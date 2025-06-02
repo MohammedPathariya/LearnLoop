@@ -1,0 +1,238 @@
+/* ========== src/pages/QuizPage.css ========== */
+
+/* ─── Page Background & Centered Container ─────────────────────────────────────── */
+body {
+    background-color: #f5f5f5; /* Light gray background */
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  .quiz-container {
+    max-width: 800px;
+    margin: 2rem auto;           /* Center with top/bottom spacing */
+    padding: 2rem 1.5rem;        /* Extra padding on top and bottom */
+    background-color: #ffffff;   /* White “card” */
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* ─── Heading ───────────────────────────────────────────────────────────────── */
+  .quiz-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  /* ─── Form Styles ─────────────────────────────────────────────────────────────── */
+  .quiz-form {
+    display: grid;
+    gap: 1rem;
+    background-color: #f5f5f5;   /* Light gray form background */
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #333;
+  }
+  
+  /* Inputs, selects, and textareas have a light gray background by default */
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fafafa; /* Light gray field */
+    box-sizing: border-box;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+  
+  /* On focus, inputs/selects/textareas switch to white background */
+  .form-group input[type="text"]:focus,
+  .form-group input[type="number"]:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #5c6bc0;      /* Primary purple border */
+    background-color: #ffffff;  /* White background on focus */
+  }
+  
+  /* Textarea is resizable vertically */
+  .form-group textarea {
+    resize: vertical;
+  }
+  
+  /* ─── Generate Button ─────────────────────────────────────────────────────────── */
+  .generate-btn {
+    display: block;
+    width: 100%;
+    background-color: #5c6bc0; /* Primary purple */
+    color: #fff;
+    border: none;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 0.5rem;
+  }
+  
+  .generate-btn:hover {
+    background-color: #4f46e5; /* Darker purple on hover */
+  }
+  
+  .generate-btn:active {
+    transform: scale(0.98);
+  }
+  
+  .generate-btn:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+  }
+  
+  /* ─── Error Message ───────────────────────────────────────────────────────────── */
+  .quiz-error {
+    background-color: #ffe6e6;
+    border: 1px solid #f5c2c2;
+    color: #a94442;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+    white-space: pre-wrap;
+  }
+  
+  /* ─── Quiz Test Area ──────────────────────────────────────────────────────────── */
+  .quiz-test-area {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  /* ─── Each Question Container ────────────────────────────────────────────────── */
+  .question-container {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 1rem;
+    background-color: #fafafa;
+  }
+  
+  .question-container.correct {
+    border-color: #4caf50;
+    background-color: #e8f5e9;
+  }
+  
+  .question-container.wrong {
+    border-color: #f44336;
+    background-color: #ffebee;
+  }
+  
+  .quiz-q {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #333;
+  }
+  
+  /* ─── Options List & Items ─────────────────────────────────────────────────────── */
+  .quiz-options {
+    margin-left: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .quiz-option-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.3rem;
+    cursor: pointer;
+  }
+  
+  .quiz-option-item input[type="radio"] {
+    margin-right: 0.5rem;
+  }
+  
+  .tf-options .quiz-option-item {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* ─── Fill-in-the-Blank Input ─────────────────────────────────────────────────── */
+  .fib-options input[type="text"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fafafa; /* Light gray */
+    box-sizing: border-box;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+  
+  .fib-options input[type="text"]:focus {
+    outline: none;
+    border-color: #5c6bc0;      /* Primary purple */
+    background-color: #ffffff;  /* White on focus */
+  }
+  
+  /* ─── Explanation Text ────────────────────────────────────────────────────────── */
+  .quiz-explanation {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .explanation-correct {
+    color: #2e7d32;
+  }
+  
+  .explanation-wrong {
+    color: #b71c1c;
+  }
+  
+  /* ─── Check Answers Button ────────────────────────────────────────────────────── */
+  .check-answers-btn {
+    display: block;
+    margin: 1.5rem auto;
+    padding: 0.75rem 1.5rem;
+    background-color: #42a5f5; /* Blue for check button */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  
+  .check-answers-btn:hover {
+    background-color: #1e88e5;
+  }
+  
+  .check-answers-btn:active {
+    transform: scale(0.98);
+  }
+  
+  .check-answers-btn:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+  }
+  
+  /* ─── Final Score Display ─────────────────────────────────────────────────────── */
+  .quiz-score {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    color: #333;
+  }
+  

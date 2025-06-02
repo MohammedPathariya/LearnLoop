@@ -1,0 +1,44 @@
+/* ========== src/components/SessionList.css ========== */
+
+.session-list {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.session-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.session-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.session-avatar {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.session-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.session-topic {
+  font-weight: 600;
+  color: #111827;
+}
+
+.session-time {
+  font-size: 0.85rem;
+  color: #6b7280;
+}

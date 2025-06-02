@@ -1,0 +1,32 @@
+/* ========== src/components/NavBar.css ========== */
+.navbar {
+  background: linear-gradient(to right, #6366f1, #8b5cf6);
+  padding: 1rem 2rem;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar-links a {
+  margin-left: 1.5rem;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navbar-links a:hover {
+  text-decoration: underline;
+}
+
+.navbar-links .active {
+  text-decoration: underline;
+  font-weight: bold;
+}

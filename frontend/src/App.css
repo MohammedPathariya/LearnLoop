@@ -1,0 +1,13 @@
+/* ========== src/App.css ========== */
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content-area {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  background: #f9fbfd;
+  min-height: 100vh;
+}

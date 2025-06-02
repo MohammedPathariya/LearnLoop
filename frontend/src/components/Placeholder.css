@@ -1,0 +1,9 @@
+/* ========== src/components/Placeholder.css ========== */
+.placeholder {
+  background-color: #fef3c7;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  color: #92400e;
+}

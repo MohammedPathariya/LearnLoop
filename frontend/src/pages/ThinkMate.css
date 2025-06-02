@@ -1,0 +1,160 @@
+/* ========== src/pages/ThinkMate.css ========== */
+
+/* ─── Page Background & Centered Container ─────────────────────────────────────── */
+body {
+  background-color: #f5f5f5; /* Light gray background */
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.thinkmate-container {
+  max-width: 800px;
+  margin: 2rem auto;            /* Center with top/bottom spacing */
+  padding: 2rem 1.5rem;         /* Extra padding on top and bottom */
+  background-color: #ffffff;    /* White “card” */
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* ─── Heading ───────────────────────────────────────────────────────────────── */
+.thinkmate-container h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+/* ─── Form Styles ─────────────────────────────────────────────────────────────── */
+.thinkmate-form {
+  display: grid;
+  gap: 1rem;
+  background-color: #f5f5f5;   /* Light gray form background */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.thinkmate-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.thinkmate-form label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+
+.thinkmate-form input[type="text"],
+.thinkmate-form input[type="number"],
+.thinkmate-form select,
+.thinkmate-form textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fafafa; /* Light gray field */
+  box-sizing: border-box;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.thinkmate-form input[type="text"]:focus,
+.thinkmate-form input[type="number"]:focus,
+.thinkmate-form select:focus,
+.thinkmate-form textarea:focus {
+  outline: none;
+  border-color: #5c6bc0;      /* Primary purple border */
+  background-color: #ffffff;  /* White background on focus */
+}
+
+.thinkmate-form textarea {
+  resize: vertical;
+}
+
+/* ─── Generate Button ─────────────────────────────────────────────────────────── */
+.thinkmate-form button {
+  display: block;
+  width: 100%;
+  background-color: #5c6bc0; /* Primary purple */
+  color: #fff;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  margin-top: 0.5rem;
+}
+
+.thinkmate-form button:hover {
+  background-color: #4f46e5; /* Darker purple on hover */
+}
+
+.thinkmate-form button:active {
+  transform: scale(0.98);
+}
+
+.thinkmate-form button:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+/* ─── Error Message ───────────────────────────────────────────────────────────── */
+.error {
+  background-color: #ffe6e6;
+  border: 1px solid #f5c2c2;
+  color: #a94442;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  white-space: pre-wrap;
+}
+
+/* ─── Chat Bubbles Container ──────────────────────────────────────────────────── */
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem; /* Spacing between form and first bubble */
+}
+
+/* Each chat message row */
+.message-container {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* Emoji icon styling */
+.message-icon {
+  font-size: 1.75rem;
+  margin-right: 0.75rem;
+  margin-top: 0.15rem;
+}
+
+/* The speech bubble itself */
+.chat-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  max-width: 90%;
+  line-height: 1.4;
+}
+
+/* ─── Student vs. Teacher Bubble Colors ───────────────────────────────────────── */
+.chat-student .chat-bubble {
+  background-color: #e3f2fd; /* Light blue */
+  color: #0d47a1;           /* Dark blue text */
+  align-self: flex-start;
+}
+
+.chat-teacher .chat-bubble {
+  background-color: #ede7f6; /* Light purple */
+  color: #311b92;           /* Dark purple text */
+  align-self: flex-end;
+}
+
+/* ─── Utility Class for Hiding Elements (if needed) ──────────────────────────── */
+.hidden {
+  display: none;
+}
