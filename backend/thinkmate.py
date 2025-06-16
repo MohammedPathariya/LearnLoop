@@ -47,13 +47,35 @@ class QuizSession(db.Model):
     user_answers_json = db.Column(db.Text, nullable=False)
     correct_answers_json = db.Column(db.Text, nullable=False)
     score = db.Column(db.Integer, nullable=False)
-    
+
 class FlashcardSet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     topic = db.Column(db.String(255), nullable=False)
     num_cards = db.Column(db.Integer, nullable=False)
     cards_json = db.Column(db.Text, nullable=False)
+
+# ─── Routes for Deleting ──────────────────────────────────
+@app.route("/conversations/<int:conv_id>", methods=["DELETE"])
+def delete_conversation(conv_id):
+    conv = Conversation.query.get_or_404(conv_id)
+    db.session.delete(conv)
+    db.session.commit()
+    return jsonify({"success": True})
+
+@app.route("/quiz_results/<int:quiz_id>", methods=["DELETE"])
+def delete_quiz(quiz_id):
+    q = QuizSession.query.get_or_404(quiz_id)
+    db.session.delete(q)
+    db.session.commit()
+    return jsonify({"success": True})
+
+@app.route("/flashcards/<int:id>", methods=["DELETE"])
+def delete_flashcard(id):
+    s = FlashcardSet.query.get_or_404(id)
+    db.session.delete(s)
+    db.session.commit()
+    return jsonify({"success": True})
 
 
 # ─── Generation Helpers ──────────────────────────────────────
@@ -460,7 +482,7 @@ def get_quiz_by_id(quiz_id):
         "correct_answers": correct_answers_arr,
         "score": session.score
     })
-    
+  
 # ─── Flashcards ───────────────────────────────────────
 @app.route("/flashcards", methods=["POST"])
 def flashcards():
@@ -526,7 +548,6 @@ def get_flashcard_stats():
         "total_flashcards_generated": total_cards,
         "sets_created_today": today_sets
     })
-
 
 
 # ─── Init & Run ─────────────────────────────────────

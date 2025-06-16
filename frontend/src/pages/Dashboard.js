@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+
 
 import {
   getStats as getChatStats,
@@ -32,6 +34,7 @@ const Dashboard = () => {
     getFlashcardStats().then((res) => setFlashStats(res.data)).catch(console.error);
     getFlashcardHistory().then((history) => setFlashHistory(history)).catch(console.error);
   }, []);
+
 
   return (
     <div className="dashboard-container">
