@@ -67,13 +67,13 @@ const Dashboard = () => {
         ) : (
           <p>Loading quiz stats…</p>
         )}
-        <h3>Recent Quizes</h3>
+        <h3>Recent Quizzes</h3>
         <ul className="history-list">
           {quizHistory.map((q) => (
             <li key={q.id} className="history-item">
               <Link to={`/quiz/${q.id}`} className="history-link">
                 <span role="img" aria-label="quiz">📝</span>{' '}
-                {q.topic ? <strong>Topic: {q.topic}</strong> : <strong>Content-Based Quiz</strong>}
+                <strong>{q.topic || '(No Topic)'}</strong>
                 <br />
                 <small>{q.timestamp} — Score: {q.score} / {q.num_questions}</small>
               </Link>
