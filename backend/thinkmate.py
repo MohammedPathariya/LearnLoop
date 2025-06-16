@@ -47,6 +47,13 @@ class QuizSession(db.Model):
     user_answers_json = db.Column(db.Text, nullable=False)
     correct_answers_json = db.Column(db.Text, nullable=False)
     score = db.Column(db.Integer, nullable=False)
+    
+class FlashcardSet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    topic = db.Column(db.String(255), nullable=False)
+    num_cards = db.Column(db.Integer, nullable=False)
+    cards_json = db.Column(db.Text, nullable=False)
 
 
 # ─── Generation Helpers ──────────────────────────────────────
@@ -136,6 +143,34 @@ def generate_quiz(content: str = None, topic: str = None, num_questions: int = 5
         quiz_json = {"error": "Failed to parse GPT output as JSON", "raw_output": raw_text}
 
     return quiz_json
+
+
+# ─── Helper: Flashcard Generator ───────────────────────
+def generate_flashcards(topic: str, num_cards: int = 5) -> dict:
+    system_prompt = (
+        "You are an AI flashcard generator. *Respond with only a JSON object and no extra text.*\n"
+        f"Generate exactly {num_cards} flashcards for the topic: '{topic}'. "
+        "Each flashcard should have a 'term' and a 'definition'. "
+        "The definition should be clear and concise."
+    )
+
+    resp = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": topic}
+        ],
+        max_tokens=512,
+        temperature=0.7,
+    )
+    raw = resp.choices[0].message.content.strip()
+    raw = re.sub(r',\s*]', ']', raw)
+    raw = re.sub(r',\s*}', '}', raw)
+
+    try:
+        return json.loads(raw)
+    except:
+        return {"error": "Failed to parse GPT output as JSON", "raw_output": raw}
 
 
 # ─── Routes ──────────────────────────────────────────
@@ -410,6 +445,68 @@ def get_quiz_by_id(quiz_id):
         "correct_answers": correct_answers_arr,
         "score": session.score
     })
+
+
+# ─── Flashcards ───────────────────────────────────────
+@app.route("/flashcards", methods=["POST"])
+def flashcards():
+    data = request.get_json(force=True)
+    topic = data.get("topic", "").strip()
+    if not topic:
+        return jsonify({"error": "Missing 'topic'"}), 400
+    try:
+        num = int(data.get("num_cards", 5))
+    except:
+        num = 5
+    cards = generate_flashcards(topic, num_cards=num)
+    if "flashcards" in cards:
+        cards_json_str = json.dumps(cards["flashcards"])
+        fc = FlashcardSet(topic=topic, num_cards=num, cards_json=cards_json_str)
+        db.session.add(fc)
+        db.session.commit()
+        cards["id"] = fc.id
+    return jsonify(cards)
+
+
+@app.route("/flashcards_history", methods=["GET"])
+def flashcards_history():
+    sets = FlashcardSet.query.order_by(FlashcardSet.timestamp.desc()).limit(20).all()
+    return jsonify([
+        {
+            "id": s.id,
+            "timestamp": s.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            "topic": s.topic,
+            "num_cards": s.num_cards
+        }
+        for s in sets
+    ])
+
+
+@app.route("/flashcards/<int:id>", methods=["GET"])
+def get_flashcard_set(id):
+    s = FlashcardSet.query.get_or_404(id)
+    return jsonify({
+        "id": s.id,
+        "timestamp": s.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        "topic": s.topic,
+        "num_cards": s.num_cards,
+        "flashcards": json.loads(s.cards_json)
+    })
+
+@app.route("/analytics/flashcard_stats", methods=["GET"])
+def get_flashcard_stats():
+    total_sets = FlashcardSet.query.count()
+    total_cards = db.session.query(func.sum(FlashcardSet.num_cards)).scalar() or 0
+    today = datetime.utcnow().date()
+    today_sets = FlashcardSet.query.filter(func.date(FlashcardSet.timestamp) == today).count()
+
+    return jsonify({
+        "total_flashcard_sets": total_sets,
+        "total_flashcards_generated": total_cards,
+        "sets_created_today": today_sets
+    })
+
+
 
 # ─── Init & Run ─────────────────────────────────────
 if __name__ == "__main__":
