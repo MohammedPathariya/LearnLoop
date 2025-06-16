@@ -1,3 +1,5 @@
+// src/pages/FlashcardPage.js
+
 import React, { useState } from 'react';
 import { generateFlashcards } from '../api/thinkmateApi';
 import './QuizPage.css';
@@ -8,62 +10,82 @@ const FlashcardPage = () => {
   const [numCards, setNumCards] = useState(5);
   const [flashcards, setFlashcards] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleGenerate = async (e) => {
     e.preventDefault();
-    if (!topic.trim()) return;
+    setError(null);
+    if (!topic.trim()) {
+      setError('Please enter a topic to generate flashcards.');
+      return;
+    }
     setLoading(true);
     setFlashcards([]);
 
     try {
       const data = await generateFlashcards(topic, numCards);
-      console.log("GPT flashcard response:", JSON.stringify(data, null, 2));
       setFlashcards(data.flashcards || []);
     } catch (err) {
-      console.error("Error generating flashcards:", err);
+      console.error('Error generating flashcards:', err);
+      setError('Failed to generate flashcards.');
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="container">
-      <h2>📇 Generate Flashcards</h2>
-      <form onSubmit={handleGenerate}>
-        <input
-          type="text"
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          placeholder="Enter topic..."
-        />
-        <input
-          type="number"
-          value={numCards}
-          onChange={(e) => setNumCards(e.target.value)}
-          min={1}
-          max={10}
-        />
-        <button type="submit">Generate</button>
+    <div className="quiz-container">
+      <h2>🧠 Smart Flashcard Generator</h2>
+
+      <form className="quiz-form" onSubmit={handleGenerate}>
+        <div className="form-group">
+          <label htmlFor="topic-input">Topic</label>
+          <input
+            id="topic-input"
+            type="text"
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="e.g. Photosynthesis"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="num-cards-input">Number of Flashcards</label>
+          <input
+            id="num-cards-input"
+            type="number"
+            min="1"
+            max="10"
+            value={numCards}
+            onChange={(e) => setNumCards(e.target.value)}
+          />
+        </div>
+
+        <button type="submit" className="generate-btn" disabled={loading}>
+          {loading ? 'Generating Flashcards…' : 'Generate Flashcards'}
+        </button>
       </form>
 
-      {loading && <p>Generating...</p>}
+      {error && <div className="quiz-error">{error}</div>}
 
-      <div className="flashcard-grid">
-        {flashcards.map((card, idx) => (
-          <div
-            key={idx}
-            className="flashcard"
-            onClick={(e) =>
-              e.currentTarget.classList.toggle('flipped')
-            }
-          >
-            <div className="flashcard-inner">
-              <div className="flashcard-front">{card.term}</div>
-              <div className="flashcard-back">{card.definition}</div>
-            </div>
+      {flashcards.length > 0 && (
+        <div className="quiz-test-area">
+          <div className="flashcard-grid">
+            {flashcards.map((card, idx) => (
+              <div
+                key={idx}
+                className="flashcard"
+                onClick={(e) => e.currentTarget.classList.toggle('flipped')}
+              >
+                <div className="flashcard-inner">
+                  <div className="flashcard-front">{card.term}</div>
+                  <div className="flashcard-back">{card.definition}</div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,56 +1,84 @@
+/* ========== src/pages/Flashcard.css ========== */
+
+/* ─── Flashcard Layout ───────────────────────────────────────────────────────── */
 .flashcard-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: flex-start;
-  margin-top: 1rem;
+  gap: 1.25rem; /* spacing between cards */
+  justify-content: center;
+  margin-top: 2rem;
 }
 
+/* ─── Individual Flashcard Container ─────────────────────────────────────────── */
 .flashcard {
+  width: 240px;
+  height: 160px;
   perspective: 1000px;
-  width: 200px;
-  height: 140px;
-  position: relative;
   cursor: pointer;
+  transition: transform 0.2s ease-in-out;
 }
 
+.flashcard:hover {
+  transform: scale(1.03);
+}
+
+/* ─── Inner Card with Flip Animation ─────────────────────────────────────────── */
 .flashcard-inner {
   width: 100%;
   height: 100%;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
   position: relative;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  background: #f9f9f9;
+  background: #fdfdfd;
 }
 
 .flashcard.flipped .flashcard-inner {
   transform: rotateY(180deg);
 }
 
-.flashcard-front, .flashcard-back {
+/* ─── Front and Back Sides ───────────────────────────────────────────────────── */
+.flashcard-front,
+.flashcard-back {
   position: absolute;
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
   border-radius: 12px;
-  padding: 1rem;
+  padding: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 500;
-  font-size: 1rem;
+  font-weight: 600;
+  font-size: 1.05rem;
   text-align: center;
+  box-sizing: border-box;
 }
 
+/* ─── Front Style ─────────────────────────────────────────────────────────────── */
 .flashcard-front {
   background-color: #e3f2fd;
   color: #0d47a1;
 }
 
+/* ─── Back Style ──────────────────────────────────────────────────────────────── */
 .flashcard-back {
   background-color: #fff9c4;
   color: #795548;
   transform: rotateY(180deg);
+}
+
+/* ─── Responsive Scaling (optional) ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .flashcard {
+    width: 90%;
+    height: 180px;
+  }
+
+  .flashcard-front,
+  .flashcard-back {
+    font-size: 1rem;
+    padding: 1rem;
+  }
 }
