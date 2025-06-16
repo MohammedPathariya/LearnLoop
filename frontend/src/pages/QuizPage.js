@@ -246,7 +246,9 @@ const QuizPage = () => {
 
   return (
     <div className="quiz-container">
-      <h2>Smart Quiz Generator (Interactive Mode)</h2>
+      <h2>Practice Quizzes for Deeper Understanding</h2>
+      <p className="subtitle">Generate topic-based quizzes and check your answers instantly.</p>
+
 
       <form className="quiz-form" onSubmit={handleSubmit}>
         <div className="form-group">

@@ -71,7 +71,9 @@ const ThinkMate = () => {
 
   return (
     <div className="thinkmate-container">
-      <h2>Smart Student–Teacher Conversation Generator</h2>
+      <h2>Concept Breakdown Through Dialogue</h2>
+      <p className="subtitle">Learn any topic through a natural student–teacher style conversation.</p>
+
 
       <form className="thinkmate-form" onSubmit={handleSubmit}>
         <div className="form-group">

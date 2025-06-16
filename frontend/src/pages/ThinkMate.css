@@ -158,3 +158,12 @@ body {
 .hidden {
   display: none;
 }
+
+.subtitle {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #555;
+  text-align: center;
+  margin-top: -0.75rem;
+  margin-bottom: 1.5rem;
+}

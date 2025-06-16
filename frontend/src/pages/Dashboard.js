@@ -35,11 +35,11 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <h1>Welcome back to LearnLoop!</h1>
+      <h1>Ready to Learn Something New Today?</h1>
 
       {/* ─── Chat Section ───────────────────────────────────────────── */}
       <section className="dashboard-section">
-        <h2>Conversation Statistics</h2>
+        <h2>Chat Statistics</h2>
         {chatStats ? (
           <div className="cards-container">
             <StatCard icon="📘" title="Total Chat Sessions" value={chatStats.total_conversations} bgColor="#e0f7fa" />
@@ -50,7 +50,7 @@ const Dashboard = () => {
         ) : (
           <p>Loading conversation stats…</p>
         )}
-        <h3>Recent Chat Sessions</h3>
+        <h3>Recent Chats</h3>
         <SessionList sessions={chatHistory} />
       </section>
 
@@ -67,7 +67,7 @@ const Dashboard = () => {
         ) : (
           <p>Loading quiz stats…</p>
         )}
-        <h3>Recent Quiz Sessions</h3>
+        <h3>Recent Quizes</h3>
         <ul className="history-list">
           {quizHistory.map((q) => (
             <li key={q.id} className="history-item">
@@ -94,7 +94,7 @@ const Dashboard = () => {
         ) : (
           <p>Loading flashcard stats…</p>
         )}
-        <h3>Recent Flashcard Sets</h3>
+        <h3>Recent Flashcards</h3>
         {Array.isArray(flashHistory) && flashHistory.length > 0 ? (
           <ul className="history-list">
             {flashHistory.map((set) => (

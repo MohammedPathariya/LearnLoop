@@ -4,15 +4,15 @@
 .flashcard-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.25rem; /* spacing between cards */
+  gap: 1.5rem; /* more spacing between cards */
   justify-content: center;
   margin-top: 2rem;
 }
 
 /* ─── Individual Flashcard Container ─────────────────────────────────────────── */
 .flashcard {
-  width: 240px;
-  height: 160px;
+  width: 260px;
+  height: 200px;
   perspective: 1000px;
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
@@ -54,6 +54,11 @@
   font-size: 1.05rem;
   text-align: center;
   box-sizing: border-box;
+
+  /* Handle overflow */
+  overflow-y: auto;
+  word-break: break-word;
+  line-height: 1.3;
 }
 
 /* ─── Front Style ─────────────────────────────────────────────────────────────── */
@@ -69,11 +74,31 @@
   transform: rotateY(180deg);
 }
 
+/* ─── Optional Scrollbar Styling ─────────────────────────────────────────────── */
+.flashcard-back::-webkit-scrollbar,
+.flashcard-front::-webkit-scrollbar {
+  width: 6px;
+}
+.flashcard-back::-webkit-scrollbar-thumb,
+.flashcard-front::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+.subtitle {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #555;
+  text-align: center;
+  margin-top: -0.75rem;
+  margin-bottom: 1.5rem;
+}
+
 /* ─── Responsive Scaling (optional) ───────────────────────────────────────────── */
 @media (max-width: 768px) {
   .flashcard {
     width: 90%;
-    height: 180px;
+    height: 220px;
   }
 
   .flashcard-front,

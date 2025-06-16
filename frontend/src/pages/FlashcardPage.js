@@ -35,7 +35,8 @@ const FlashcardPage = () => {
 
   return (
     <div className="quiz-container">
-      <h2>🧠 Smart Flashcard Generator</h2>
+      <h2>Dynamic Flashcard Builder</h2>
+      <p className="subtitle">Create topic-driven flashcards for efficient review. Tap to flip.</p>
 
       <form className="quiz-form" onSubmit={handleGenerate}>
         <div className="form-group">
