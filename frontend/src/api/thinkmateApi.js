@@ -92,6 +92,11 @@ export const generateFlashcards = async (topic, numCards = 5) => {
   return res.data;
 };
 
+export const getFlashcardStats = async () => {
+  const res = await axios.get(`${BASE_URL}/analytics/flashcard_stats`);
+  return res;
+};
+
 export const getFlashcardHistory = async () => {
   const res = await axios.get(`${BASE_URL}/flashcards_history`);
   return res.data;

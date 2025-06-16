@@ -164,13 +164,28 @@ def generate_flashcards(topic: str, num_cards: int = 5) -> dict:
         temperature=0.7,
     )
     raw = resp.choices[0].message.content.strip()
+
+    # Remove triple backticks and optional language hints like ```json
+    if raw.startswith("```"):
+        raw = re.sub(r"^```(?:json)?\s*", "", raw)
+        raw = re.sub(r"\s*```$", "", raw)
+
+    # Fix common trailing comma issues
     raw = re.sub(r',\s*]', ']', raw)
     raw = re.sub(r',\s*}', '}', raw)
 
     try:
-        return json.loads(raw)
-    except:
+        # GPT sometimes returns an array instead of { flashcards: [...] }
+        parsed = json.loads(raw)
+        if isinstance(parsed, list):
+            return {"flashcards": parsed}
+        elif isinstance(parsed, dict) and "flashcards" in parsed:
+            return parsed
+        else:
+            return {"error": "Unexpected format", "raw_output": raw}
+    except Exception:
         return {"error": "Failed to parse GPT output as JSON", "raw_output": raw}
+
 
 
 # ─── Routes ──────────────────────────────────────────
@@ -445,8 +460,7 @@ def get_quiz_by_id(quiz_id):
         "correct_answers": correct_answers_arr,
         "score": session.score
     })
-
-
+    
 # ─── Flashcards ───────────────────────────────────────
 @app.route("/flashcards", methods=["POST"])
 def flashcards():
@@ -458,14 +472,21 @@ def flashcards():
         num = int(data.get("num_cards", 5))
     except:
         num = 5
+
     cards = generate_flashcards(topic, num_cards=num)
-    if "flashcards" in cards:
+
+    # Optional log:
+    print("Flashcard generation result:", cards)
+
+    # Only save to DB if valid cards exist
+    if "flashcards" in cards and isinstance(cards["flashcards"], list):
         cards_json_str = json.dumps(cards["flashcards"])
-        fc = FlashcardSet(topic=topic, num_cards=num, cards_json=cards_json_str)
+        fc = FlashcardSet(topic=topic, num_cards=len(cards["flashcards"]), cards_json=cards_json_str)
         db.session.add(fc)
         db.session.commit()
         cards["id"] = fc.id
     return jsonify(cards)
+
 
 
 @app.route("/flashcards_history", methods=["GET"])
@@ -512,4 +533,5 @@ def get_flashcard_stats():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
+    print("🧠 Flask app starting. Database:", db_path)
     app.run(debug=True)
