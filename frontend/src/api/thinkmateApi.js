@@ -86,3 +86,18 @@ export const getQuizStats = () => {
 export const getQuizById = (quizId) => {
     return axios.get(`${BASE_URL}/quiz_results/${quizId}`);
   };
+
+export const generateFlashcards = async (topic, numCards = 5) => {
+  const res = await axios.post(`${BASE_URL}/flashcards`, { topic, num_cards: numCards });
+  return res.data;
+};
+
+export const getFlashcardHistory = async () => {
+  const res = await axios.get(`${BASE_URL}/flashcards_history`);
+  return res.data;
+};
+
+export const getFlashcardSetById = async (id) => {
+  const res = await axios.get(`${BASE_URL}/flashcards/${id}`);
+  return res.data;
+};
