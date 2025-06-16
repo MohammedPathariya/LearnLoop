@@ -1,7 +1,5 @@
-// src/pages/Dashboard.js
-
+// ========== src/pages/Dashboard.js ==========
 import React, { useEffect, useState } from 'react';
-
 
 import {
   getStats as getChatStats,
@@ -24,6 +22,10 @@ const Dashboard = () => {
   const [flashStats, setFlashStats] = useState(null);
   const [flashHistory, setFlashHistory] = useState([]);
 
+  const [chatView, setChatView] = useState("recent");
+  const [quizView, setQuizView] = useState("recent");
+  const [flashView, setFlashView] = useState("recent");
+
   useEffect(() => {
     getChatStats().then((res) => setChatStats(res.data)).catch(console.error);
     getChatHistory().then((res) => setChatHistory(res.data)).catch(console.error);
@@ -33,6 +35,16 @@ const Dashboard = () => {
     getFlashcardHistory().then((history) => setFlashHistory(history)).catch(console.error);
   }, []);
 
+  const renderTabs = (view, setView) => (
+    <div className="tab-buttons">
+      <button className={view === "recent" ? "active" : ""} onClick={() => setView("recent")}>
+        Recent
+      </button>
+      <button className={view === "all" ? "active" : ""} onClick={() => setView("all")}>
+        All
+      </button>
+    </div>
+  );
 
   return (
     <div className="dashboard-container">
@@ -51,8 +63,15 @@ const Dashboard = () => {
         ) : (
           <p>Loading conversation stats…</p>
         )}
-        <h3>Recent Chats</h3>
-        <SessionList sessions={chatHistory} emoji="👩‍🎓" basePath="/conversations" />
+        <div className="section-header">
+          <h3>Chats</h3>
+          {renderTabs(chatView, setChatView)}
+        </div>
+        <SessionList
+          sessions={chatView === "recent" ? chatHistory.slice(0, 3) : chatHistory}
+          emoji="👩‍🎓"
+          basePath="/conversations"
+        />
       </section>
 
       {/* ─── Quiz Section ───────────────────────────────────────────── */}
@@ -68,8 +87,15 @@ const Dashboard = () => {
         ) : (
           <p>Loading quiz stats…</p>
         )}
-        <h3>Recent Quizzes</h3>
-        <SessionList sessions={quizHistory} emoji="📝" basePath="/quiz" />
+        <div className="section-header">
+          <h3>Quizzes</h3>
+          {renderTabs(quizView, setQuizView)}
+        </div>
+        <SessionList
+          sessions={quizView === "recent" ? quizHistory.slice(0, 3) : quizHistory}
+          emoji="📝"
+          basePath="/quiz"
+        />
       </section>
 
       {/* ─── Flashcard Section ──────────────────────────────────────── */}
@@ -84,8 +110,15 @@ const Dashboard = () => {
         ) : (
           <p>Loading flashcard stats…</p>
         )}
-        <h3>Recent Flashcards</h3>
-        <SessionList sessions={flashHistory} emoji="🗂️" basePath="/flashcards" />
+        <div className="section-header">
+          <h3>Flashcards</h3>
+          {renderTabs(flashView, setFlashView)}
+        </div>
+        <SessionList
+          sessions={flashView === "recent" ? flashHistory.slice(0, 3) : flashHistory}
+          emoji="🗂️"
+          basePath="/flashcards"
+        />
       </section>
     </div>
   );

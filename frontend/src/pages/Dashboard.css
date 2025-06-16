@@ -1,5 +1,4 @@
-/* src/pages/Dashboard.css */
-
+/* ───── Dashboard Container ───── */
 .dashboard-container {
   max-width: 900px;
   margin: 0 auto;
@@ -16,8 +15,7 @@
   margin-bottom: 2.5rem;
 }
 
-/* ─── Statistic Cards ───────────────────────────────────────────────── */
-
+/* ───── Statistic Cards ───── */
 .cards-container {
   display: flex;
   flex-wrap: wrap;
@@ -50,8 +48,7 @@
   color: #333;
 }
 
-/* ─── Recent Sessions List ───────────────────────────────────────────────── */
-
+/* ───── Session History List ───── */
 .history-list {
   list-style: none;
   padding: 0;
@@ -86,4 +83,65 @@
 .history-link small {
   color: #666;
   font-size: 0.875rem;
+}
+
+/* ───── Section Header & Tabs ───── */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.2rem 0 0.5rem;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.tab-buttons {
+  display: flex;
+  border-bottom: 2px solid #ccc;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.tab-buttons button {
+  padding: 0.4rem 1rem;
+  border: none;
+  background: transparent;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+  border-right: 1px solid #ccc;
+}
+
+.tab-buttons button:last-child {
+  border-right: none;
+}
+
+.tab-buttons button.active {
+  background-color: #ffffff;
+  color: #007bff;
+  font-weight: 600;
+  border-bottom: 2px solid white;
+}
+
+/* ───── Animated Session List ───── */
+.session-list {
+  animation: fadeIn 0.35s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
 }
