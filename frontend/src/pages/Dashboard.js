@@ -1,8 +1,6 @@
 // src/pages/Dashboard.js
 
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
 
 
 import {
@@ -54,7 +52,7 @@ const Dashboard = () => {
           <p>Loading conversation stats…</p>
         )}
         <h3>Recent Chats</h3>
-        <SessionList sessions={chatHistory} />
+        <SessionList sessions={chatHistory} emoji="👩‍🎓" basePath="/conversations" />
       </section>
 
       {/* ─── Quiz Section ───────────────────────────────────────────── */}
@@ -71,18 +69,7 @@ const Dashboard = () => {
           <p>Loading quiz stats…</p>
         )}
         <h3>Recent Quizzes</h3>
-        <ul className="history-list">
-          {quizHistory.map((q) => (
-            <li key={q.id} className="history-item">
-              <Link to={`/quiz/${q.id}`} className="history-link">
-                <span role="img" aria-label="quiz">📝</span>{' '}
-                <strong>{q.topic || '(No Topic)'}</strong>
-                <br />
-                <small>{q.timestamp} — Score: {q.score} / {q.num_questions}</small>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <SessionList sessions={quizHistory} emoji="📝" basePath="/quiz" />
       </section>
 
       {/* ─── Flashcard Section ──────────────────────────────────────── */}
@@ -98,22 +85,7 @@ const Dashboard = () => {
           <p>Loading flashcard stats…</p>
         )}
         <h3>Recent Flashcards</h3>
-        {Array.isArray(flashHistory) && flashHistory.length > 0 ? (
-          <ul className="history-list">
-            {flashHistory.map((set) => (
-              <li key={set.id} className="history-item">
-                <Link to={`/flashcards/${set.id}`} className="history-link">
-                  <span role="img" aria-label="flashcards">🗂️</span>{' '}
-                  <strong>{set.topic || '(No topic)'}</strong>
-                  <br />
-                  <small>{set.timestamp} — {set.num_cards} cards</small>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p style={{ marginLeft: "1rem" }}>No flashcard sets found yet.</p>
-        )}
+        <SessionList sessions={flashHistory} emoji="🗂️" basePath="/flashcards" />
       </section>
     </div>
   );
