@@ -1,16 +1,43 @@
 /* ========== src/pages/ThinkMate.css ========== */
 
-/* ─── Page Background & Centered Container ─────────────────────────────────────── */
+/* ─── Shared wrapper for all pages ─────────────────────────────────────────── */
 body {
-  background-color: #f5f5f5; /* Light gray background */
+  background-color: #f9fbfd; /* light grey whitespace behind everything */
   margin: 0;
-  font-family: Arial, sans-serif;
+}
+
+.page-bg-wrapper {
+  position: relative;
+  padding: 2rem 0;            /* vertical breathing room */
+  background-color: #f9fbfd;  /* match body */
+}
+
+/* left & right “fading” panels */
+.page-bg-wrapper::before,
+.page-bg-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 120px;
+  background: linear-gradient(
+    to right,
+    #F4E7E1,
+    rgba(244,231,225, 0)
+  );
+}
+.page-bg-wrapper::before {
+  left: 0;
+}
+.page-bg-wrapper::after {
+  right: 0;
+  transform: scaleX(-1);
 }
 
 .thinkmate-container {
   max-width: 800px;
   margin: 2rem auto;            /* Center with top/bottom spacing */
-  padding: 2rem 1.5rem;         /* Extra padding on top and bottom */
+  padding: 2rem 1.5rem;         /* Extra padding */
   background-color: #ffffff;    /* White “card” */
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -19,86 +46,102 @@ body {
 /* ─── Heading ───────────────────────────────────────────────────────────────── */
 .thinkmate-container h2 {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: #333;
+}
+
+.subtitle {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #555;
+  text-align: center;
+  margin-top: -0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 /* ─── Form Styles ─────────────────────────────────────────────────────────────── */
 .thinkmate-form {
   display: grid;
   gap: 1rem;
-  background-color: #f5f5f5;   /* Light gray form background */
+  background-color: #f5f5f5;
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 1rem 1.25rem;
   margin-bottom: 1.5rem;
 }
 
-.thinkmate-form .form-group {
+.form-group {
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
 }
 
-.thinkmate-form label {
+.form-group label {
   font-weight: 600;
   margin-bottom: 0.25rem;
   color: #333;
 }
 
-.thinkmate-form input[type="text"],
-.thinkmate-form input[type="number"],
-.thinkmate-form select,
-.thinkmate-form textarea {
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 0.75rem 1rem;
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background-color: #fafafa; /* Light gray field */
+  background-color: #fafafa;
   box-sizing: border-box;
   transition: border-color 0.2s, background-color 0.2s;
 }
 
-.thinkmate-form input[type="text"]:focus,
-.thinkmate-form input[type="number"]:focus,
-.thinkmate-form select:focus,
-.thinkmate-form textarea:focus {
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
-  border-color: #5c6bc0;      /* Primary purple border */
-  background-color: #ffffff;  /* White background on focus */
+  border-color: #A27B5C;   /* warm brown focus */
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(162,123,92,0.3);
 }
 
-.thinkmate-form textarea {
+.form-group textarea {
   resize: vertical;
 }
 
-/* ─── Generate Button ─────────────────────────────────────────────────────────── */
-.thinkmate-form button {
+/* ─── Generate Button (new slate-and-brown palette) ─────────────────────────── */
+.generate-btn {
   display: block;
   width: 100%;
-  background-color: #5c6bc0; /* Primary purple */
-  color: #fff;
-  border: none;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
-  margin-top: 0.5rem;
+  background-color: #3F4E4F;      /* default slate */
+  color:           #DCD7C9;      /* light cream text */
+  border:          1px solid #A27B5C; /* subtle brown border */
+  padding:         0.75rem;
+  font-size:       1rem;
+  border-radius:   4px;
+  cursor:          pointer;
+  transition:      background-color 0.2s, color 0.2s, transform 0.1s;
+  margin-top:      0.5rem;
 }
 
-.thinkmate-form button:hover {
-  background-color: #4f46e5; /* Darker purple on hover */
+.generate-btn:hover {
+  background-color: #2C3639;     /* darker slate on hover */
+  color:           #DCD7C9;
 }
 
-.thinkmate-form button:active {
-  transform: scale(0.98);
+.generate-btn:active {
+  background-color: #A27B5C;     /* brown accent on click */
+  color:           #2C3639;      /* dark text */
+  transform:       scale(0.98);
 }
 
-.thinkmate-form button:disabled {
-  background-color: #999;
-  cursor: not-allowed;
+.generate-btn:disabled {
+  background-color: #DCD7C9;     /* pale cream when disabled */
+  color:           #3F4E4F;      /* muted slate text */
+  border-color:    #DCD7C9;
+  cursor:          not-allowed;
+  opacity:         0.8;
 }
 
 /* ─── Error Message ───────────────────────────────────────────────────────────── */
@@ -117,23 +160,20 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 1.5rem; /* Spacing between form and first bubble */
+  margin-top: 1.5rem;
 }
 
-/* Each chat message row */
 .message-container {
   display: flex;
   align-items: flex-start;
 }
 
-/* Emoji icon styling */
 .message-icon {
   font-size: 1.75rem;
   margin-right: 0.75rem;
   margin-top: 0.15rem;
 }
 
-/* The speech bubble itself */
 .chat-bubble {
   padding: 0.75rem 1rem;
   border-radius: 12px;
@@ -141,29 +181,19 @@ body {
   line-height: 1.4;
 }
 
-/* ─── Student vs. Teacher Bubble Colors ───────────────────────────────────────── */
 .chat-student .chat-bubble {
-  background-color: #e3f2fd; /* Light blue */
-  color: #0d47a1;           /* Dark blue text */
+  background-color: #e3f2fd;
+  color: #0d47a1;
   align-self: flex-start;
 }
 
 .chat-teacher .chat-bubble {
-  background-color: #ede7f6; /* Light purple */
-  color: #311b92;           /* Dark purple text */
+  background-color: #ede7f6;
+  color: #311b92;
   align-self: flex-end;
 }
 
-/* ─── Utility Class for Hiding Elements (if needed) ──────────────────────────── */
+/* ─── Utility ───────────────────────────────────────────────────────────────── */
 .hidden {
   display: none;
-}
-
-.subtitle {
-  font-size: 1rem;
-  font-weight: 400;
-  color: #555;
-  text-align: center;
-  margin-top: -0.75rem;
-  margin-bottom: 1.5rem;
 }

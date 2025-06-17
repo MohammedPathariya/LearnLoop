@@ -1,5 +1,40 @@
 /* ========== src/pages/Flashcard.css ========== */
 
+/* ─── Shared wrapper for all pages ─────────────────────────────────────────── */
+body {
+  background-color: #f9fbfd; /* light grey whitespace behind everything */
+  margin: 0;
+}
+
+.page-bg-wrapper {
+  position: relative;
+  padding: 2rem 0;            /* vertical breathing room */
+  background-color: #f9fbfd;  /* match body */
+}
+
+/* left & right “fading” panels */
+.page-bg-wrapper::before,
+.page-bg-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 120px;
+  background: linear-gradient(
+    to right,
+    #F4E7E1,
+    rgba(244,231,225, 0)
+  );
+}
+.page-bg-wrapper::before {
+  left: 0;
+}
+.page-bg-wrapper::after {
+  right: 0;
+  transform: scaleX(-1);
+}
+
+
 /* ─── Flashcard Layout ───────────────────────────────────────────────────────── */
 .flashcard-grid {
   display: flex;

@@ -245,74 +245,76 @@ const QuizPage = () => {
   };
 
   return (
-    <div className="quiz-container">
-      <h2>Practice Quizzes for Deeper Understanding</h2>
-      <p className="subtitle">Generate topic-based quizzes and check your answers instantly.</p>
+    <div className="page-bg-wrapper">
+      <div className="quiz-container">
+        <h2>Practice Quizzes for Deeper Understanding</h2>
+        <p className="subtitle">Generate topic-based quizzes and check your answers instantly.</p>
 
 
-      <form className="quiz-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="topic-input">Topic (short string)</label>
-          <input
-            id="topic-input"
-            type="text"
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="e.g. Photosynthesis"
-          />
-        </div>
+        <form className="quiz-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="topic-input">Topic (short string)</label>
+            <input
+              id="topic-input"
+              type="text"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              placeholder="e.g. Photosynthesis"
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="content-input">Or paste Content (long text)</label>
-          <textarea
-            id="content-input"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Paste an article or notes here…"
-            rows={4}
-          />
-        </div>
+          <div className="form-group">
+            <label htmlFor="content-input">Or paste Content (long text)</label>
+            <textarea
+              id="content-input"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="Paste an article or notes here…"
+              rows={4}
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="num-questions-input">Number of Questions</label>
-          <input
-            id="num-questions-input"
-            type="number"
-            min="1"
-            max="20"
-            value={numQuestions}
-            onChange={(e) => setNumQuestions(e.target.value)}
-          />
-        </div>
+          <div className="form-group">
+            <label htmlFor="num-questions-input">Number of Questions</label>
+            <input
+              id="num-questions-input"
+              type="number"
+              min="1"
+              max="20"
+              value={numQuestions}
+              onChange={(e) => setNumQuestions(e.target.value)}
+            />
+          </div>
 
-        <button type="submit" className="generate-btn" disabled={loading}>
-          {loading ? 'Generating Quiz…' : 'Generate Quiz'}
-        </button>
-      </form>
+          <button type="submit" className="generate-btn" disabled={loading}>
+            {loading ? 'Generating Quiz…' : 'Generate Quiz'}
+          </button>
+        </form>
 
-      {error && <div className="quiz-error">{error}</div>}
+        {error && <div className="quiz-error">{error}</div>}
 
-      {quizResult && (
-        <div className="quiz-test-area">
-          {quizResult.map((q, idx) => renderQuestion(q, idx))}
+        {quizResult && (
+          <div className="quiz-test-area">
+            {quizResult.map((q, idx) => renderQuestion(q, idx))}
 
-          {!showResults && (
-            <button
-              className="check-answers-btn"
-              onClick={handleCheckAnswers}
-              disabled={Object.values(userAnswers).some((ans) => ans === '')}
-            >
-              Check Answers
-            </button>
-          )}
+            {!showResults && (
+              <button
+                className="check-answers-btn"
+                onClick={handleCheckAnswers}
+                disabled={Object.values(userAnswers).some((ans) => ans === '')}
+              >
+                Check Answers
+              </button>
+            )}
 
-          {showResults && (
-            <div className="quiz-score">
-              Your Score: {score} / {quizResult.length}
-            </div>
-          )}
-        </div>
-      )}
+            {showResults && (
+              <div className="quiz-score">
+                Your Score: {score} / {quizResult.length}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
