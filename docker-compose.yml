@@ -6,6 +6,9 @@ services:
       - "5050:5000"  # Host:Container (optional but useful for testing)
     env_file:
       - ./backend/.env
+    volumes:
+      # bind-mount the host file into the container
+      - ./backend/conversations.db:/app/conversations.db
     restart: unless-stopped
 
   frontend:
