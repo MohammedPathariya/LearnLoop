@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 from app import create_app, db
 from app.models import Conversation, FlashcardSet, QuizSession
+from app.study_routes import cleanup_duplicate_demos
 from app.services.generation import generate_convo, generate_flashcards, generate_quiz
 
 load_dotenv()
@@ -31,6 +32,7 @@ if __name__ == "__main__":
 
     with app.app_context():
         db.create_all()
+        cleanup_duplicate_demos()
 
     print("Flask app starting")
     print("Listening on port:", port)

@@ -1,8 +1,10 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
+import uuid
 
 from flask import jsonify, request
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 
 from .extensions import db
 from .models import (
@@ -25,6 +27,7 @@ from .services.rag import (
 
 DEMO_TITLE = "Machine Learning Foundations"
 DEMO_DOMAIN = "Machine Learning"
+DEMO_RESET_AFTER = timedelta(hours=24)
 
 DEMO_MATERIALS = [
     {
@@ -282,17 +285,26 @@ def register_study_routes(app):
     @app.route("/study/demo", methods=["POST"])
     def study_demo():
         visitor_id = _visitor_id()
+        cleanup_duplicate_demos(visitor_id)
         existing = StudySession.query.filter_by(
             visitor_id=visitor_id,
             is_demo=True,
         ).first()
+        if existing is not None and datetime.utcnow() - existing.updated_at >= DEMO_RESET_AFTER:
+            _delete_session_data(existing)
+            existing = None
         if existing is None:
-            existing = _seed_demo(visitor_id)
+            try:
+                existing = _seed_demo(visitor_id)
+            except IntegrityError:
+                db.session.rollback()
+                existing = db.session.get(StudySession, _demo_session_id(visitor_id))
         return jsonify(_serialize_session(existing, include_details=True))
 
     @app.route("/study/demo/reset", methods=["POST"])
     def reset_study_demo():
         visitor_id = _visitor_id()
+        cleanup_duplicate_demos(visitor_id)
         existing = StudySession.query.filter_by(
             visitor_id=visitor_id,
             is_demo=True,
@@ -408,7 +420,7 @@ def register_study_routes(app):
                 "timestamp": session.updated_at.isoformat(),
                 "metadata": f"{StudyMessage.query.filter_by(session_id=session.id).count()} messages",
                 "action": "Resume",
-                "href": f"/study/{session.id}",
+                "href": f"/learn/{session.id}",
             })
 
         items.sort(key=lambda item: item["timestamp"], reverse=True)
@@ -576,12 +588,13 @@ def _delete_session_data(session):
 
 def _seed_demo(visitor_id):
     session = StudySession(
+        id=_demo_session_id(visitor_id),
         visitor_id=visitor_id,
         title=DEMO_TITLE,
         domain=DEMO_DOMAIN,
         is_demo=True,
         created_at=datetime(2026, 7, 1, 14, 0),
-        updated_at=datetime(2026, 7, 28, 16, 30),
+        updated_at=datetime.utcnow(),
     )
     db.session.add(session)
     db.session.flush()
@@ -654,6 +667,28 @@ def _seed_demo(visitor_id):
     db.session.add(SessionFlashcardLink(session_id=session.id, flashcard_id=flashcard.id))
     db.session.commit()
     return session
+
+
+def _demo_session_id(visitor_id):
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, f"learnloop-demo:{visitor_id}"))
+
+
+def cleanup_duplicate_demos(visitor_id=None):
+    query = StudySession.query.filter_by(is_demo=True)
+    if visitor_id is not None:
+        query = query.filter_by(visitor_id=visitor_id)
+    visitor_ids = {session.visitor_id for session in query.all()}
+    removed = 0
+    for current_visitor_id in visitor_ids:
+        demos = (
+            StudySession.query.filter_by(visitor_id=current_visitor_id, is_demo=True)
+            .order_by(StudySession.updated_at.desc(), StudySession.created_at.asc())
+            .all()
+        )
+        for duplicate in demos[1:]:
+            _delete_session_data(duplicate)
+            removed += 1
+    return removed
 
 
 def _demo_quiz(topic, total):

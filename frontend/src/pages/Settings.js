@@ -36,7 +36,7 @@ function Settings() {
         </section>
         <section className="card-panel">
           <h2>Demo workspace</h2>
-          <p>Restore the seeded Machine Learning Foundations journey. This removes changes made to your isolated demo copy.</p>
+          <p>Your isolated Machine Learning Foundations demo resets automatically after 24 hours without saved activity. You can also restore it immediately.</p>
           <button className="button secondary" type="button" onClick={handleReset}>Reset demo journey</button>
         </section>
         <section className="card-panel">

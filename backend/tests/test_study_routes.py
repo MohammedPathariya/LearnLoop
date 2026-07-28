@@ -1,5 +1,6 @@
 import importlib
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -55,6 +56,29 @@ def test_demo_journey_is_seeded_and_isolated(client):
         f"/study/sessions/{demo['id']}",
         headers={"X-LearnLoop-Visitor": "visitor-b"},
     ).status_code == 404
+
+    repeated = client.post("/study/demo", headers=VISITOR_HEADERS).get_json()
+    own_sessions = client.get("/study/sessions", headers=VISITOR_HEADERS).get_json()
+    assert repeated["id"] == demo["id"]
+    assert len(own_sessions) == 1
+
+
+def test_demo_resets_after_24_hours_of_inactivity(client, backend_app):
+    from app.models import StudySession
+
+    demo = client.post("/study/demo", headers=VISITOR_HEADERS).get_json()
+    stale_time = datetime.utcnow() - timedelta(hours=25)
+    with backend_app.app.app_context():
+        session = backend_app.db.session.get(StudySession, demo["id"])
+        session.updated_at = stale_time
+        backend_app.db.session.commit()
+
+    refreshed = client.post("/study/demo", headers=VISITOR_HEADERS).get_json()
+
+    assert refreshed["id"] == demo["id"]
+    assert datetime.fromisoformat(refreshed["updated_at"]) > stale_time
+    assert refreshed["material_count"] == 3
+    assert refreshed["message_count"] == 4
 
 
 def test_session_and_material_crud(client, monkeypatch):
