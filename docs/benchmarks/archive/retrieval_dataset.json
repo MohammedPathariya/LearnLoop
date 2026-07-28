@@ -1,0 +1,37 @@
+[
+  {
+    "id": "mitosis",
+    "question": "What is the result of mitosis?",
+    "source_id": "biology-mitosis",
+    "expected_chunk_id": "biology-mitosis:0",
+    "text": "Mitosis is a form of cell division that produces two genetically identical daughter cells."
+  },
+  {
+    "id": "photosynthesis",
+    "question": "Which pigment captures light energy during photosynthesis?",
+    "source_id": "biology-photosynthesis",
+    "expected_chunk_id": "biology-photosynthesis:0",
+    "text": "Photosynthesis converts light energy into chemical energy. Chlorophyll is the green pigment that captures much of that light energy."
+  },
+  {
+    "id": "supply-demand",
+    "question": "What usually happens to equilibrium price when demand increases and supply stays fixed?",
+    "source_id": "economics",
+    "expected_chunk_id": "economics:0",
+    "text": "When demand increases while supply stays fixed, the equilibrium price usually rises."
+  },
+  {
+    "id": "binary-search",
+    "question": "What time complexity does binary search have on a sorted list?",
+    "source_id": "computer-science",
+    "expected_chunk_id": "computer-science:0",
+    "text": "Binary search repeatedly halves the remaining search interval, giving it logarithmic O(log n) time complexity on a sorted list."
+  },
+  {
+    "id": "newton-second-law",
+    "question": "How is Newton's second law commonly written?",
+    "source_id": "physics",
+    "expected_chunk_id": "physics:0",
+    "text": "Newton's second law is commonly written as F = ma: net force equals mass multiplied by acceleration."
+  }
+]

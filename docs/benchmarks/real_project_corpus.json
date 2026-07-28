@@ -1,0 +1,24 @@
+{
+  "description": "Real-document retrieval benchmark built from LearnLoop implementation files and project documents checked into this repository.",
+  "documents": [
+    {"source_id": "rag-service", "path": "backend/app/services/rag.py"},
+    {"source_id": "routes", "path": "backend/app/routes.py"},
+    {"source_id": "factory", "path": "backend/app/factory.py"},
+    {"source_id": "config", "path": "backend/app/config.py"},
+    {"source_id": "week-plan", "path": "docs/WEEK_PLAN.md"},
+    {"source_id": "decisions", "path": "docs/DECISIONS.md"},
+    {"source_id": "deployment", "path": "docs/DEPLOYMENT.md"}
+  ],
+  "queries": [
+    {"id": "embedding-model", "question": "Which local model is used to create the document embeddings?", "expected_chunk_id": "rag-service:0"},
+    {"id": "retrieval-latency", "question": "What does the retrieval function include in its measured latency?", "expected_chunk_id": "rag-service:2"},
+    {"id": "session-isolation", "question": "How does the retrieval implementation keep one session's index separate from another's?", "expected_chunk_id": "rag-service:2"},
+    {"id": "retrieve-validation", "question": "Which request parameter controls the number of returned chunks and how is an invalid value handled?", "expected_chunk_id": "routes:3"},
+    {"id": "grounded-answer", "question": "Which endpoint combines retrieval with source-grounded answer generation?", "expected_chunk_id": "routes:3"},
+    {"id": "sqlite-wal", "question": "Which database pragmas are applied when the application uses SQLite?", "expected_chunk_id": "factory:0"},
+    {"id": "database-fallback", "question": "What environment variable takes precedence over the local SQLite database?", "expected_chunk_id": "config:0"},
+    {"id": "day-five-goal", "question": "What is the stated purpose of the fifth revamp day?", "expected_chunk_id": "week-plan:1"},
+    {"id": "privacy-choice", "question": "Why was a local embedding index chosen instead of sending study material to a hosted vector database?", "expected_chunk_id": "decisions:0"},
+    {"id": "generation-key", "question": "At what point is the OpenAI key actually required?", "expected_chunk_id": "deployment:0"}
+  ]
+}

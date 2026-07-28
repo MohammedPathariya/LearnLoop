@@ -1,0 +1,28 @@
+{
+  "benchmark": "LearnLoop retrieval benchmark",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dataset": "docs/benchmarks/archive/retrieval_dataset.json",
+  "query_count": 5,
+  "top_k": 5,
+  "recall_at_5": 1.0,
+  "hits_at_5": 5,
+  "p50_latency_ms": 6.002,
+  "p95_latency_ms": 8.0568,
+  "latency_definition": "retrieval_chunks query embedding plus FAISS search, excluding ingestion",
+  "environment": {
+    "python": "3.11.12",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "numpy": "1.26.4",
+    "faiss": "1.8.0",
+    "sentence_transformers": "3.0.1"
+  },
+  "command": "HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=backend python3.11 scripts/evaluate_retrieval.py",
+  "queries": [
+    {"id": "mitosis", "expected_chunk_id": "biology-mitosis:0", "retrieved_chunk_ids": ["biology-mitosis:0", "biology-photosynthesis:0", "economics:0", "computer-science:0", "physics:0"], "hit_at_5": true, "latency_ms": 8.477},
+    {"id": "photosynthesis", "expected_chunk_id": "biology-photosynthesis:0", "retrieved_chunk_ids": ["biology-photosynthesis:0", "biology-mitosis:0", "computer-science:0", "physics:0", "economics:0"], "hit_at_5": true, "latency_ms": 6.002},
+    {"id": "supply-demand", "expected_chunk_id": "economics:0", "retrieved_chunk_ids": ["economics:0", "physics:0", "computer-science:0", "biology-photosynthesis:0", "biology-mitosis:0"], "hit_at_5": true, "latency_ms": 5.803},
+    {"id": "binary-search", "expected_chunk_id": "computer-science:0", "retrieved_chunk_ids": ["computer-science:0", "physics:0", "economics:0", "biology-mitosis:0", "biology-photosynthesis:0"], "hit_at_5": true, "latency_ms": 6.376},
+    {"id": "newton-second-law", "expected_chunk_id": "physics:0", "retrieved_chunk_ids": ["physics:0", "economics:0", "biology-mitosis:0", "computer-science:0", "biology-photosynthesis:0"], "hit_at_5": true, "latency_ms": 5.425}
+  ],
+  "elapsed_seconds": 3.7589836250117514
+}

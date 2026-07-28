@@ -1,0 +1,189 @@
+[
+  {
+    "id": "osmosis",
+    "question": "Which process moves water across a selectively permeable membrane toward the side with more dissolved solute?",
+    "source_id": "biology-osmosis",
+    "expected_chunk_id": "biology-osmosis:0",
+    "text": "Osmosis is the net movement of water across a selectively permeable membrane toward the solution with higher solute concentration."
+  },
+  {
+    "id": "diffusion",
+    "question": "What explains molecules spreading from a crowded region into a less concentrated region without cellular energy?",
+    "source_id": "biology-diffusion",
+    "expected_chunk_id": "biology-diffusion:0",
+    "text": "Diffusion is the passive net movement of particles from an area of higher concentration to an area of lower concentration."
+  },
+  {
+    "id": "meiosis",
+    "question": "During which division process do homologous chromosomes pair and exchange segments to create variation in gametes?",
+    "source_id": "biology-meiosis",
+    "expected_chunk_id": "biology-meiosis:0",
+    "text": "Meiosis produces haploid gametes and includes pairing and crossing over between homologous chromosomes, which increases genetic variation."
+  },
+  {
+    "id": "mitosis",
+    "question": "Which type of cell division makes two daughter cells with the same chromosome number and essentially identical genetic material?",
+    "source_id": "biology-mitosis-v2",
+    "expected_chunk_id": "biology-mitosis-v2:0",
+    "text": "Mitosis produces two genetically similar daughter cells and preserves the parent cell's chromosome number."
+  },
+  {
+    "id": "opportunity-cost",
+    "question": "In an economic choice, what do you call the value of the best alternative given up?",
+    "source_id": "economics-opportunity-cost",
+    "expected_chunk_id": "economics-opportunity-cost:0",
+    "text": "Opportunity cost is the value of the next-best alternative that is forgone when a choice is made."
+  },
+  {
+    "id": "sunk-cost",
+    "question": "What term describes money already spent that cannot be recovered and should not determine a forward-looking decision?",
+    "source_id": "economics-sunk-cost",
+    "expected_chunk_id": "economics-sunk-cost:0",
+    "text": "A sunk cost is an expense that has already been incurred and cannot be recovered; rational decisions should not treat it as a current marginal cost."
+  },
+  {
+    "id": "inflation",
+    "question": "What is the name for a sustained rise in the overall price level that reduces purchasing power?",
+    "source_id": "economics-inflation",
+    "expected_chunk_id": "economics-inflation:0",
+    "text": "Inflation is a sustained increase in the general price level, which means a unit of currency buys fewer goods and services."
+  },
+  {
+    "id": "binary-search",
+    "question": "Which search method discards half of a sorted array after each comparison?",
+    "source_id": "computer-science-binary-search",
+    "expected_chunk_id": "computer-science-binary-search:0",
+    "text": "Binary search compares with the middle item of a sorted array and discards half of the remaining interval after each comparison."
+  },
+  {
+    "id": "linear-search",
+    "question": "Which simple lookup method checks entries one by one and does not require the collection to be sorted?",
+    "source_id": "computer-science-linear-search",
+    "expected_chunk_id": "computer-science-linear-search:0",
+    "text": "Linear search examines items sequentially until it finds a match or reaches the end, so it does not require sorted data."
+  },
+  {
+    "id": "tcp",
+    "question": "Which transport protocol establishes a connection and provides ordered, reliable delivery with retransmission?",
+    "source_id": "computer-science-tcp",
+    "expected_chunk_id": "computer-science-tcp:0",
+    "text": "TCP is a connection-oriented transport protocol that provides ordered, reliable delivery and retransmits lost data."
+  },
+  {
+    "id": "udp",
+    "question": "Which transport protocol sends datagrams without establishing a connection or guaranteeing delivery order?",
+    "source_id": "computer-science-udp",
+    "expected_chunk_id": "computer-science-udp:0",
+    "text": "UDP is a connectionless transport protocol with low overhead; it does not guarantee delivery, ordering, or retransmission."
+  },
+  {
+    "id": "newton-second-law",
+    "question": "Which law states that an object's net force equals its mass multiplied by its acceleration?",
+    "source_id": "physics-newton-second-law",
+    "expected_chunk_id": "physics-newton-second-law:0",
+    "text": "Newton's second law states that net force equals mass times acceleration, written F = ma."
+  },
+  {
+    "id": "momentum",
+    "question": "What physical quantity is calculated by multiplying an object's mass by its velocity?",
+    "source_id": "physics-momentum",
+    "expected_chunk_id": "physics-momentum:0",
+    "text": "Linear momentum is the product of an object's mass and velocity, p = mv, and it has both magnitude and direction."
+  },
+  {
+    "id": "active-transport-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "biology-active-transport",
+    "expected_chunk_id": "biology-active-transport:0",
+    "text": "Active transport moves substances across a membrane against a concentration gradient and requires cellular energy, often from ATP."
+  },
+  {
+    "id": "homeostasis-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "biology-homeostasis",
+    "expected_chunk_id": "biology-homeostasis:0",
+    "text": "Homeostasis is the maintenance of relatively stable internal conditions despite changes in the external environment."
+  },
+  {
+    "id": "cell-cycle-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "biology-cell-cycle",
+    "expected_chunk_id": "biology-cell-cycle:0",
+    "text": "The cell cycle includes growth, DNA replication, and division; checkpoints help regulate whether a cell proceeds to the next phase."
+  },
+  {
+    "id": "natural-selection-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "biology-natural-selection",
+    "expected_chunk_id": "biology-natural-selection:0",
+    "text": "Natural selection changes the frequency of heritable traits when individuals with advantageous traits leave more offspring."
+  },
+  {
+    "id": "elasticity-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "economics-elasticity",
+    "expected_chunk_id": "economics-elasticity:0",
+    "text": "Price elasticity of demand measures how strongly quantity demanded responds to a change in price."
+  },
+  {
+    "id": "gdp-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "economics-gdp",
+    "expected_chunk_id": "economics-gdp:0",
+    "text": "Gross domestic product is the market value of final goods and services produced within an economy during a period."
+  },
+  {
+    "id": "marginal-cost-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "economics-marginal-cost",
+    "expected_chunk_id": "economics-marginal-cost:0",
+    "text": "Marginal cost is the additional cost incurred from producing one more unit of output."
+  },
+  {
+    "id": "hash-table-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "computer-science-hash-table",
+    "expected_chunk_id": "computer-science-hash-table:0",
+    "text": "A hash table maps keys to values using a hash function and can provide average constant-time lookup when collisions are controlled."
+  },
+  {
+    "id": "stack-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "computer-science-stack",
+    "expected_chunk_id": "computer-science-stack:0",
+    "text": "A stack is a last-in, first-out data structure where the most recently pushed item is the next item popped."
+  },
+  {
+    "id": "dns-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "computer-science-dns",
+    "expected_chunk_id": "computer-science-dns:0",
+    "text": "The Domain Name System translates human-readable domain names into IP addresses used for network routing."
+  },
+  {
+    "id": "impulse-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "physics-impulse",
+    "expected_chunk_id": "physics-impulse:0",
+    "text": "Impulse is the product of force and the time interval over which it acts, and it equals the change in momentum."
+  },
+  {
+    "id": "kinetic-energy-distractor",
+    "evaluate": false,
+    "question": "",
+    "source_id": "physics-kinetic-energy",
+    "expected_chunk_id": "physics-kinetic-energy:0",
+    "text": "Kinetic energy is the energy of motion and is calculated as one half times mass times velocity squared."
+  }
+]

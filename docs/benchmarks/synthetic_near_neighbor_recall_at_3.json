@@ -1,0 +1,38 @@
+{
+  "test_id": "synthetic-near-neighbor-recall-at-3",
+  "benchmark": "LearnLoop synthetic near-neighbor Recall@3",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "dataset": "docs/benchmarks/archive/retrieval_dataset_v2.json",
+  "document_count": 25,
+  "query_count": 13,
+  "top_k": 3,
+  "recall_at_3": 1.0,
+  "hits_at_3": 13,
+  "p50_latency_ms": 6.591,
+  "p95_latency_ms": 8.5436,
+  "latency_definition": "retrieval_chunks query embedding plus FAISS search, excluding ingestion",
+  "environment": {
+    "python": "3.11.12",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "numpy": "1.26.4",
+    "faiss": "1.8.0",
+    "sentence_transformers": "3.0.1"
+  },
+  "command": "HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=backend python3.11 scripts/evaluate_retrieval.py --dataset docs/benchmarks/archive/retrieval_dataset_v2.json --report docs/benchmarks/synthetic_near_neighbor_recall_at_3.json --benchmark-name 'LearnLoop synthetic near-neighbor Recall@3' --top-k 3",
+  "queries": [
+    {"id": "osmosis", "expected_chunk_id": "biology-osmosis:0", "retrieved_chunk_ids": ["biology-osmosis:0", "biology-active-transport:0", "biology-diffusion:0"], "hit_at_3": true, "latency_ms": 9.494},
+    {"id": "diffusion", "expected_chunk_id": "biology-diffusion:0", "retrieved_chunk_ids": ["biology-active-transport:0", "biology-diffusion:0", "biology-osmosis:0"], "hit_at_3": true, "latency_ms": 7.163},
+    {"id": "meiosis", "expected_chunk_id": "biology-meiosis:0", "retrieved_chunk_ids": ["biology-meiosis:0", "biology-mitosis-v2:0", "biology-cell-cycle:0"], "hit_at_3": true, "latency_ms": 6.591},
+    {"id": "mitosis", "expected_chunk_id": "biology-mitosis-v2:0", "retrieved_chunk_ids": ["biology-mitosis-v2:0", "biology-meiosis:0", "biology-cell-cycle:0"], "hit_at_3": true, "latency_ms": 5.878},
+    {"id": "opportunity-cost", "expected_chunk_id": "economics-opportunity-cost:0", "retrieved_chunk_ids": ["economics-opportunity-cost:0", "economics-sunk-cost:0", "economics-inflation:0"], "hit_at_3": true, "latency_ms": 6.652},
+    {"id": "sunk-cost", "expected_chunk_id": "economics-sunk-cost:0", "retrieved_chunk_ids": ["economics-sunk-cost:0", "economics-opportunity-cost:0", "economics-marginal-cost:0"], "hit_at_3": true, "latency_ms": 6.162},
+    {"id": "inflation", "expected_chunk_id": "economics-inflation:0", "retrieved_chunk_ids": ["economics-inflation:0", "economics-elasticity:0", "economics-opportunity-cost:0"], "hit_at_3": true, "latency_ms": 6.205},
+    {"id": "binary-search", "expected_chunk_id": "computer-science-binary-search:0", "retrieved_chunk_ids": ["computer-science-binary-search:0", "computer-science-linear-search:0", "computer-science-hash-table:0"], "hit_at_3": true, "latency_ms": 7.23},
+    {"id": "linear-search", "expected_chunk_id": "computer-science-linear-search:0", "retrieved_chunk_ids": ["computer-science-linear-search:0", "computer-science-hash-table:0", "computer-science-binary-search:0"], "hit_at_3": true, "latency_ms": 5.888},
+    {"id": "tcp", "expected_chunk_id": "computer-science-tcp:0", "retrieved_chunk_ids": ["computer-science-tcp:0", "computer-science-udp:0", "biology-active-transport:0"], "hit_at_3": true, "latency_ms": 7.495},
+    {"id": "udp", "expected_chunk_id": "computer-science-udp:0", "retrieved_chunk_ids": ["computer-science-tcp:0", "computer-science-udp:0", "biology-active-transport:0"], "hit_at_3": true, "latency_ms": 6.275},
+    {"id": "newton-second-law", "expected_chunk_id": "physics-newton-second-law:0", "retrieved_chunk_ids": ["physics-newton-second-law:0", "physics-momentum:0", "physics-kinetic-energy:0"], "hit_at_3": true, "latency_ms": 5.678},
+    {"id": "momentum", "expected_chunk_id": "physics-momentum:0", "retrieved_chunk_ids": ["physics-kinetic-energy:0", "physics-newton-second-law:0", "physics-momentum:0"], "hit_at_3": true, "latency_ms": 7.91}
+  ],
+  "elapsed_seconds": 4.2608165410056245
+}
