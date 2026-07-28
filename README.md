@@ -91,7 +91,7 @@ This project is fully containerized with Docker for a simple setup.
     cd LearnLoop
     ```
 2.  **Configure Your API Key**
-    -   In the `backend/` directory, create a new file named `.env`.
+    -   Copy `backend/.env.example` to `backend/.env` and fill in the values. Keep `backend/.env` local and never commit it.
     -   Add your OpenAI API key to this file:
         ```
         OPENAI_API_KEY=sk-YourSecretKeyHere
@@ -114,8 +114,8 @@ This project is fully containerized with Docker for a simple setup.
 Developing this project involved solving several interesting technical hurdles:
 
 1.  **Challenge: Unreliable JSON from AI**
-    -   **Problem:** The GPT model would sometimes return JSON with formatting errors, like trailing commas, which would break the Python `json.loads` parser.
-    -   **Solution:** I implemented a pre-processing step using a regular expression to clean up the JSON string before parsing. I also added `try...except` blocks to gracefully handle any remaining errors and report them.
+    -   **Problem:** The GPT model could return malformed or structurally invalid quiz and flashcard JSON.
+    -   **Solution:** Generation now validates model output with Pydantic schemas and sends validation feedback through at most two repair retries. Exhausted retries return a clear error instead of being treated as successful generation.
 
 2.  **Challenge: Losing Data in Docker**
     -   **Problem:** The SQLite database file (`conversations.db`) was being created inside the Docker container, so it was deleted every time the container was rebuilt.

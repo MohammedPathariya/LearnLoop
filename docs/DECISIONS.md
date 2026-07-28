@@ -10,7 +10,7 @@ This file records architecture and product decisions made during the revamp. Kee
 - Persistence is currently SQLAlchemy with SQLite fallback and optional Supabase URI.
 - The checked-in SQLite DB contains existing conversation, quiz, and flashcard records.
 - Day 2 adds session-scoped in-memory FAISS retrieval with local `all-MiniLM-L6-v2` embeddings.
-- There is no retrieval benchmark, Locust test, or Pydantic validation loop yet.
+- There is no Locust load test yet. Quiz and flashcard generation now uses Pydantic validation with bounded repair retries.
 
 ## Decisions
 

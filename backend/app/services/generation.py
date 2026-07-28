@@ -1,10 +1,84 @@
 import json
 import os
-import re
+from collections.abc import Callable
+from typing import TypeVar
 
 from openai import OpenAI
+from pydantic import BaseModel, ValidationError
+
+from ..schemas import FlashcardOutput, QuizOutput
 
 _client = None
+T = TypeVar("T", bound=BaseModel)
+MAX_REPAIR_RETRIES = 2
+
+
+def _strip_json_fence(raw_output: str) -> str:
+    text = raw_output.strip()
+    if text.startswith("```"):
+        first_line, separator, remainder = text.partition("\n")
+        if separator and first_line[3:].strip().lower() in {"", "json"}:
+            text = remainder
+        if text.rstrip().endswith("```"):
+            text = text.rstrip()[:-3]
+    return text.strip()
+
+
+def _validation_feedback(error: Exception) -> str:
+    if isinstance(error, ValidationError):
+        return json.dumps(error.errors(), ensure_ascii=True)
+    return str(error)
+
+
+def _generate_validated_output(
+    *,
+    system_prompt: str,
+    user_prompt: str,
+    schema: type[T],
+    normalize: Callable[[object], object],
+    expected_count: int,
+    max_retries: int = MAX_REPAIR_RETRIES,
+) -> dict:
+    prompt = user_prompt
+    raw_output = ""
+    last_error = ""
+    attempts = 0
+
+    for attempt in range(max_retries + 1):
+        attempts = attempt + 1
+        response = get_openai_client().chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=800,
+            temperature=0.7,
+        )
+        raw_output = response.choices[0].message.content.strip()
+        try:
+            parsed = json.loads(_strip_json_fence(raw_output))
+            validated = schema.model_validate(normalize(parsed))
+            items = validated.quiz if isinstance(validated, QuizOutput) else validated.flashcards
+            if len(items) != expected_count:
+                raise ValueError(f"Expected exactly {expected_count} items, got {len(items)}")
+            return validated.model_dump(exclude_none=True)
+        except (json.JSONDecodeError, ValidationError, TypeError, ValueError) as error:
+            last_error = _validation_feedback(error)
+            if attempt < max_retries:
+                prompt = (
+                    f"{user_prompt}\n\nYour previous output was invalid. "
+                    "Return only corrected JSON matching the requested shape. "
+                    f"Validation feedback: {last_error}\n"
+                    f"Previous output: {raw_output}"
+                )
+
+    return {
+        "error": "Generated output failed validation after repair retries",
+        "raw_output": raw_output,
+        "validation_errors": last_error,
+        "validation_attempts": attempts,
+    }
 
 
 def get_openai_client():
@@ -73,23 +147,13 @@ def generate_quiz(content: str = None, topic: str = None, num_questions: int = 5
         'Return a single JSON object with one key "quiz" whose value is a list of those question objects.'
     )
 
-    resp = get_openai_client().chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt_source},
-        ],
-        max_tokens=800,
-        temperature=0.7,
+    return _generate_validated_output(
+        system_prompt=system_prompt,
+        user_prompt=prompt_source,
+        schema=QuizOutput,
+        normalize=lambda parsed: parsed,
+        expected_count=num_questions,
     )
-    raw_text = resp.choices[0].message.content.strip()
-    sanitized = re.sub(r",\s*]", "]", raw_text)
-    sanitized = re.sub(r",\s*}", "}", sanitized)
-
-    try:
-        return json.loads(sanitized)
-    except Exception:
-        return {"error": "Failed to parse GPT output as JSON", "raw_output": raw_text}
 
 
 def generate_flashcards(topic: str, num_cards: int = 5) -> dict:
@@ -100,33 +164,13 @@ def generate_flashcards(topic: str, num_cards: int = 5) -> dict:
         "The definition should be clear and concise."
     )
 
-    resp = get_openai_client().chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": topic},
-        ],
-        max_tokens=512,
-        temperature=0.7,
+    return _generate_validated_output(
+        system_prompt=system_prompt,
+        user_prompt=topic,
+        schema=FlashcardOutput,
+        normalize=lambda parsed: {"flashcards": parsed} if isinstance(parsed, list) else parsed,
+        expected_count=num_cards,
     )
-    raw = resp.choices[0].message.content.strip()
-
-    if raw.startswith("```"):
-        raw = re.sub(r"^```(?:json)?\s*", "", raw)
-        raw = re.sub(r"\s*```$", "", raw)
-
-    raw = re.sub(r",\s*]", "]", raw)
-    raw = re.sub(r",\s*}", "}", raw)
-
-    try:
-        parsed = json.loads(raw)
-        if isinstance(parsed, list):
-            return {"flashcards": parsed}
-        if isinstance(parsed, dict) and "flashcards" in parsed:
-            return parsed
-        return {"error": "Unexpected format", "raw_output": raw}
-    except Exception:
-        return {"error": "Failed to parse GPT output as JSON", "raw_output": raw}
 
 
 def generate_grounded_answer(question: str, chunks: list[dict]) -> str:

@@ -27,7 +27,7 @@ const FlashcardPage = () => {
       setFlashcards(data.flashcards || []);
     } catch (err) {
       console.error('Error generating flashcards:', err);
-      setError('Failed to generate flashcards.');
+      setError(err.response?.data?.error || 'Failed to generate flashcards.');
     }
 
     setLoading(false);

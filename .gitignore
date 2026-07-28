@@ -1,4 +1,6 @@
 backend/.env
+frontend/.env
+*.db
 __pycache__/
 node_modules/
 *.pyc

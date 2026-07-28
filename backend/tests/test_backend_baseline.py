@@ -67,6 +67,43 @@ def test_missing_generation_inputs_return_validation_errors(client):
         assert response.get_json() == expected_body
 
 
+def test_generation_count_ranges_are_validated(client):
+    quiz_response = client.post(
+        "/quiz",
+        json={"topic": "biology", "num_questions": 0},
+    )
+    flashcard_response = client.post(
+        "/flashcards",
+        json={"topic": "biology", "num_cards": 11},
+    )
+
+    assert quiz_response.status_code == 400
+    assert quiz_response.get_json() == {"error": "num_questions must be between 1 and 20"}
+    assert flashcard_response.status_code == 400
+    assert flashcard_response.get_json() == {"error": "num_cards must be between 1 and 10"}
+
+
+def test_generation_failures_return_bad_gateway(client, monkeypatch):
+    from app import routes
+
+    failure = {
+        "error": "Generated output failed validation after repair retries",
+        "raw_output": "not json",
+        "validation_errors": "invalid JSON",
+        "validation_attempts": 3,
+    }
+    monkeypatch.setattr(routes, "generate_quiz", lambda **_: failure)
+    monkeypatch.setattr(routes, "generate_flashcards", lambda *_args, **_: failure)
+
+    quiz_response = client.post("/quiz", json={"topic": "biology"})
+    flashcard_response = client.post("/flashcards", json={"topic": "biology"})
+
+    assert quiz_response.status_code == 502
+    assert flashcard_response.status_code == 502
+    assert quiz_response.get_json() == failure
+    assert flashcard_response.get_json() == failure
+
+
 def test_quiz_result_can_be_saved_and_fetched(client):
     payload = {
         "topic": "database indexes",

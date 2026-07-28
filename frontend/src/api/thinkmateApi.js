@@ -33,42 +33,9 @@ export const startConversation = (payload) => {
 };
 
 export const generateQuiz = async (payload) => {
-    const response = await axios.post(`${BASE_URL}/quiz`, payload);
-  
-    // If the backend explicitly returned an error, just forward it:
-    if (response.data.error) {
-      return response.data;
-    }
-  
-    // 1) Use raw_output if present (server‐side parsing failed).
-    // 2) Otherwise, wrap the quiz array into an object so we have '{ "quiz": [ ... ] }'
-    let text = response.data.raw_output ?? JSON.stringify({ quiz: response.data.quiz });
-  
-    // 3) Find first and last brace in that string
-    const firstBrace = text.indexOf('{');
-    const lastBrace = text.lastIndexOf('}');
-  
-    if (firstBrace === -1 || lastBrace === -1) {
-      return {
-        error: 'Failed to locate JSON object in GPT output',
-        raw_output: text
-      };
-    }
-  
-    // 4) Extract from the first '{' to the last '}' inclusive
-    const jsonString = text.slice(firstBrace, lastBrace + 1);
-  
-    // 5) Try parsing it
-    try {
-      const parsed = JSON.parse(jsonString);
-      return { quiz: parsed.quiz ?? parsed };
-    } catch (e) {
-      return {
-        error: 'Failed to parse GPT output as JSON',
-        raw_output: jsonString
-      };
-    }
-  };
+  const response = await axios.post(`${BASE_URL}/quiz`, payload);
+  return response.data;
+};
 
 
 export const saveQuizSession = (payload) => {

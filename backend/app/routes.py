@@ -205,10 +205,12 @@ def register_routes(app):
         try:
             num_q = int(data.get("num_questions", 5))
         except (ValueError, TypeError):
-            num_q = 5
+            return jsonify({"error": "num_questions must be an integer"}), 400
 
         if not topic and not content:
             return jsonify({"error": "Provide either 'topic' or 'content'"}), 400
+        if not 1 <= num_q <= 20:
+            return jsonify({"error": "num_questions must be between 1 and 20"}), 400
 
         quiz_data = generate_quiz(
             content=content if content else None,
@@ -216,7 +218,8 @@ def register_routes(app):
             num_questions=num_q,
         )
 
-        return jsonify(quiz_data)
+        status_code = 502 if "error" in quiz_data else 200
+        return jsonify(quiz_data), status_code
 
     @app.route("/quiz_results", methods=["POST"])
     def save_quiz_results():
@@ -309,7 +312,9 @@ def register_routes(app):
         try:
             num = int(data.get("num_cards", 5))
         except (ValueError, TypeError):
-            num = 5
+            return jsonify({"error": "num_cards must be an integer"}), 400
+        if not 1 <= num <= 10:
+            return jsonify({"error": "num_cards must be between 1 and 10"}), 400
 
         cards = generate_flashcards(topic, num_cards=num)
 
@@ -319,7 +324,8 @@ def register_routes(app):
             db.session.add(fc)
             db.session.commit()
             cards["id"] = fc.id
-        return jsonify(cards)
+        status_code = 502 if "error" in cards else 200
+        return jsonify(cards), status_code
 
     @app.route("/flashcards_history", methods=["GET"])
     def flashcards_history():

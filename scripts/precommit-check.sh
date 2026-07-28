@@ -10,7 +10,7 @@ if [[ "$CURRENT_BRANCH" != "main" ]]; then
   exit 1
 fi
 
-if git diff --cached --name-only | grep -E '(^|/)\.env$|(^|/)conversations\.db$' >/dev/null; then
+if git diff --cached --diff-filter=ACMR --name-only | grep -E '(^|/)\.env$|(^|/)conversations\.db$' >/dev/null; then
   echo "Refusing to commit staged secrets or mutable local data files." >&2
   echo "Unstage .env files and backend/conversations.db before committing." >&2
   exit 1

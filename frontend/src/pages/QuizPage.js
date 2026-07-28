@@ -60,7 +60,7 @@ const QuizPage = () => {
       }
     } catch (err) {
       console.error(err);
-      setError('Failed to generate quiz. Try again.');
+      setError(err.response?.data?.error || 'Failed to generate quiz. Try again.');
     }
     setLoading(false);
   };

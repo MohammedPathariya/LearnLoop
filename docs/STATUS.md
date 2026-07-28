@@ -23,10 +23,13 @@ Last updated: 2026-07-28
 - RAG uses lazy local `sentence-transformers/all-MiniLM-L6-v2` embeddings and per-session in-memory FAISS `IndexFlatIP` indexes.
 - The current local embedding path is not yet deployment-tuned for Render memory, cold-start, or scale-out constraints.
 - Retrieval benchmark evidence is saved under `docs/benchmarks/`.
+- Quiz and flashcard generation now validates Pydantic schemas and retries malformed or schema-invalid model output up to two times with validation feedback.
+- Exhausted generation retries return a stable error object with the last raw output, validation errors, and attempt count; generation routes return HTTP 502 for those failures.
 - Locust load test does not exist yet.
 - Git workflow for this revamp is direct commits to `main` with logical multi-commit history.
 - Local folder and GitHub remote have been renamed from `LearnLoop-Deployment` to `LearnLoop`.
 - Docker Compose maps the backend to `5050:5050`, matching the Flask default and frontend API fallback.
+- Frontend environment overrides are no longer tracked; `frontend/.env.example` uses the browser-reachable `http://localhost:5050` API URL, and `backend/.env.example` contains placeholders only.
 
 ## Baseline Verification
 
@@ -44,6 +47,7 @@ Passed:
 - temporary SQLite smoke test for `/quiz_results`
 - `python3.11 -m pytest` with 7 backend tests passing
 - `python3.11 -m pytest` with 12 backend tests passing after Day 2 RAG changes
+- `python3.11 -m pytest` with 16 backend tests passing after Day 4 generation changes
 - `PYTHONPYCACHEPREFIX=/tmp/learnloop-pycache python3.11 -m compileall backend/app backend/tests`
 - `npm test -- --watchAll=false`
 - `npm run build`
@@ -89,7 +93,7 @@ Guardrails:
 | 1 | Backend stabilization | Complete |
 | 2 | Real RAG layer | Complete |
 | 3 | Benchmark evidence | Complete |
-| 4 | Pydantic self-healing generation | Not started |
+| 4 | Pydantic self-healing generation | Complete |
 | 5 | Load testing and WAL validation | Not started |
 | 6 | Complete frontend redesign | Not started |
 | 7 | Deployment compatibility and production deployment | Not started |
@@ -115,9 +119,17 @@ Guardrails:
 
 ## Immediate Next Step
 
-Continue on `main` and start Phase 4:
+Continue on `main` and start Phase 5:
 
-- add structured output validation for quiz and flashcard generation
+- Day 4 structured output validation is complete. Continue with Phase 5 load testing and SQLite WAL validation.
+
+## Day 4 Generation Notes
+
+- `backend/app/schemas.py` defines strict quiz question, quiz output, flashcard, and flashcard output schemas.
+- `backend/app/services/generation.py` validates JSON before returning it and performs at most two repair retries after the initial model response.
+- `backend/tests/test_generation.py` covers valid output, malformed JSON repair, schema-invalid JSON repair, retry exhaustion, answer normalization, and content validation.
+- The frontend now consumes the validated API response directly and displays generation errors returned by the backend.
+- Local security follow-up: rotate any credentials currently present in `backend/.env`, remove that file from local sharing, and replace the tracked `backend/conversations.db` with a sanitized or untracked database before publishing the repository.
 
 Before adding Day 8 product features, complete Day 7 deployment compatibility and production deployment:
 
