@@ -38,7 +38,7 @@ function History() {
       <PageHeader
         eyebrow="History"
         title="Return to the work you have already done."
-        description="Study journeys, quiz attempts, and flashcard sets are kept in one searchable timeline."
+        description="Learning spaces, quiz attempts, and flashcard sets are kept in one searchable timeline."
       />
       {error && <StatusNotice type="error">{error}</StatusNotice>}
       <div className="toolbar">
@@ -49,7 +49,7 @@ function History() {
             </button>
           ))}
         </div>
-        <label className="search-field"><span>Search history</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by topic or journey" /></label>
+        <label className="search-field"><span>Search history</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by topic or learning space" /></label>
       </div>
       {loading ? <LoadingBlock /> : filtered.length ? (
         <div className="history-list">

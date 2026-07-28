@@ -8,14 +8,14 @@ import {
 } from '../api/learnloopApi';
 import { EmptyState, LoadingBlock, PageHeader, SelectField, StatusNotice } from '../components/UI';
 
-function Flashcards() {
+function Flashcards({ embedded = false, sessionIdOverride = '' }) {
   const { setId } = useParams();
   const [searchParams] = useSearchParams();
   const [sets, setSets] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [selectedSet, setSelectedSet] = useState(null);
-  const [sessionId, setSessionId] = useState(searchParams.get('session') || '');
-  const [sourceMode, setSourceMode] = useState(searchParams.get('session') ? 'session' : 'topic');
+  const [sessionId, setSessionId] = useState(sessionIdOverride || searchParams.get('session') || '');
+  const [sourceMode, setSourceMode] = useState(embedded || searchParams.get('session') ? 'session' : 'topic');
   const [topic, setTopic] = useState('');
   const [count, setCount] = useState(5);
   const [cardIndex, setCardIndex] = useState(0);
@@ -27,15 +27,18 @@ function Flashcards() {
   useEffect(() => {
     Promise.all([getFlashcardSets(), getSessions()])
       .then(async ([setData, sessionData]) => {
-        setSets(setData);
+        const availableSets = embedded
+          ? setData.filter((item) => item.session_id === sessionIdOverride)
+          : setData;
+        setSets(availableSets);
         setSessions(sessionData);
-        if (sessionData.length) setSessionId((current) => current || sessionData[0].id);
-        const initialId = setId || setData[0]?.id;
+        if (sessionData.length) setSessionId((current) => sessionIdOverride || current || sessionData[0].id);
+        const initialId = setId || availableSets[0]?.id;
         if (initialId) setSelectedSet(await getFlashcardSet(initialId));
       })
       .catch(() => setError('Flashcards could not be loaded.'))
       .finally(() => setLoading(false));
-  }, [setId]);
+  }, [embedded, setId, sessionIdOverride]);
 
   async function handleGenerate(event) {
     event.preventDefault();
@@ -50,7 +53,8 @@ function Flashcards() {
       setSelectedSet(complete);
       setCardIndex(0);
       setFlipped(false);
-      setSets(await getFlashcardSets());
+      const nextSets = await getFlashcardSets();
+      setSets(embedded ? nextSets.filter((item) => item.session_id === sessionIdOverride) : nextSets);
     } catch (requestError) {
       setError(requestError.response?.data?.error || 'Flashcard generation failed.');
     } finally {
@@ -68,17 +72,19 @@ function Flashcards() {
   const card = cards[cardIndex];
 
   return (
-    <div className="page">
-      <PageHeader
-        eyebrow="Flashcards"
-        title="Review one concept at a time."
-        description="Generate a focused set from a study journey or topic, then move through it without distractions."
-      />
+    <div className={embedded ? 'embedded-tool' : 'page'}>
+      {!embedded && (
+        <PageHeader
+          eyebrow="Flashcards"
+          title="Review one concept at a time."
+          description="Generate a focused set from a learning space or topic, then move through it without distractions."
+        />
+      )}
       {error && <StatusNotice type="error">{error}</StatusNotice>}
       {loading ? <LoadingBlock /> : (
-        <div className="flashcard-layout">
+        <div className={embedded ? 'flashcard-layout embedded' : 'flashcard-layout'}>
           <aside className="flashcard-sidebar card-panel">
-            <h2>Saved sets</h2>
+            <h2>{embedded ? 'Review sets' : 'Saved sets'}</h2>
             {sets.length ? sets.map((set) => (
               <button className={selectedSet?.id === set.id ? 'set-row active' : 'set-row'} type="button" key={set.id} onClick={() => chooseSet(set.id)}>
                 <span>{set.topic}</span>
@@ -88,21 +94,21 @@ function Flashcards() {
             <hr />
             <h2>Create a set</h2>
             <form className="form-stack" onSubmit={handleGenerate}>
-              <div className="segmented-control">
+              {!embedded && <div className="segmented-control">
                 <button className={sourceMode === 'session' ? 'active' : ''} type="button" onClick={() => setSourceMode('session')}>Journey</button>
                 <button className={sourceMode === 'topic' ? 'active' : ''} type="button" onClick={() => setSourceMode('topic')}>Topic</button>
-              </div>
-              {sourceMode === 'session' ? (
+              </div>}
+              {!embedded && sourceMode === 'session' ? (
                 <SelectField
-                  label="Study journey"
+                  label="Learning space"
                   value={sessionId}
                   onChange={setSessionId}
                   options={sessions.map((session) => ({ value: session.id, label: session.title }))}
                   disabled={!sessions.length}
                 />
-              ) : (
+              ) : !embedded ? (
                 <label>Topic<input value={topic} onChange={(event) => setTopic(event.target.value)} required /></label>
-              )}
+              ) : null}
               <label>Number of cards<input type="number" min="1" max="10" value={count} onChange={(event) => setCount(event.target.value)} /></label>
               <button className="button primary full" type="submit" disabled={generating}>{generating ? 'Generating...' : 'Generate set'}</button>
             </form>

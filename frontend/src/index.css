@@ -872,7 +872,7 @@ select:focus {
 .study-layout {
   display: grid;
   min-height: calc(100vh - 145px);
-  grid-template-columns: 260px minmax(420px, 1fr) 300px;
+  grid-template-columns: 260px minmax(0, 1fr);
   overflow: hidden;
   background: var(--surface);
   border: 0.5px solid var(--border);
@@ -894,6 +894,11 @@ select:focus {
 
 .study-sidebar h1 {
   font-size: 1.55rem;
+}
+
+.sidebar-link {
+  margin-top: 4px;
+  font-size: 0.72rem;
 }
 
 .study-sidebar section {
@@ -981,6 +986,91 @@ select:focus {
   min-width: 0;
   grid-template-rows: auto 1fr auto;
   background: var(--surface);
+}
+
+.learn-main {
+  display: grid;
+  min-width: 0;
+  grid-template-rows: auto 1fr;
+  background: var(--surface);
+}
+
+.learn-mode-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 12px 18px;
+  background: var(--inset);
+  border-bottom: 0.5px solid var(--border);
+}
+
+.learn-mode-tabs button {
+  min-width: 92px;
+  padding: 10px 18px;
+  border: 0.5px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--secondary);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.learn-mode-tabs button:hover,
+.learn-mode-tabs button.active {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--brand);
+}
+
+.learn-guide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 12px;
+  padding: 14px 18px;
+  background: var(--brand-soft);
+  border: 0.5px solid rgba(31, 77, 51, 0.2);
+  border-radius: 10px;
+}
+
+.learn-guide p,
+.learn-guide strong {
+  margin: 0;
+}
+
+.learn-guide strong {
+  font-size: 0.84rem;
+}
+
+.compact-button {
+  min-height: 36px;
+  padding: 8px 12px;
+}
+
+.source-drawer-list {
+  display: grid;
+  gap: 12px;
+}
+
+.embedded-tool {
+  min-width: 0;
+  padding: 24px;
+}
+
+.practice-layout.embedded {
+  display: block;
+}
+
+.practice-layout.embedded .quiz-builder {
+  min-height: 0;
+}
+
+.flashcard-layout.embedded {
+  grid-template-columns: minmax(240px, 0.55fr) minmax(360px, 1fr);
+}
+
+.flashcard-layout.embedded .flashcard-review {
+  min-height: 540px;
 }
 
 .conversation-heading,
@@ -1283,19 +1373,22 @@ select:focus {
   border-radius: var(--radius);
 }
 
-.question-card legend {
+.question-heading {
   display: grid;
-  width: 100%;
   gap: 8px;
-  padding: 0 0 18px;
+  margin-bottom: 18px;
+}
+
+.question-heading h2 {
+  margin: 0;
   font-size: 1rem;
-  font-weight: 650;
   line-height: 1.45;
 }
 
-.question-card legend span {
+.question-heading span {
   color: var(--muted);
   font-size: 0.68rem;
+  font-weight: 650;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1800,6 +1893,10 @@ select:focus {
     grid-template-columns: 220px 1fr;
   }
 
+  .flashcard-layout.embedded {
+    grid-template-columns: 1fr;
+  }
+
   .evidence-panel {
     grid-column: 1 / -1;
     display: grid;
@@ -1897,7 +1994,7 @@ select:focus {
     bottom: 0;
     left: 0;
     display: grid !important;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     min-height: 66px;
     padding: 7px 8px max(7px, env(safe-area-inset-bottom));
     background: rgba(255, 255, 255, 0.96);
@@ -2002,6 +2099,10 @@ select:focus {
     border-radius: 9px;
   }
 
+  .learn-guide {
+    align-items: flex-start;
+  }
+
   .study-sidebar {
     display: block;
   }
@@ -2013,6 +2114,20 @@ select:focus {
   .conversation-heading {
     align-items: flex-start;
     padding: 18px;
+  }
+
+  .learn-mode-tabs {
+    padding: 10px;
+  }
+
+  .learn-mode-tabs button {
+    min-width: 0;
+    flex: 1;
+    padding: 9px 8px;
+  }
+
+  .embedded-tool {
+    padding: 14px;
   }
 
   .conversation-heading .badge {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   addMaterial,
   deleteMaterial,
@@ -11,6 +11,7 @@ import {
 import { EmptyState, LoadingBlock, Modal, PageHeader, SelectField, StatusNotice } from '../components/UI';
 
 function Materials() {
+  const [searchParams] = useSearchParams();
   const [sessions, setSessions] = useState([]);
   const [sessionId, setSessionId] = useState('');
   const [materials, setMaterials] = useState([]);
@@ -28,11 +29,14 @@ function Materials() {
     getSessions()
       .then((items) => {
         setSessions(items);
-        if (items.length) setSessionId(items[0].id);
+        if (items.length) {
+          const requestedSession = searchParams.get('session');
+          setSessionId(items.some((item) => item.id === requestedSession) ? requestedSession : items[0].id);
+        }
       })
-      .catch(() => setError('Study journeys could not be loaded.'))
+      .catch(() => setError('Learning spaces could not be loaded.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [searchParams]);
 
   const loadMaterials = useCallback(async () => {
     try {
@@ -72,7 +76,7 @@ function Materials() {
   }
 
   async function handleDelete(material) {
-    if (!window.confirm(`Remove "${material.title}" from this journey?`)) return;
+    if (!window.confirm(`Remove "${material.title}" from this learning space?`)) return;
     await deleteMaterial(material.id);
     await loadMaterials();
   }
@@ -82,23 +86,23 @@ function Materials() {
   return (
     <div className="page">
       <PageHeader
-        eyebrow="Materials"
+        eyebrow="Sources"
         title="Your source library"
-        description="Every answer, quiz, and flashcard can trace back to material you added."
-        actions={<button className="button primary" type="button" onClick={() => setShowAdd(true)} disabled={!sessionId}>Add material</button>}
+        description="Every answer, quiz, and flashcard can trace back to a source you added."
+        actions={<button className="button primary" type="button" onClick={() => setShowAdd(true)} disabled={!sessionId}>Add source</button>}
       />
       {error && <StatusNotice type="error">{error}</StatusNotice>}
 
       <div className="toolbar">
         <SelectField
-          label="Study journey"
+          label="Learning space"
           value={sessionId}
           onChange={setSessionId}
           options={sessions.map((session) => ({ value: session.id, label: session.title }))}
           disabled={!sessions.length}
         />
         <label className="search-field">
-          <span>Search materials</span>
+          <span>Search sources</span>
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by title" />
         </label>
         {query && <button className="button secondary" type="button" onClick={() => setQuery('')}>Clear</button>}
@@ -126,25 +130,25 @@ function Materials() {
         </div>
       ) : (
         <EmptyState
-          title={query ? 'No matching materials' : 'No material in this journey'}
+          title={query ? 'No matching sources' : 'No sources in this learning space'}
           description={query ? 'Try another title or clear the search.' : 'Paste your notes or study text to make grounded learning possible.'}
-          action={!query && sessionId ? <button className="button primary" type="button" onClick={() => setShowAdd(true)}>Add material</button> : null}
+          action={!query && sessionId ? <button className="button primary" type="button" onClick={() => setShowAdd(true)}>Add source</button> : null}
         />
       )}
 
       <div className="page-footer-action">
-        {activeSession && <Link className="button secondary" to={`/study/${activeSession.id}`}>Open study workspace</Link>}
+        {activeSession && <Link className="button secondary" to={`/learn/${activeSession.id}`}>Back to Learn</Link>}
       </div>
 
       {showAdd && (
-        <Modal title="Add study material" wide onClose={() => setShowAdd(false)}>
+        <Modal title="Add a source" wide onClose={() => setShowAdd(false)}>
           <form className="form-stack" onSubmit={handleAdd}>
-            <label>Material title<input value={title} onChange={(event) => setTitle(event.target.value)} required /></label>
+            <label>Source title<input value={title} onChange={(event) => setTitle(event.target.value)} required /></label>
             <label>Study text<textarea rows="12" value={content} onChange={(event) => setContent(event.target.value)} required /></label>
             <p className="field-note">Text paste is supported. File upload has not been implemented.</p>
             <div className="form-actions">
               <button className="button secondary" type="button" onClick={() => setShowAdd(false)}>Cancel</button>
-              <button className="button primary" type="submit">Index material</button>
+              <button className="button primary" type="submit">Add source</button>
             </div>
           </form>
         </Modal>

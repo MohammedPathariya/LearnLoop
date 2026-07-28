@@ -9,14 +9,14 @@ import {
 } from '../api/learnloopApi';
 import { EmptyState, LoadingBlock, MetricCard, PageHeader, SelectField, StatusNotice } from '../components/UI';
 
-function Practice() {
+function Practice({ embedded = false, sessionIdOverride = '' }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [sessions, setSessions] = useState([]);
   const [history, setHistory] = useState([]);
   const [progress, setProgress] = useState(null);
-  const [sourceMode, setSourceMode] = useState(searchParams.get('session') ? 'session' : 'topic');
-  const [sessionId, setSessionId] = useState(searchParams.get('session') || '');
+  const [sourceMode, setSourceMode] = useState(embedded || searchParams.get('session') ? 'session' : 'topic');
+  const [sessionId, setSessionId] = useState(sessionIdOverride || searchParams.get('session') || '');
   const [topic, setTopic] = useState('');
   const [content, setContent] = useState('');
   const [count, setCount] = useState(5);
@@ -32,11 +32,11 @@ function Practice() {
         setSessions(sessionData);
         setHistory(historyData.filter((item) => item.type === 'quiz'));
         setProgress(progressData);
-        if (sessionData.length) setSessionId((current) => current || sessionData[0].id);
+        if (sessionData.length) setSessionId((current) => sessionIdOverride || current || sessionData[0].id);
       })
       .catch(() => setError('Practice data could not be loaded.'))
       .finally(() => setLoading(false));
-  }, []);
+  }, [sessionIdOverride]);
 
   async function handleGenerate(event) {
     event.preventDefault();
@@ -80,12 +80,12 @@ function Practice() {
     }
   }
 
-  if (loading) return <div className="page"><LoadingBlock label="Loading practice" /></div>;
+  if (loading) return <div className={embedded ? '' : 'page'}><LoadingBlock label="Loading practice" /></div>;
 
   if (quiz) {
     const answeredCount = Object.values(answers).filter((answer) => String(answer).trim()).length;
     return (
-      <div className="page quiz-active-page">
+      <div className={embedded ? 'quiz-active-page embedded-tool' : 'page quiz-active-page'}>
         <div className="quiz-active-header">
           <div>
             <p className="eyebrow">Active quiz</p>
@@ -115,31 +115,35 @@ function Practice() {
   }
 
   return (
-    <div className="page">
-      <PageHeader
-        eyebrow="Practice"
-        title="Turn your material into a focused check."
-        description="Generate a validated mixed-format quiz from a journey, a topic, or pasted text."
-      />
+    <div className={embedded ? 'embedded-tool' : 'page'}>
+      {!embedded && (
+        <PageHeader
+          eyebrow="Practice"
+          title="Turn your material into a focused check."
+          description="Generate a validated mixed-format quiz from a learning space, a topic, or pasted text."
+        />
+      )}
       {error && <StatusNotice type="error">{error}</StatusNotice>}
-      <div className="practice-layout">
+      <div className={embedded ? 'practice-layout embedded' : 'practice-layout'}>
         <section className="quiz-builder card-panel">
-          <div className="section-heading"><div><p className="eyebrow">New quiz</p><h2>Choose what to test</h2></div></div>
+          <div className="section-heading"><div><p className="eyebrow">Quiz</p><h2>{embedded ? 'Test this learning space' : 'Choose what to test'}</h2></div></div>
           <form className="form-stack" onSubmit={handleGenerate}>
-            <div className="segmented-control" aria-label="Quiz source">
-              {[
-                ['session', 'Study journey'],
-                ['topic', 'Topic'],
-                ['content', 'Paste text'],
-              ].map(([value, label]) => (
-                <button className={sourceMode === value ? 'active' : ''} type="button" key={value} onClick={() => setSourceMode(value)}>
-                  {label}
-                </button>
-              ))}
-            </div>
-            {sourceMode === 'session' && (
+            {!embedded && (
+              <div className="segmented-control" aria-label="Quiz source">
+                {[
+                  ['session', 'Learning space'],
+                  ['topic', 'Topic'],
+                  ['content', 'Paste text'],
+                ].map(([value, label]) => (
+                  <button className={sourceMode === value ? 'active' : ''} type="button" key={value} onClick={() => setSourceMode(value)}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {!embedded && sourceMode === 'session' && (
               <SelectField
-                label="Study journey"
+                label="Learning space"
                 value={sessionId}
                 onChange={setSessionId}
                 options={sessions.map((session) => ({ value: session.id, label: session.title }))}
@@ -154,7 +158,7 @@ function Practice() {
             </button>
           </form>
         </section>
-        <aside className="practice-summary">
+        {!embedded && <aside className="practice-summary">
           <div className="metric-grid compact">
             <MetricCard label="Quiz average" value={`${progress?.average_score || 0}%`} />
             <MetricCard label="Completed" value={progress?.quizzes || 0} />
@@ -168,7 +172,7 @@ function Practice() {
               </Link>
             )) : <EmptyState title="No attempts yet" description="Your completed quizzes will appear here." />}
           </section>
-        </aside>
+        </aside>}
       </div>
     </div>
   );
@@ -178,8 +182,11 @@ function Question({ question, index, value, onChange }) {
   const type = question.type;
   const options = type === 'True/False' ? ['True', 'False'] : question.options || [];
   return (
-    <fieldset className="question-card">
-      <legend><span>Question {index + 1}</span>{question.question}</legend>
+    <article className="question-card">
+      <div className="question-heading">
+        <span>Question {index + 1}</span>
+        <h2>{question.question}</h2>
+      </div>
       {(type === 'MCQ' || type === 'True/False') ? (
         <div className="answer-options">
           {options.map((option, optionIndex) => {
@@ -189,7 +196,7 @@ function Question({ question, index, value, onChange }) {
             return (
               <label className={value === answerValue ? 'selected' : ''} key={option}>
                 <input type="radio" name={`question-${index}`} value={answerValue} checked={value === answerValue} onChange={() => onChange(answerValue)} />
-                <span>{option}</span>
+                <span>{type === 'MCQ' ? String(option).replace(/^\s*[A-D][.)]\s*/i, '') : option}</span>
               </label>
             );
           })}
@@ -197,7 +204,7 @@ function Question({ question, index, value, onChange }) {
       ) : (
         <label className="fill-answer">Your answer<input value={value} onChange={(event) => onChange(event.target.value)} /></label>
       )}
-    </fieldset>
+    </article>
   );
 }
 

@@ -20,11 +20,16 @@ function Progress() {
         eyebrow="Progress"
         title="See what is improving and what needs another pass."
         description="These results come from completed quiz attempts and saved study activity. No inferred mastery score is shown."
-        actions={<Link className="button primary" to="/practice">Start practice</Link>}
+        actions={(
+          <>
+            <Link className="button primary" to="/learn">Start practice</Link>
+            <Link className="button secondary" to="/history">View activity</Link>
+          </>
+        )}
       />
       <div className="metric-grid">
         <MetricCard label="Quiz average" value={`${progress.average_score}%`} detail={`${progress.quizzes} completed`} />
-        <MetricCard label="Study journeys" value={progress.sessions} detail={`${progress.materials} indexed materials`} />
+        <MetricCard label="Learning spaces" value={progress.sessions} detail={`${progress.materials} indexed sources`} />
         <MetricCard label="Flashcard sets" value={progress.flashcard_sets} detail="Saved review sets" />
         <MetricCard label="Recorded attempts" value={progress.score_trend.length} detail="Real saved scores" />
       </div>
@@ -60,7 +65,7 @@ function Progress() {
                 <span className="score error-text">{topic.score}%</span>
               </div>
             )) : <p className="muted-copy">No saved topic currently falls below 75%.</p>}
-            <Link className="button primary full" to="/practice">Review a weak topic</Link>
+            <Link className="button primary full" to="/learn">Review a weak topic</Link>
           </div>
         </section>
       </div>

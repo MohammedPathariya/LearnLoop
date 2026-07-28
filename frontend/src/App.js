@@ -18,6 +18,8 @@ function App() {
       <Routes>
         <Route element={<AppShell />}>
           <Route path="/" element={<Home />} />
+          <Route path="/learn" element={<Study />} />
+          <Route path="/learn/:sessionId" element={<Study />} />
           <Route path="/study" element={<Study />} />
           <Route path="/study/:sessionId" element={<Study />} />
           <Route path="/materials" element={<Materials />} />

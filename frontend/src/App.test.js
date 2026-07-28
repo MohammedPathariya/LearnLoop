@@ -38,6 +38,6 @@ test('renders the redesigned learnloop home', async () => {
 
   expect(await screen.findByText('Machine Learning Foundations')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'learnloop home' })).toHaveTextContent('learnloop');
-  expect(screen.getAllByRole('link', { name: 'Study' })).toHaveLength(2);
-  expect(screen.getByRole('heading', { name: /Learn from your own material/i })).toBeInTheDocument();
+  expect(screen.getAllByRole('link', { name: 'Learn' })).toHaveLength(2);
+  expect(screen.getByRole('heading', { name: /Pick up where you left off/i })).toBeInTheDocument();
 });

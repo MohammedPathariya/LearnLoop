@@ -4,19 +4,20 @@ import logo from '../assets/learnloop-logo.svg';
 
 const primaryLinks = [
   ['/', 'Home'],
-  ['/study', 'Study'],
-  ['/materials', 'Materials'],
-  ['/practice', 'Practice'],
-  ['/flashcards', 'Flashcards'],
+  ['/learn', 'Learn'],
   ['/progress', 'Progress'],
-  ['/history', 'History'],
 ];
 
 const mobileLinks = [
   ['/', 'Home'],
-  ['/study', 'Study'],
-  ['/practice', 'Practice'],
+  ['/learn', 'Learn'],
   ['/progress', 'Progress'],
+];
+
+const utilityLinks = [
+  ['/history', 'History'],
+  ['/benchmarks', 'Benchmarks'],
+  ['/settings', 'System'],
 ];
 
 function AppShell() {
@@ -36,29 +37,16 @@ function AppShell() {
               {label}
             </NavLink>
           ))}
-          <NavLink className="benchmark-link" to="/benchmarks">Benchmarks</NavLink>
         </nav>
 
         <div className="utility-nav">
-          <a
-            href="https://github.com/MohammedPathariya/LearnLoop"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open LearnLoop source on GitHub"
-            title="Source on GitHub"
-          >
-            GH
-          </a>
-          <NavLink to="/settings" aria-label="Open system settings" title="System settings">
-            SYS
-          </NavLink>
           <button
-            className="mobile-menu-button"
+            className="utility-menu-button"
             type="button"
             onClick={() => setDrawerOpen(true)}
-            aria-label="Open navigation"
+            aria-label="Open more navigation"
           >
-            Menu
+            More
           </button>
         </div>
       </header>
@@ -88,14 +76,22 @@ function AppShell() {
             aria-label="All navigation"
           >
             <div className="drawer-heading">
-              <span>Navigate</span>
+              <span>More</span>
               <button type="button" onClick={() => setDrawerOpen(false)}>Close</button>
             </div>
-            {[...primaryLinks, ['/benchmarks', 'Benchmarks'], ['/settings', 'System']].map(([to, label]) => (
+            {utilityLinks.map(([to, label]) => (
               <NavLink key={to} to={to} onClick={() => setDrawerOpen(false)}>
                 {label}
               </NavLink>
             ))}
+            <a
+              href="https://github.com/MohammedPathariya/LearnLoop"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setDrawerOpen(false)}
+            >
+              GitHub repository
+            </a>
           </aside>
         </div>
       )}

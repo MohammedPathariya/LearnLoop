@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
+  addMaterial,
   createSession,
   deleteSession,
   getProgress,
@@ -12,6 +13,7 @@ import { EmptyState, LoadingBlock, MetricCard, Modal, PageHeader, ScoreBar, Stat
 
 function Home() {
   const navigate = useNavigate();
+  const initialLoadStarted = useRef(false);
   const [sessions, setSessions] = useState([]);
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,10 +21,14 @@ function Home() {
   const [showCreate, setShowCreate] = useState(false);
   const [title, setTitle] = useState('');
   const [domain, setDomain] = useState('');
+  const [materialTitle, setMaterialTitle] = useState('');
+  const [materialContent, setMaterialContent] = useState('');
   const [renameTarget, setRenameTarget] = useState(null);
   const [renameValue, setRenameValue] = useState('');
 
   useEffect(() => {
+    if (initialLoadStarted.current) return;
+    initialLoadStarted.current = true;
     loadHome();
   }, []);
 
@@ -30,11 +36,8 @@ function Home() {
     setLoading(true);
     setError('');
     try {
-      let nextSessions = await getSessions();
-      if (nextSessions.length === 0) {
-        await openDemo();
-        nextSessions = await getSessions();
-      }
+      await openDemo();
+      const nextSessions = await getSessions();
       const nextProgress = await getProgress();
       setSessions(nextSessions);
       setProgress(nextProgress);
@@ -47,9 +50,20 @@ function Home() {
 
   async function handleCreate(event) {
     event.preventDefault();
-    const session = await createSession({ title, domain });
-    setShowCreate(false);
-    navigate(`/study/${session.id}`);
+    setError('');
+    try {
+      const session = await createSession({ title, domain });
+      if (materialContent.trim()) {
+        await addMaterial(session.id, {
+          title: materialTitle.trim() || `${title} notes`,
+          content: materialContent,
+        });
+      }
+      setShowCreate(false);
+      navigate(`/learn/${session.id}`);
+    } catch (requestError) {
+      setError(requestError.response?.data?.error || 'The learning space could not be created.');
+    }
   }
 
   async function handleRename(event) {
@@ -66,44 +80,30 @@ function Home() {
   }
 
   const demo = sessions.find((session) => session.is_demo);
+  const latestSession = sessions[0] || demo;
   const recommendation = progress?.needs_review?.[0];
 
   return (
     <div className="page home-page">
       <PageHeader
-        eyebrow="Your study workspace"
-        title="Learn from your own material, then prove what stuck."
-        description="Bring in a topic, ask source-grounded questions, and turn the same material into quizzes and flashcards."
+        eyebrow="Your learning home"
+        title="Pick up where you left off."
+        description="Ask questions, take a quiz, or review flashcards inside one learning space."
         actions={(
           <>
-            <button className="button primary" type="button" onClick={() => setShowCreate(true)}>
-              Start a study journey
-            </button>
-            {demo && (
-              <Link className="button secondary" to={`/study/${demo.id}`}>
-                Explore demo journey
+            {latestSession && (
+              <Link className="button primary" to={`/learn/${latestSession.id}`}>
+                Continue learning
               </Link>
             )}
+            <button className="button secondary" type="button" onClick={() => setShowCreate(true)}>
+              Start something new
+            </button>
           </>
         )}
       />
 
       {error && <StatusNotice type="error">{error}</StatusNotice>}
-
-      <section className="quick-actions" aria-label="Quick actions">
-        <Link to={demo ? `/study/${demo.id}` : '/study'}>
-          <span>01</span><strong>Ask a question</strong><small>Study with grounded answers</small>
-        </Link>
-        <Link to="/materials">
-          <span>02</span><strong>Add material</strong><small>Paste and index study notes</small>
-        </Link>
-        <Link to={demo ? `/practice?session=${demo.id}` : '/practice'}>
-          <span>03</span><strong>Generate a quiz</strong><small>Test the current material</small>
-        </Link>
-        <Link to={demo ? `/flashcards?session=${demo.id}` : '/flashcards'}>
-          <span>04</span><strong>Create flashcards</strong><small>Turn concepts into review cards</small>
-        </Link>
-      </section>
 
       {loading ? (
         <LoadingBlock label="Loading home" />
@@ -113,7 +113,7 @@ function Home() {
             <div className="section-heading">
               <div>
                 <p className="eyebrow">Continue learning</p>
-                <h2>Recent journeys</h2>
+                <h2>Your learning spaces</h2>
               </div>
               <Link className="text-link" to="/history">View history</Link>
             </div>
@@ -126,15 +126,15 @@ function Home() {
                     <article className="session-card" key={session.id}>
                       <div className="card-topline">
                         <span className={session.is_demo ? 'badge brand' : 'badge neutral'}>
-                          {session.is_demo ? 'Demo journey' : session.domain || 'Study journey'}
+                          {session.is_demo ? 'Guided demo' : session.domain || 'Learning space'}
                         </span>
                         <span>{new Date(session.updated_at).toLocaleDateString()}</span>
                       </div>
                       <h3>{session.title}</h3>
-                      <p>{session.material_count} materials · {session.quiz_count} quizzes · {session.flashcard_count} card sets</p>
-                      <ScoreBar value={progressValue} label={`${progressValue}% journey activity`} />
+                      <p>{session.material_count} sources · {session.quiz_count} quizzes · {session.flashcard_count} card sets</p>
+                      <ScoreBar value={progressValue} label={`${progressValue}% activity`} />
                       <div className="session-card-controls">
-                        <Link className="button secondary" to={`/study/${session.id}`}>Continue</Link>
+                        <Link className="button secondary" to={`/learn/${session.id}`}>Continue</Link>
                         {session.is_demo ? (
                           <Link className="text-link" to="/settings">Reset options</Link>
                         ) : (
@@ -150,9 +150,9 @@ function Home() {
               </div>
             ) : (
               <EmptyState
-                title="Start your first study journey"
-                description="Create a session, add material, and ask your first grounded question."
-                action={<button className="button primary" type="button" onClick={() => setShowCreate(true)}>Create session</button>}
+                title="Start your first learning space"
+                description="Name what you are studying, add your notes, and begin learning."
+                action={<button className="button primary" type="button" onClick={() => setShowCreate(true)}>Start learning</button>}
               />
             )}
           </section>
@@ -166,7 +166,7 @@ function Home() {
                   ? `Your current average is ${recommendation.score}%. A focused quiz will reinforce this topic.`
                   : 'Return to your latest material and build on the questions you have already explored.'}
               </p>
-              <Link className="button primary" to={demo ? `/practice?session=${demo.id}` : '/practice'}>
+              <Link className="button primary" to={demo ? `/learn/${demo.id}?mode=quiz` : '/learn'}>
                 Start focused practice
               </Link>
             </div>
@@ -177,8 +177,8 @@ function Home() {
               </div>
               <div className="metric-grid compact">
                 <MetricCard label="Quiz average" value={`${progress?.average_score || 0}%`} />
-                <MetricCard label="Study journeys" value={progress?.sessions || 0} />
-                <MetricCard label="Materials" value={progress?.materials || 0} />
+                <MetricCard label="Learning spaces" value={progress?.sessions || 0} />
+                <MetricCard label="Sources" value={progress?.materials || 0} />
                 <MetricCard label="Card sets" value={progress?.flashcard_sets || 0} />
               </div>
             </div>
@@ -187,28 +187,36 @@ function Home() {
       )}
 
       {showCreate && (
-        <Modal title="Start a study journey" onClose={() => setShowCreate(false)}>
+        <Modal title="Start something new" wide onClose={() => setShowCreate(false)}>
           <form className="form-stack" onSubmit={handleCreate}>
             <label>
-              Journey name
-              <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Neural network fundamentals" required />
+              What are you learning?
+              <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="e.g. Neural network fundamentals" required autoFocus />
             </label>
             <label>
-              Domain
+              Subject (optional)
               <input value={domain} onChange={(event) => setDomain(event.target.value)} placeholder="e.g. Machine Learning" />
+            </label>
+            <label>
+              Source title (optional)
+              <input value={materialTitle} onChange={(event) => setMaterialTitle(event.target.value)} placeholder="e.g. Lecture notes" />
+            </label>
+            <label>
+              Paste study material (optional)
+              <textarea rows="7" value={materialContent} onChange={(event) => setMaterialContent(event.target.value)} placeholder="Paste notes now, or add sources later inside Learn." />
             </label>
             <div className="form-actions">
               <button className="button secondary" type="button" onClick={() => setShowCreate(false)}>Cancel</button>
-              <button className="button primary" type="submit">Create journey</button>
+              <button className="button primary" type="submit">Open learning space</button>
             </div>
           </form>
         </Modal>
       )}
 
       {renameTarget && (
-        <Modal title="Rename study journey" onClose={() => setRenameTarget(null)}>
+        <Modal title="Rename learning space" onClose={() => setRenameTarget(null)}>
           <form className="form-stack" onSubmit={handleRename}>
-            <label>Journey name<input value={renameValue} onChange={(event) => setRenameValue(event.target.value)} required /></label>
+            <label>Name<input value={renameValue} onChange={(event) => setRenameValue(event.target.value)} required /></label>
             <div className="form-actions">
               <button className="button secondary" type="button" onClick={() => setRenameTarget(null)}>Cancel</button>
               <button className="button primary" type="submit">Save name</button>
