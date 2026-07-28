@@ -21,7 +21,7 @@ api.interceptors.request.use((config) => {
 
 const data = (request) => request.then((response) => response.data);
 
-export const getHealth = () => api.get('/healthz');
+export const getHealth = () => api.get('/healthz', { timeout: 65000 });
 export const getSessions = () => data(api.get('/study/sessions'));
 export const getSession = (id) => data(api.get(`/study/sessions/${id}`));
 export const createSession = (payload) => data(api.post('/study/sessions', payload));

@@ -95,6 +95,8 @@ describe('LearnLoop frontend workflows', () => {
     render(<App />);
 
     expect(await screen.findByText('Machine Learning Foundations')).toBeInTheDocument();
+    expect(await screen.findByText('Backend online')).toBeInTheDocument();
+    expect(screen.getByText('Free backend may take up to 60 seconds to wake')).toBeInTheDocument();
     expect(within(screen.getByRole('navigation', { name: 'Primary navigation' })).getByRole('link', { name: 'Learn' })).toBeInTheDocument();
     const mobileNavigation = document.querySelector('.mobile-bottom-nav');
     expect(mobileNavigation).toBeInTheDocument();
@@ -105,6 +107,24 @@ describe('LearnLoop frontend workflows', () => {
     expect(screen.getByRole('link', { name: 'History' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Benchmarks' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'System' })).toBeInTheDocument();
+  });
+
+  test('shows when the backend is offline', async () => {
+    api.getHealth.mockRejectedValueOnce(new Error('Backend unavailable'));
+
+    render(<App />);
+
+    expect(await screen.findByText('Backend offline')).toBeInTheDocument();
+  });
+
+  test('shows an amber waking state while the backend health check is pending', async () => {
+    api.getHealth.mockReturnValueOnce(new Promise(() => {}));
+
+    render(<App />);
+
+    expect(screen.getByText('Backend waking')).toBeInTheDocument();
+    expect(screen.getByText('Backend waking').closest('.backend-status-strip')).toHaveClass('waking');
+    await screen.findByText('Machine Learning Foundations');
   });
 
   test('keeps optional labels on one line in the new learning-space flow', async () => {

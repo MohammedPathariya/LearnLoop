@@ -19,6 +19,8 @@ Last updated: 2026-07-28
 - The frontend uses React 19, Vite, Vitest, Wouter, and custom responsive CSS.
 - Primary navigation is Home, Learn, and Progress. History, Benchmarks, System,
   and GitHub are under More.
+- Home shows live backend availability and warns that the free backend may take
+  up to 60 seconds to wake.
 - Learn presents materials, grounded questions, quizzes, and flashcards as
   connected modes inside one selected learning space.
 - The Machine Learning Foundations demo provides a complete browser-isolated

@@ -40,6 +40,12 @@ The avatar was removed because the product has no authentication. System
 information contains app-level status and demo reset controls, not account
 settings.
 
+Home begins with a compact backend availability indicator and a note that the
+free backend may take up to 60 seconds to wake. It stays above the main page
+header so service latency is visible without competing with the primary task.
+While the health check is pending, the indicator says `Backend waking` and its
+amber dot cycles between subdued and softly glowing states.
+
 ## Product Flow
 
 The primary flow is:

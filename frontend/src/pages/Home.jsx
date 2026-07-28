@@ -4,6 +4,7 @@ import {
   addMaterial,
   createSession,
   deleteSession,
+  getHealth,
   getProgress,
   getSessions,
   openDemo,
@@ -16,6 +17,7 @@ function Home() {
   const initialLoadStarted = useRef(false);
   const [sessions, setSessions] = useState([]);
   const [progress, setProgress] = useState(null);
+  const [backendStatus, setBackendStatus] = useState('waking');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCreate, setShowCreate] = useState(false);
@@ -29,8 +31,18 @@ function Home() {
   useEffect(() => {
     if (initialLoadStarted.current) return;
     initialLoadStarted.current = true;
+    checkBackend();
     loadHome();
   }, []);
+
+  async function checkBackend() {
+    try {
+      await getHealth();
+      setBackendStatus('online');
+    } catch {
+      setBackendStatus('offline');
+    }
+  }
 
   async function loadHome() {
     setLoading(true);
@@ -85,6 +97,19 @@ function Home() {
 
   return (
     <div className="page home-page">
+      <div className={`backend-status-strip ${backendStatus}`} role="status" aria-live="polite">
+        <span className="backend-status-state">
+          <span className="backend-status-dot" aria-hidden="true" />
+          <strong>
+            {backendStatus === 'waking' && 'Backend waking'}
+            {backendStatus === 'online' && 'Backend online'}
+            {backendStatus === 'offline' && 'Backend offline'}
+          </strong>
+        </span>
+        <span className="backend-status-divider" aria-hidden="true" />
+        <span className="backend-wake-note">Free backend may take up to 60 seconds to wake</span>
+      </div>
+
       <PageHeader
         eyebrow="Your learning home"
         title="Pick up where you left off."
