@@ -162,3 +162,22 @@ def test_sqlite_uses_wal_journal_mode(backend_app):
         journal_mode = backend_app.db.session.execute(text("PRAGMA journal_mode")).scalar()
 
     assert journal_mode == "wal"
+
+
+def test_wsgi_entrypoint_creates_schema(tmp_path, monkeypatch):
+    db_path = tmp_path / "learnloop-wsgi.db"
+    monkeypatch.setenv("SUPABASE_DB_URI", f"sqlite:///{db_path}")
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1]))
+
+    sys.modules.pop("wsgi", None)
+    module = importlib.import_module("wsgi")
+
+    with module.app.app_context():
+        table_name = module.db.session.execute(
+            text(
+                "SELECT name FROM sqlite_master "
+                "WHERE type = 'table' AND name = 'quiz_session'"
+            )
+        ).scalar()
+
+    assert table_name == "quiz_session"

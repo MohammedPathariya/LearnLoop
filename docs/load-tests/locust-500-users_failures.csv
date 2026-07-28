@@ -1,0 +1,218 @@
+Method,Name,Error,Occurrences
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bd73090>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c3cf650>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c361810>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ceb90d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c996910>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ceae690>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c51b850>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c28aad0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cc54990>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c36c550>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c72a750>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7c0f90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10be4f350>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c51a4d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c9f5f90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c827e10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bd6c810>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7996d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d0f8e50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c1b56d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bd8b4d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c38c5d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c99a490>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c9d5550>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bfc1610>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ccd1690>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10be45890>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cb86b90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cdeca10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c82cd90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d1af950>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bcedf10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cea8950>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bfb4650>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cb94310>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ccabc10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bcec890>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cc96f50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10be16e50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cf95b10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10be009d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bf83590>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bfa7790>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ceabad0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bcd8190>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c3f3750>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ca35890>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c453250>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10be2edd0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4f6f10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4d90d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c5896d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d1472d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c1b5790>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d0e2890>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c9c7c50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cc488d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cdd5ed0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,GET /quiz_results/:id,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c383a50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c73c290>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c9f7b90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cc9d990>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ce65490>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cc58190>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bd6fed0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"OSError(49, ""Can't assign requested address"")",2379
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c729d90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cb42b90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c56a350>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cbbb910>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d213f10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c52e750>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7b66d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ccf5550>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c94e6d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c55e810>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4eefd0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ccb7f90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c5a8090>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c24d590>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c3ce790>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cb42c50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c851c50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d0f6710>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cc54ed0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c9dc690>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c872390>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c41d610>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bd89a90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c381f90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c269390>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cc3a290>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cc3ae90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ce292d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4ec350>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c2344d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,GET /quiz_results/:id,"OSError(49, ""Can't assign requested address"")",50
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10be23510>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4da810>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ca16f90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c51a450>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cb4e550>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c732d50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cb9a1d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c70c810>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c534990>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7fd650>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ce1fc10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7edb50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4073d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"OSError(49, ""Can't assign requested address"")",1026
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c54f1d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d02b450>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ce020d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d0e0b50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c507810>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bce0510>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,GET /quiz_results/:id,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cdf0310>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c50c650>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"OSError(49, ""Can't assign requested address"")",2300
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10a596a90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c704190>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bfcc2d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4edad0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"OSError(49, ""Can't assign requested address"")",2452
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c003890>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bd4cb50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ce74090>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d112690>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c3602d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c94fe50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bfe8110>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ccbb090>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c56c790>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c369b90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ccc6410>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7944d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7b9d50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"OSError(49, ""Can't assign requested address"")",2308
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c5197d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c94d490>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d1394d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c5855d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d1fe450>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bdf6090>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c9408d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ce75410>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c2a1350>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"OSError(49, ""Can't assign requested address"")",2470
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ce157d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cc48bd0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c5a0410>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7a80d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cb67850>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4ec8d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10be0f210>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ccf4790>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c80a050>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ceab110>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bdecc50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ca1c090>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c362fd0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ccb4f10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4f4510>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c2a1a10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ca06410>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c2a2d90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,GET /quiz_results/:id,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7b9a10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c1b8bd0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c44a110>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bde8d10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"OSError(49, ""Can't assign requested address"")",1522
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10be4c410>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4f4a90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c27f890>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7cb910>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c542ed0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c6e4e90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bfe8c10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c035f90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d0121d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d115150>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ca35ed0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bf97e50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c85a650>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,GET /quiz_results/:id,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bfa8ed0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10be32d10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cd03290>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c415b50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c291790>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c1ce910>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"OSError(49, ""Can't assign requested address"")",2379
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bdef650>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c6c5e50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10ca25310>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/quiz_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7993d0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4c7090>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cc9c750>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bd4e650>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c567e90>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c41e750>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c850c10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10cf96490>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c819bd0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/search,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c554290>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+POST,POST /quiz_results,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c5a1f10>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4ca710>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d17a650>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d117390>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bd47d50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c68e790>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,GET /quiz_results/:id,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c7ee510>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10d19ff50>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/quiz_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c369190>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/flashcards_history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c4deed0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/history,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10c52cad0>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1
+GET,/analytics/flashcard_stats,"ConnectTimeoutError(<HTTPConnection(host='127.0.0.1', port=5050) at 0x10bfab150>, 'Connection to 127.0.0.1 timed out. (connect timeout=None)')",1

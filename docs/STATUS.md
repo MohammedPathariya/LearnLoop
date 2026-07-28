@@ -25,7 +25,27 @@ Last updated: 2026-07-28
 - Retrieval benchmark evidence is saved under `docs/benchmarks/`.
 - Quiz and flashcard generation now validates Pydantic schemas and retries malformed or schema-invalid model output up to two times with validation feedback.
 - Exhausted generation retries return a stable error object with the last raw output, validation errors, and attempt count; generation routes return HTTP 502 for those failures.
-- Locust load test does not exist yet.
+- Locust load testing now exists under `load_tests/` with read-heavy dashboard
+  and search flows plus write-heavy quiz-result persistence.
+- The first 500-user local run is recorded under `docs/load-tests/`. It
+  measured 79,093 requests, 17,094 failures (21.52%), 669.15 requests/second,
+  aggregate p50 320 ms, and aggregate p95 1,500 ms. Failures were client-side
+  address-allocation errors and connection timeouts from the single-process
+  local setup, not hidden application responses.
+- The run observed no SQLite lock errors. The isolated database remained in WAL
+  mode and passed `PRAGMA integrity_check` after the test.
+- The load-test serving path now uses Gunicorn with four workers and two
+  threads per worker; Docker uses the same production-style command instead of
+  the Flask development server.
+- The first Gunicorn rerun exposed and fixed a deployment startup bug: Gunicorn
+  does not execute `main.py` as `__main__`, so schema creation moved to
+  `backend/wsgi.py`. SQLite WAL initialization now checks the current mode
+  before changing it, avoiding concurrent worker startup lock errors.
+- The fixed 500-user Gunicorn run completed with 128,917 requests, 0 failures,
+  1,078.47 requests/second, aggregate p50 260 ms, and aggregate p95 580 ms.
+  This is local-only evidence; Locust still reported CPU usage above 90% on the
+  shared client/server Mac. The reusable comparison is cataloged in
+  `docs/load-tests/README.md` and `docs/load-tests/catalog.json`.
 - Git workflow for this revamp is direct commits to `main` with logical multi-commit history.
 - Local folder and GitHub remote have been renamed from `LearnLoop-Deployment` to `LearnLoop`.
 - Docker Compose maps the backend to `5050:5050`, matching the Flask default and frontend API fallback.
@@ -54,10 +74,15 @@ Passed:
 - `bash scripts/precommit-check.sh`
 - `bash scripts/verify.sh`
 - `bash scripts/install-git-hooks.sh`
+- `locust -f load_tests/locustfile.py --headless --host http://127.0.0.1:5050 --users 500 --spawn-rate 50 --run-time 2m --csv docs/load-tests/locust-500-users --html docs/load-tests/locust-500-users.html --only-summary` (completed with documented failures)
 
 Failed:
 
-- None in the latest baseline verification.
+- The 500-user load test failed its clean-pass criterion with a 21.52% Locust
+  failure rate; see `docs/load-tests/locust-500-users.md`.
+- The first Gunicorn rerun failed with 100% HTTP 500s because WSGI startup did
+  not create the schema and concurrent workers contended during WAL setup. It
+  is preserved and documented in `docs/load-tests/locust-500-users-gunicorn-fixed.md`.
 
 Previous failure reason:
 
@@ -94,7 +119,7 @@ Guardrails:
 | 2 | Real RAG layer | Complete |
 | 3 | Benchmark evidence | Complete |
 | 4 | Pydantic self-healing generation | Complete |
-| 5 | Load testing and WAL validation | Not started |
+| 5 | Load testing and WAL validation | Measured locally; production-scale rerun pending |
 | 6 | Complete frontend redesign | Not started |
 | 7 | Deployment compatibility and production deployment | Not started |
 | 8 | Additional impressive product features | Not started |
@@ -119,9 +144,13 @@ Guardrails:
 
 ## Immediate Next Step
 
-Continue on `main` and start Phase 5:
+Continue on `main` with the Phase 5 follow-up:
 
-- Day 4 structured output validation is complete. Continue with Phase 5 load testing and SQLite WAL validation.
+- repeat the scenario with a production WSGI server and Locust in a separate
+  process or host so load-generator saturation is not conflated with backend
+  capacity
+- use Postgres/Supabase for sustained multi-worker write concurrency before
+  making a hosted 500-user claim
 
 ## Day 4 Generation Notes
 

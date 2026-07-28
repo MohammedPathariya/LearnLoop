@@ -1,0 +1,57 @@
+{
+  "scenario": "load_tests/locustfile.py",
+  "users": 500,
+  "ramp_users_per_second": 50,
+  "duration_seconds": 120,
+  "database": "SQLite",
+  "wal_validation": {
+    "journal_mode": "wal",
+    "integrity_check": "ok",
+    "lock_errors_fixed_run": 0
+  },
+  "tests": [
+    {
+      "id": "local-flask-500-users",
+      "report": "locust-500-users.md",
+      "raw_prefix": "locust-500-users",
+      "server": "Flask development server, single process",
+      "requests": 79093,
+      "failures": 17094,
+      "failure_rate_percent": 21.52,
+      "throughput_requests_per_second": 669.15,
+      "p50_ms": 320,
+      "p95_ms": 1500,
+      "status": "failed",
+      "failure_class": "client transport exhaustion and connection timeouts"
+    },
+    {
+      "id": "local-gunicorn-500-users-schema-failure",
+      "report": "locust-500-users-gunicorn.html",
+      "raw_prefix": "locust-500-users-gunicorn",
+      "server": "Gunicorn, 4 workers, 2 threads",
+      "requests": 147098,
+      "failures": 147098,
+      "failure_rate_percent": 100.0,
+      "throughput_requests_per_second": 1226.57,
+      "p50_ms": 210,
+      "p95_ms": 680,
+      "status": "failed",
+      "failure_class": "WSGI schema initialization and concurrent WAL startup"
+    },
+    {
+      "id": "local-gunicorn-500-users-fixed",
+      "report": "locust-500-users-gunicorn-fixed.md",
+      "raw_prefix": "locust-500-users-gunicorn-fixed",
+      "server": "Gunicorn, 4 workers, 2 threads",
+      "requests": 128917,
+      "failures": 0,
+      "failure_rate_percent": 0.0,
+      "throughput_requests_per_second": 1078.47,
+      "p50_ms": 260,
+      "p95_ms": 580,
+      "status": "passed-local-only",
+      "sqlite_rows_after_run": 7017,
+      "cpu_warning": "load generator and backend shared one Mac"
+    }
+  ]
+}

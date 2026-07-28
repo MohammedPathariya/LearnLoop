@@ -7,7 +7,10 @@ This file tracks local, Docker, and hosted deployment behavior during the revamp
 Backend:
 
 - Framework: Flask
-- Entry point: `backend/main.py`
+- Smoke-test entry point: `backend/main.py`
+- WSGI entry point: `backend/wsgi.py`, which creates the schema before serving
+- Production-style local/Docker server: Gunicorn with four workers and two
+  threads per worker
 - App package: `backend/app/`
 - Default local fallback DB: `backend/conversations.db`
 - Optional production DB: `SUPABASE_DB_URI`
@@ -32,6 +35,9 @@ Docker:
 - Backend read endpoints return `200` against the checked-in SQLite DB.
 - Backend write-path smoke checks pass against a temporary SQLite DB.
 - Local SQLite connections use `PRAGMA journal_mode=WAL`.
+- The Day 5 500-user local run used WAL plus `PRAGMA busy_timeout=5000`; it
+  completed with no SQLite lock errors, but the single-process local setup had
+  21.52% client-side transport failures under the load generator.
 
 ## Known Deployment Issues
 
@@ -39,6 +45,8 @@ Docker:
 - README and the frontend default both point to the backend at `http://localhost:5050`.
 - The backend no longer requires `OPENAI_API_KEY` during import; missing keys fail only when generation endpoints need the model client.
 - The Docker volume maps `./backend/conversations.db` to `/app/conversations.db`; this matches the current Docker workdir but should be rechecked after backend refactoring.
+- The Flask development server is for smoke checks only. Load tests must use
+  the Gunicorn command documented in `load_tests/README.md`.
 
 ## Deployment Goals
 
@@ -46,6 +54,8 @@ Docker:
 - Docker Compose should expose backend and frontend on documented ports.
 - Tests do not require a real OpenAI key.
 - Local SQLite uses WAL mode.
+- 500-user load-test evidence is local-only until repeated with a production
+  WSGI server and a separate load-generator process or host.
 - Hosted deployment configuration should be documented after the backend structure settles.
 
 ## Commands To Reverify

@@ -1,0 +1,9 @@
+Method,Name,Error,Occurrences
+GET,/history,HTTPError('500 Server Error: INTERNAL SERVER ERROR for url: /history'),21047
+GET,/analytics/quiz_stats,HTTPError('500 Server Error: INTERNAL SERVER ERROR for url: /analytics/quiz_stats'),20930
+GET,/analytics/stats,HTTPError('500 Server Error: INTERNAL SERVER ERROR for url: /analytics/stats'),21010
+GET,/search,HTTPError('500 Server Error: INTERNAL SERVER ERROR for url: /search'),12654
+GET,/flashcards_history,HTTPError('500 Server Error: INTERNAL SERVER ERROR for url: /flashcards_history'),20893
+GET,/analytics/flashcard_stats,HTTPError('500 Server Error: INTERNAL SERVER ERROR for url: /analytics/flashcard_stats'),20848
+POST,POST /quiz_results,HTTPError('500 Server Error: INTERNAL SERVER ERROR for url: POST /quiz_results'),8158
+GET,/quiz_history,HTTPError('500 Server Error: INTERNAL SERVER ERROR for url: /quiz_history'),20971
