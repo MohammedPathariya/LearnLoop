@@ -129,6 +129,34 @@ Developing this project involved solving several interesting technical hurdles:
 
 ## 🎯 Future Work & Vision
 
+## Retrieval benchmark
+
+The active retrieval comparison contains three named tests. The synthetic near-neighbor Recall@3 test measured `1.0` (13/13), with `6.591 ms` p50 and `8.5436 ms` p95 latency. The real project corpus Recall@3 test uses seven implementation and project files, 25 indexed chunks, and 10 manually labeled questions; it measured `0.6` (6/10), with `6.304 ms` p50 and `9.2693 ms` p95 latency. The same real corpus at Recall@5 measured `0.9` (9/10), with `6.146 ms` p50 and `10.2577 ms` p95 latency. These measurements exclude ingestion and are backed by [`docs/benchmarks/README.md`](docs/benchmarks/README.md), [`docs/benchmarks/synthetic_near_neighbor_recall_at_3.json`](docs/benchmarks/synthetic_near_neighbor_recall_at_3.json), [`docs/benchmarks/real_project_recall_at_3.json`](docs/benchmarks/real_project_recall_at_3.json), and [`docs/benchmarks/real_project_recall_at_5.json`](docs/benchmarks/real_project_recall_at_5.json). The initial v1 and v2 exploratory tests remain in [`docs/benchmarks/archive/`](docs/benchmarks/archive/).
+
+Rerun it with the cached embedding model:
+
+```bash
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=backend python3.11 scripts/evaluate_retrieval.py
+```
+
+Run the synthetic near-neighbor Recall@3 test:
+
+```bash
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=backend python3.11 scripts/evaluate_retrieval.py --dataset docs/benchmarks/archive/retrieval_dataset_v2.json --report docs/benchmarks/synthetic_near_neighbor_recall_at_3.json --benchmark-name 'LearnLoop synthetic near-neighbor Recall@3' --top-k 3
+```
+
+Run Recall@3 on the real project corpus:
+
+```bash
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=backend python3.11 scripts/evaluate_retrieval.py --dataset docs/benchmarks/real_project_corpus.json --report docs/benchmarks/real_project_recall_at_3.json --benchmark-name 'LearnLoop real project corpus Recall@3' --top-k 3
+```
+
+Run Recall@5 on the same real project corpus:
+
+```bash
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=backend python3.11 scripts/evaluate_retrieval.py --dataset docs/benchmarks/real_project_corpus.json --report docs/benchmarks/real_project_recall_at_5.json --benchmark-name 'LearnLoop real project corpus Recall@5' --top-k 5
+```
+
 -   **User Accounts & Auth:** Implement user authentication so learners can have private, secure notebooks and track their progress over time.
 -   **Export & Share:** Add functionality to export flashcard sets as CSVs or share quiz results with classmates via a link.
 -   **Adaptive Learning:** Track a user's weak topics based on quiz performance and automatically generate targeted review quizzes.

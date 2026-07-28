@@ -22,7 +22,8 @@ Last updated: 2026-07-28
 - Chunk embeddings use weighted pooling across MiniLM-sized windows so all 512 chunk tokens contribute.
 - RAG uses lazy local `sentence-transformers/all-MiniLM-L6-v2` embeddings and per-session in-memory FAISS `IndexFlatIP` indexes.
 - The current local embedding path is not yet deployment-tuned for Render memory, cold-start, or scale-out constraints.
-- Retrieval benchmark and Locust load test do not exist yet.
+- Retrieval benchmark evidence is saved under `docs/benchmarks/`.
+- Locust load test does not exist yet.
 - Git workflow for this revamp is direct commits to `main` with logical multi-commit history.
 - Local folder and GitHub remote have been renamed from `LearnLoop-Deployment` to `LearnLoop`.
 - Docker Compose maps the backend to `5050:5050`, matching the Flask default and frontend API fallback.
@@ -87,7 +88,7 @@ Guardrails:
 | --- | --- | --- |
 | 1 | Backend stabilization | Complete |
 | 2 | Real RAG layer | Complete |
-| 3 | Benchmark evidence | Not started |
+| 3 | Benchmark evidence | Complete |
 | 4 | Pydantic self-healing generation | Not started |
 | 5 | Load testing and WAL validation | Not started |
 | 6 | Complete frontend redesign | Not started |
@@ -102,14 +103,21 @@ Guardrails:
 - `backend/tests/test_rag.py` covers 512-token chunking with overlap, full-chunk embedding coverage, relevant retrieval, and session isolation.
 - `backend/tests/test_rag_integration.py` covers real MiniLM embedding generation and FAISS retrieval.
 
+## Day 3 Benchmark Notes
+
+- v1 and v2 are archived under `docs/benchmarks/archive/` as exploratory provenance.
+- `scripts/evaluate_retrieval.py` reruns the named tests against the RAG service with configurable `--top-k`.
+- `synthetic-near-neighbor-recall-at-3` measured Recall@3 `1.0` (13/13), p50 `6.591 ms`, and p95 `8.5436 ms`.
+- `real-project-recall-at-3` uses seven actual checked-in implementation and project files, 25 indexed chunks, and 10 manually labeled questions; it measured Recall@3 `0.6` (6/10), p50 `6.304 ms`, and p95 `9.2693 ms`.
+- `real-project-recall-at-5` uses the unchanged real corpus and labels; it measured Recall@5 `0.9` (9/10), p50 `6.146 ms`, and p95 `10.2577 ms`. The remaining miss is the embedding-model query.
+- The named tests and stable report paths are cataloged in `docs/benchmarks/README.md` for later frontend use.
+- Latency covers query embedding plus FAISS search and excludes ingestion. The report includes each query's result IDs, latency, environment, and command.
+
 ## Immediate Next Step
 
-Continue on `main` and start Phase 3:
+Continue on `main` and start Phase 4:
 
-- add a small retrieval benchmark dataset
-- measure Recall@5 and retrieval latency
-- save traceable benchmark output under `docs/benchmarks/`
-- update README only with measured retrieval results
+- add structured output validation for quiz and flashcard generation
 
 Before adding Day 8 product features, complete Day 7 deployment compatibility and production deployment:
 
