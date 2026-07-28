@@ -177,7 +177,12 @@ Before adding Day 8 product features, complete Day 7 deployment compatibility an
 
 - `docs/FRONTEND_DESIGN.md` records the implemented brand, navigation, honesty rules, responsive behavior, and demo boundaries.
 - The frontend uses the lowercase `learnloop` wordmark and the provided book-and-compass logo, favicon, and app-icon SVGs.
-- The new Study workspace replaces ThinkMate with persistent source-grounded question answering.
+- Primary navigation is limited to Home, Learn, and Progress. History, Benchmarks, System, and GitHub are available under More.
+- Home leads with Continue learning and Start something new. The creation flow can add the first source before opening the new learning space.
+- Learn combines source-grounded questions, quizzes, and flashcards as three modes in one selected learning space.
+- Supporting evidence opens on demand instead of occupying a permanent third panel. Source management remains available contextually from Learn.
+- Each browser receives one isolated ML Foundations demo. Active changes persist, and the demo automatically returns to its seeded state after 24 hours without saved activity.
+- The Learn workspace replaces ThinkMate with persistent source-grounded question answering.
 - Study materials can be listed, opened, searched, renamed, and removed. Durable material text rebuilds the in-memory retrieval index after a backend restart.
 - Quiz and flashcard generation can use all material in a selected study journey.
 - Progress shows saved score trends and topic averages only. Concept mastery remains Day 8 scope.
