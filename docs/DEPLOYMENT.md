@@ -14,6 +14,9 @@ Backend:
 - App package: `backend/app/`
 - Default local fallback DB: `backend/conversations.db`
 - Optional production DB: `SUPABASE_DB_URI`
+- Direct local startup with `python3.11 backend/main.py` uses SQLite even if a
+  stale remote URI exists in `backend/.env`. Set `LEARNLOOP_USE_REMOTE_DB=1`
+  only when deliberately testing a valid remote database URI.
 - Required model key: `OPENAI_API_KEY` only for generation endpoints.
 
 Frontend:

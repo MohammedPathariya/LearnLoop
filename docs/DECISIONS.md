@@ -10,7 +10,7 @@ This file records architecture and product decisions made during the revamp. Kee
 - Persistence is currently SQLAlchemy with SQLite fallback and optional Supabase URI.
 - The checked-in SQLite DB contains existing conversation, quiz, and flashcard records.
 - Day 2 adds session-scoped in-memory FAISS retrieval with local `all-MiniLM-L6-v2` embeddings.
-- There is no Locust load test yet. Quiz and flashcard generation now uses Pydantic validation with bounded repair retries.
+- Locust evidence now includes a fixed 500-user local Gunicorn run. Quiz and flashcard generation uses Pydantic validation with bounded repair retries.
 
 ## Decisions
 
@@ -79,3 +79,21 @@ Reason: Render, Vercel, and any separate model service must be validated against
 Decision: RAG chunks use the MiniLM tokenizer for 512-token boundaries with 64-token overlap. Embeddings are pooled across model-sized windows so all chunk tokens contribute despite the model's 256-token sequence limit.
 
 Reason: Sending a 512-token chunk directly to `all-MiniLM-L6-v2` silently truncates content after its usable sequence limit and weakens retrieval for information near the end of the chunk.
+
+### 12. Make Day 6 a complete frontend vertical slice
+
+Decision: Day 6 includes the minimum backend work required for persistent study sessions, material management, session-grounded flashcards, progress, history, and an isolated demo journey.
+
+Reason: A frontend that displayed recent sessions, durable materials, or session-based practice without real persistence would misrepresent product behavior.
+
+### 13. Scope visitors without implying authentication
+
+Decision: The frontend creates a random browser identifier and sends it with study requests. Persistent study records are scoped to that identifier, but the interface does not show an avatar or claim that an account exists.
+
+Reason: Public demo visitors need isolated state, while authentication remains outside the implemented product scope.
+
+### 14. Preserve benchmark reports as static evidence
+
+Decision: The Benchmarks page renders checked-in measured results instead of adding a runtime benchmark API.
+
+Reason: Benchmark data changes only when a deliberate evaluation run updates its report. A live endpoint would add infrastructure without improving evidence quality.

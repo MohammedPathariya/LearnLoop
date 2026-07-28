@@ -2,22 +2,21 @@
 
 <div align="center">
 
-[![Live App](https://img.shields.io/badge/Live%20Frontend-▲%20Vercel-000000?style=for-the-badge&logo=vercel)](https://learnloop-deployment-frontend.vercel.app/)
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python)](https://www.python.org/)
-[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![Docker](https://img.shields.io/badge/Docker-🐳-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
 
 </div>
 
-**LearnLoop is an integrated, AI-powered web application designed to be a one-stop-shop for studying. It combines an interactive chatbot, a quiz generator, and a flashcard creator into a single, cohesive learning experience.**
+**LearnLoop is a source-grounded study workspace. Learners organize material into persistent journeys, ask questions backed by retrieved evidence, generate validated quizzes and flashcards from the same sources, and review saved progress.**
 
 ---
 
-## 🚀 Experience the Live Demo
+## Deployment status
 
-This project is fully deployed and live. Click the link below to try it out now!
-
-### **[https://learnloop-deployment-frontend.vercel.app/](https://learnloop-deployment-frontend.vercel.app/)**
+The redesigned Day 6 application is complete and verified locally. The previous
+public deployment does not represent this redesign. Day 7 covers deployment
+compatibility, public hosting, and end-to-end verification of the refreshed app.
 
 ---
 
@@ -25,38 +24,37 @@ This project is fully deployed and live. Click the link below to try it out now!
 
 As a lifelong learner and now a data science student, I constantly felt the friction of juggling multiple study tools. I had one app for notes, another for flashcards, a separate website for practice quizzes, and chatbots that felt disconnected from my actual course material. I wanted to build a single "learning command center" where I could:
 
-1.  **Interact** with any topic through a natural, student-teacher dialogue.
-2.  **Quiz myself** on specific concepts or pasted text, with instant feedback.
-3.  **Generate flashcards** for quick, on-the-fly review sessions.
-4.  **Review past sessions** so that no learning progress is ever lost.
+1. **Ground questions** in study material I provide.
+2. **Quiz myself** on specific concepts or pasted text, with saved feedback.
+3. **Generate flashcards** from the same learning journey.
+4. **Review progress and history** without losing the connection to source material.
 
-> The goal of LearnLoop was to blend **conversation**, **testing**, and **memory aids** into one seamless web experience—powered by AI, but packaged in a way that feels intuitive and focused.
+> LearnLoop connects source-grounded study, practice, and review in one persistent workspace.
 
 ---
 
 ## ✨ Key Features
 
-This project is organized into three core, interconnected modules:
+The redesigned product is organized around one connected study journey:
 
-1.  **🧠 ThinkMate Chat**
-    -   Engage in a dynamic student-teacher dialogue on any subject.
-    -   Control the AI's tone (natural, formal, humorous, technical) and who starts the conversation.
-    -   Every conversation is automatically saved with a timestamp and topic for later review.
+1. **Grounded Study**
+   - Add text material to a persistent journey.
+   - Ask questions answered from retrieved source chunks.
+   - Inspect the material supporting each grounded answer.
 
-2.  **📝 Quiz Builder**
-    -   Instantly generate mixed-type quizzes (Multiple Choice, True/False, Fill-in-the-Blank) from any topic or pasted content.
-    -   Answer questions in an interactive UI with immediate scoring and explanations.
-    -   All quiz sessions are persisted, tracking your scores and showing a full history with analytics.
+2. **Validated Practice**
+   - Generate mixed-format quizzes from a journey, topic, or pasted content.
+   - Review saved scores, answers, and explanations.
+   - Generate flashcards from the same session material.
 
-3.  **📇 Flashcard Generator**
-    -   Create sets of topic-focused flashcards with a term and a definition.
-    -   Review your cards with a simple, responsive click-to-flip grid layout.
-    -   All generated sets are saved for future study sessions.
+3. **Progress And History**
+   - View real quiz score trends and topic-level averages.
+   - Resume sessions and reopen saved quiz or flashcard artifacts.
+   - Explore a resettable Machine Learning Foundations demo journey.
 
-4.  **📊 Dashboard & Analytics**
-    -   View aggregate stats: total chats, quizzes taken, average scores, and more.
-    -   Easily navigate between recent activities and a complete history.
-    -   A minimal, professional design keeps the focus on your learning progress.
+4. **Technical Benchmarks**
+   - Review checked-in retrieval quality and latency measurements.
+   - Inspect the 500-user local load-test result with its environment limitations.
 
 ---
 
@@ -69,7 +67,7 @@ This project is organized into three core, interconnected modules:
 | **AI Client** | `openai-python`         | The official, easy-to-integrate client for OpenAI models.      |
 | **Database** | SQLite (for local dev)  | Zero-setup local persistence in a single `conversations.db` file. |
 | **HTTP** | REST + JSON             | Simple, universal, and works perfectly with `axios` and Flask. |
-| **Styling** | CSS Modules + Flexbox   | A custom look with minimal dependencies, avoiding heavy UI libraries. |
+| **Styling** | Custom responsive CSS   | A compact design system without a heavy component dependency. |
 | **Container** | Docker Compose          | Allows spinning up the entire full-stack environment with a single command. |
 
 ---

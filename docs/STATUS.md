@@ -50,6 +50,12 @@ Last updated: 2026-07-28
 - Local folder and GitHub remote have been renamed from `LearnLoop-Deployment` to `LearnLoop`.
 - Docker Compose maps the backend to `5050:5050`, matching the Flask default and frontend API fallback.
 - Frontend environment overrides are no longer tracked; `frontend/.env.example` uses the browser-reachable `http://localhost:5050` API URL, and `backend/.env.example` contains placeholders only.
+- Day 6 replaces the previous frontend with the finalized `learnloop` design system and responsive multi-route study workspace.
+- Persistent study sessions, durable study materials, grounded message history, session-linked quizzes and flashcards, unified history, and score-based progress are implemented.
+- The seeded Machine Learning Foundations demo provides three materials, grounded conversations, three quiz attempts, one flashcard set, and an isolated resettable copy per browser.
+- The learner interface contains Home, Study, Materials, Practice, Flashcards, Progress, and History. Benchmarks use a separate blue technical accent and checked-in measured data.
+- The avatar and account UI were removed because authentication does not exist. System information is limited to backend status, data boundaries, and demo reset.
+- Direct local backend startup now ignores stale `SUPABASE_DB_URI` values and uses SQLite unless `LEARNLOOP_USE_REMOTE_DB=1` is explicitly set.
 
 ## Baseline Verification
 
@@ -67,7 +73,7 @@ Passed:
 - temporary SQLite smoke test for `/quiz_results`
 - `python3.11 -m pytest` with 7 backend tests passing
 - `python3.11 -m pytest` with 12 backend tests passing after Day 2 RAG changes
-- `python3.11 -m pytest` with 16 backend tests passing after Day 4 generation changes
+- `python3.11 -m pytest` with 25 backend tests passing after Day 6 session and demo changes
 - `PYTHONPYCACHEPREFIX=/tmp/learnloop-pycache python3.11 -m compileall backend/app backend/tests`
 - `npm test -- --watchAll=false`
 - `npm run build`
@@ -102,7 +108,7 @@ Dependency Notes:
 
 Residual Warnings:
 
-- Frontend Jest reports React Router v7 future-flag warnings.
+- React Router v7 transition and splat-resolution future flags are enabled.
 - Frontend build reports stale Browserslist data and a Node deprecation warning from the current CRA toolchain.
 
 Guardrails:
@@ -120,7 +126,7 @@ Guardrails:
 | 3 | Benchmark evidence | Complete |
 | 4 | Pydantic self-healing generation | Complete |
 | 5 | Load testing and WAL validation | Measured locally; production-scale rerun pending |
-| 6 | Complete frontend redesign | Not started |
+| 6 | Complete frontend redesign | Complete locally |
 | 7 | Deployment compatibility and production deployment | Not started |
 | 8 | Additional impressive product features | Not started |
 
@@ -144,13 +150,12 @@ Guardrails:
 
 ## Immediate Next Step
 
-Continue on `main` with the Phase 5 follow-up:
+Continue with Day 7 deployment compatibility and production deployment:
 
-- repeat the scenario with a production WSGI server and Locust in a separate
-  process or host so load-generator saturation is not conflated with backend
-  capacity
-- use Postgres/Supabase for sustained multi-worker write concurrency before
-  making a hosted 500-user claim
+- decide where embedding inference runs in the hosted architecture
+- configure the redesigned frontend and expanded backend for the selected hosts
+- deploy the core app and verify the public demo end to end
+- keep the 500-user result labeled local-only until it is repeated against the deployable architecture
 
 ## Day 4 Generation Notes
 
@@ -167,3 +172,14 @@ Before adding Day 8 product features, complete Day 7 deployment compatibility an
 - deploy the core app and record public URLs
 - verify deployed health, ingestion, retrieval, grounded answer generation, and frontend-to-backend calls
 - verify load-test claims against the deployable architecture or label them local-only
+
+## Day 6 Frontend Notes
+
+- `docs/FRONTEND_DESIGN.md` records the implemented brand, navigation, honesty rules, responsive behavior, and demo boundaries.
+- The frontend uses the lowercase `learnloop` wordmark and the provided book-and-compass logo, favicon, and app-icon SVGs.
+- The new Study workspace replaces ThinkMate with persistent source-grounded question answering.
+- Study materials can be listed, opened, searched, renamed, and removed. Durable material text rebuilds the in-memory retrieval index after a backend restart.
+- Quiz and flashcard generation can use all material in a selected study journey.
+- Progress shows saved score trends and topic averages only. Concept mastery remains Day 8 scope.
+- The Benchmarks page shows the measured real-corpus Recall@3 and Recall@5 results plus the fixed 500-user local Gunicorn run with its environment limitation.
+- Frontend tests and the optimized production build pass. CRA still reports stale Browserslist data and a Node deprecation warning.
