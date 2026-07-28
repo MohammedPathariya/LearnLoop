@@ -4,118 +4,88 @@ Last updated: 2026-07-28
 
 ## Current State
 
-- Day 2 RAG changes are implemented on `main`.
-- Day 1 backend stabilization is implemented.
-- Day 2 session-based RAG is implemented in the backend.
-- Backend is split into a minimal Flask package under `backend/app/`.
-- `backend/main.py` is the local and Docker entry point.
-- Frontend is Create React App with React 19 and `react-scripts@5`.
-- Frontend production build passes.
-- Frontend test suite has been replaced with a baseline app render test and now passes.
-- Backend smoke checks pass for import without `OPENAI_API_KEY`, health, read endpoints, selected write validation, and SQLite WAL.
-- Backend pytest smoke tests pass for health, read endpoints, validation errors, quiz-result persistence, empty search, no-key import, and SQLite WAL.
-- Local guardrail scripts have been added and installed as Git hooks for pre-commit and pre-push verification.
-- Study material ingestion exists at `POST /rag/ingest`.
-- Retrieval exists at `POST /rag/retrieve` and returns top-k chunks plus retrieval latency.
-- Source-grounded answering exists at `POST /rag/answer` using retrieved chunks as source context.
-- RAG uses tokenizer-based 512-token chunking with 64-token overlap.
-- Chunk embeddings use weighted pooling across MiniLM-sized windows so all 512 chunk tokens contribute.
-- RAG uses lazy local `sentence-transformers/all-MiniLM-L6-v2` embeddings and per-session in-memory FAISS `IndexFlatIP` indexes.
-- The current local embedding path is not yet deployment-tuned for Render memory, cold-start, or scale-out constraints.
-- Retrieval benchmark evidence is saved under `docs/benchmarks/`.
-- Quiz and flashcard generation now validates Pydantic schemas and retries malformed or schema-invalid model output up to two times with validation feedback.
-- Exhausted generation retries return a stable error object with the last raw output, validation errors, and attempt count; generation routes return HTTP 502 for those failures.
-- Locust load testing now exists under `load_tests/` with read-heavy dashboard
-  and search flows plus write-heavy quiz-result persistence.
-- The first 500-user local run is recorded under `docs/load-tests/`. It
-  measured 79,093 requests, 17,094 failures (21.52%), 669.15 requests/second,
-  aggregate p50 320 ms, and aggregate p95 1,500 ms. Failures were client-side
-  address-allocation errors and connection timeouts from the single-process
-  local setup, not hidden application responses.
-- The run observed no SQLite lock errors. The isolated database remained in WAL
-  mode and passed `PRAGMA integrity_check` after the test.
-- The load-test serving path now uses Gunicorn with four workers and two
-  threads per worker; Docker uses the same production-style command instead of
-  the Flask development server.
-- The first Gunicorn rerun exposed and fixed a deployment startup bug: Gunicorn
-  does not execute `main.py` as `__main__`, so schema creation moved to
-  `backend/wsgi.py`. SQLite WAL initialization now checks the current mode
-  before changing it, avoiding concurrent worker startup lock errors.
-- The fixed 500-user Gunicorn run completed with 128,917 requests, 0 failures,
-  1,078.47 requests/second, aggregate p50 260 ms, and aggregate p95 580 ms.
-  This is local-only evidence; Locust still reported CPU usage above 90% on the
-  shared client/server Mac. The reusable comparison is cataloged in
-  `docs/load-tests/README.md` and `docs/load-tests/catalog.json`.
-- Git workflow for this revamp is direct commits to `main` with logical multi-commit history.
-- Local folder and GitHub remote have been renamed from `LearnLoop-Deployment` to `LearnLoop`.
-- Docker Compose maps the backend to `5050:5050`, matching the Flask default and frontend API fallback.
-- Frontend environment overrides are no longer tracked; `frontend/.env.example` uses the browser-reachable `http://localhost:5050` API URL, and `backend/.env.example` contains placeholders only.
-- Day 6 replaces the previous frontend with the finalized `learnloop` design system and responsive multi-route study workspace.
-- Persistent study sessions, durable study materials, grounded message history, session-linked quizzes and flashcards, unified history, and score-based progress are implemented.
-- The seeded Machine Learning Foundations demo provides three materials, grounded conversations, three quiz attempts, one flashcard set, and an isolated resettable copy per browser.
-- The learner interface contains Home, Study, Materials, Practice, Flashcards, Progress, and History. Benchmarks use a separate blue technical accent and checked-in measured data.
-- The avatar and account UI were removed because authentication does not exist. System information is limited to backend status, data boundaries, and demo reset.
-- Direct local backend startup now ignores stale `SUPABASE_DB_URI` values and uses SQLite unless `LEARNLOOP_USE_REMOTE_DB=1` is explicitly set.
+- Days 1 through 6 are complete locally on `main`.
+- Day 7 deployment compatibility and public deployment have not started.
+- The backend is a Flask package under `backend/app/`, with `backend/main.py`
+  for local development and `backend/wsgi.py` for Gunicorn.
+- Persistent learning spaces, materials, grounded conversations, quizzes,
+  flashcards, history, and score-based progress are implemented.
+- RAG uses tokenizer-based 512-token chunks with 64-token overlap, weighted
+  embedding pooling across MiniLM-sized windows, and session-scoped FAISS
+  indexes.
+- Material text is durable. In-memory indexes rebuild after a backend restart.
+- Pydantic validates generated quizzes and flashcards. Invalid model output gets
+  at most two repair retries before the API returns a stable HTTP 502 error.
+- The frontend uses React 19, Vite, Vitest, Wouter, and custom responsive CSS.
+- Primary navigation is Home, Learn, and Progress. History, Benchmarks, System,
+  and GitHub are under More.
+- Learn presents materials, grounded questions, quizzes, and flashcards as
+  connected modes inside one selected learning space.
+- The Machine Learning Foundations demo provides a complete browser-isolated
+  journey and resets to its canonical seed after 24 hours without saved
+  activity or when the visitor chooses reset.
+- The interface does not imply authentication. Browser IDs isolate visitor data
+  without representing accounts.
+- Progress displays saved score trends and topic averages only. Concept mastery
+  remains Day 8 scope.
+- `backend/conversations.db` is untracked runtime state. Docker Compose persists
+  SQLite data in the `learnloop-data` named volume.
 
-## Baseline Verification
+## Current Verification
 
-Passed:
+Passed on 2026-07-28:
 
-- `PYTHONDONTWRITEBYTECODE=1 python3 -c "compile(open('backend/main.py').read(), 'backend/main.py', 'exec')"`
-- Flask app import without `OPENAI_API_KEY`
-- `GET /healthz`
-- `GET /history`
-- `GET /analytics/stats`
-- `GET /quiz_history`
-- `GET /analytics/quiz_stats`
-- `GET /flashcards_history`
-- `GET /analytics/flashcard_stats`
-- temporary SQLite smoke test for `/quiz_results`
-- `python3.11 -m pytest` with 7 backend tests passing
-- `python3.11 -m pytest` with 12 backend tests passing after Day 2 RAG changes
-- `python3.11 -m pytest` with 25 backend tests passing after Day 6 session and demo changes
-- `PYTHONPYCACHEPREFIX=/tmp/learnloop-pycache python3.11 -m compileall backend/app backend/tests`
-- `npm test -- --watchAll=false`
-- `npm run build`
-- `bash scripts/precommit-check.sh`
-- `bash scripts/verify.sh`
-- `bash scripts/install-git-hooks.sh`
-- `locust -f load_tests/locustfile.py --headless --host http://127.0.0.1:5050 --users 500 --spawn-rate 50 --run-time 2m --csv docs/load-tests/locust-500-users --html docs/load-tests/locust-500-users.html --only-summary` (completed with documented failures)
+- `python3.11 -m pytest`: 28 passed
+- `npm --prefix frontend test`: 4 passed
+- `npm --prefix frontend run build`: production build succeeded
+- `npm --prefix frontend audit --omit=dev`: 0 vulnerabilities
+- `docker compose config --quiet`
+- real MiniLM and FAISS integration test
+- pinned benchmark source and frontend-report consistency tests
+- all three active retrieval benchmark commands
 
-Failed:
+The active retrieval measurements are:
 
-- The 500-user load test failed its clean-pass criterion with a 21.52% Locust
-  failure rate; see `docs/load-tests/locust-500-users.md`.
-- The first Gunicorn rerun failed with 100% HTTP 500s because WSGI startup did
-  not create the schema and concurrent workers contended during WAL setup. It
-  is preserved and documented in `docs/load-tests/locust-500-users-gunicorn-fixed.md`.
+| Benchmark | Result | p50 | p95 |
+| --- | --- | --- | --- |
+| Synthetic near-neighbor Recall@3 | 1.0, 13/13 | 12.89 ms | 543.597 ms |
+| Real-project Recall@3 | 0.6, 6/10 | 15.433 ms | 30.8652 ms |
+| Real-project Recall@5 | 0.9, 9/10 | 15.826 ms | 33.8765 ms |
 
-Previous failure reason:
+The real-project benchmark uses seven checked-in files and 27 chunks. Every
+source is pinned by SHA-256, and reports include the dataset hash, corpus hashes,
+environment, command, per-query results, and latency samples. Latency covers
+query embedding plus FAISS search and excludes ingestion.
 
-- Previous failure was caused by Jest parsing ESM `axios` through the CRA/Jest setup.
-- The old test also expected stale "learn react" boilerplate.
+The fixed Day 5 local Gunicorn load run remains the current load evidence:
+128,917 requests, zero failures, 1,078.47 requests per second, aggregate p50
+260 ms, and aggregate p95 580 ms with 500 Locust users. The server and load
+generator shared one Mac, so this is explicitly local-only evidence.
 
-Dependency Notes:
+## Day 6 Frontend Coverage
 
-- `npm ci` completed successfully.
-- `npm audit` reported 61 vulnerabilities, including 3 critical.
-- This is likely tied to the old CRA/react-scripts toolchain.
-- Backend tests require Python 3.10+; `python3` is 3.9.6 locally, so use `python3.11`.
-- `python3.11 -m pip install -r backend/requirements.txt` completed successfully.
-- Day 2 adds `faiss-cpu==1.8.0.post1`, `numpy==1.26.4`, and `sentence-transformers==3.0.1`.
-- The real embedding model is loaded lazily on first ingestion.
-- Unit tests use a deterministic fake embedder, and an integration test exercises real MiniLM embeddings plus FAISS retrieval.
+The frontend behavior suite verifies:
 
-Residual Warnings:
+- the simplified primary navigation and More menu
+- the new-learning-space form labels
+- opening a learning space and switching to its embedded quiz without the
+  previous null-session crash
+- quiz question-card layout and radio options without redundant letter prefixes
 
-- React Router v7 transition and splat-resolution future flags are enabled.
-- Frontend build reports stale Browserslist data and a Node deprecation warning from the current CRA toolchain.
+The production dependency tree is audit-clean. The legacy Create React App
+toolchain, stale Browserslist warning, Node deprecation warning, and React Router
+advisory surface were removed by the Vite, Vitest, and Wouter migration.
 
-Guardrails:
+## Guardrails
 
-- `scripts/precommit-check.sh` verifies the current branch is `main`, blocks staged `.env` files and `conversations.db`, checks staged whitespace, runs backend tests, and runs frontend tests.
-- `scripts/verify.sh` verifies the current branch is `main`, checks unstaged and staged whitespace, runs backend tests, runs frontend tests, and runs the frontend production build.
-- `scripts/install-git-hooks.sh` installs local `pre-commit` and `pre-push` hooks that call those scripts.
+- `scripts/precommit-check.sh` requires `main`, blocks staged `.env` files and
+  mutable database files, checks staged whitespace, and runs backend and
+  frontend tests.
+- `scripts/verify.sh` requires `main`, checks staged and unstaged whitespace,
+  runs backend tests, frontend tests, the production build, and a production
+  dependency audit.
+- `backend/tests/test_benchmark_evidence.py` fails if benchmark source hashes,
+  reports, or frontend benchmark data drift apart.
 
 ## Phase Progress
 
@@ -125,66 +95,19 @@ Guardrails:
 | 2 | Real RAG layer | Complete |
 | 3 | Benchmark evidence | Complete |
 | 4 | Pydantic self-healing generation | Complete |
-| 5 | Load testing and WAL validation | Measured locally; production-scale rerun pending |
+| 5 | Load testing and WAL validation | Measured locally; deployed rerun pending |
 | 6 | Complete frontend redesign | Complete locally |
 | 7 | Deployment compatibility and production deployment | Not started |
-| 8 | Additional impressive product features | Not started |
-
-## Day 2 Implementation Notes
-
-- `backend/app/services/rag.py` owns chunking, embedding generation, FAISS index creation, ingestion, retrieval, latency measurement, and session-index clearing for tests.
-- In-memory indexes are keyed by `session_id`; retrieval does not search across sessions.
-- `backend/app/services/generation.py` now includes grounded answer generation that instructs the model to answer only from retrieved source chunks.
-- `backend/tests/test_rag.py` covers 512-token chunking with overlap, full-chunk embedding coverage, relevant retrieval, and session isolation.
-- `backend/tests/test_rag_integration.py` covers real MiniLM embedding generation and FAISS retrieval.
-
-## Day 3 Benchmark Notes
-
-- v1 and v2 are archived under `docs/benchmarks/archive/` as exploratory provenance.
-- `scripts/evaluate_retrieval.py` reruns the named tests against the RAG service with configurable `--top-k`.
-- `synthetic-near-neighbor-recall-at-3` measured Recall@3 `1.0` (13/13), p50 `6.591 ms`, and p95 `8.5436 ms`.
-- `real-project-recall-at-3` uses seven actual checked-in implementation and project files, 25 indexed chunks, and 10 manually labeled questions; it measured Recall@3 `0.6` (6/10), p50 `6.304 ms`, and p95 `9.2693 ms`.
-- `real-project-recall-at-5` uses the unchanged real corpus and labels; it measured Recall@5 `0.9` (9/10), p50 `6.146 ms`, and p95 `10.2577 ms`. The remaining miss is the embedding-model query.
-- The named tests and stable report paths are cataloged in `docs/benchmarks/README.md` for later frontend use.
-- Latency covers query embedding plus FAISS search and excludes ingestion. The report includes each query's result IDs, latency, environment, and command.
+| 8 | Additional product features | Not started |
 
 ## Immediate Next Step
 
-Continue with Day 7 deployment compatibility and production deployment:
+Day 7 should:
 
-- decide where embedding inference runs in the hosted architecture
-- configure the redesigned frontend and expanded backend for the selected hosts
-- deploy the core app and verify the public demo end to end
-- keep the 500-user result labeled local-only until it is repeated against the deployable architecture
-
-## Day 4 Generation Notes
-
-- `backend/app/schemas.py` defines strict quiz question, quiz output, flashcard, and flashcard output schemas.
-- `backend/app/services/generation.py` validates JSON before returning it and performs at most two repair retries after the initial model response.
-- `backend/tests/test_generation.py` covers valid output, malformed JSON repair, schema-invalid JSON repair, retry exhaustion, answer normalization, and content validation.
-- The frontend now consumes the validated API response directly and displays generation errors returned by the backend.
-- Local security follow-up: rotate any credentials currently present in `backend/.env`, remove that file from local sharing, and replace the tracked `backend/conversations.db` with a sanitized or untracked database before publishing the repository.
-
-Before adding Day 8 product features, complete Day 7 deployment compatibility and production deployment:
-
-- decide whether Render runs embeddings locally or calls Modal/another model service
-- document Vercel, Render, and Modal environment variables and deployment steps
-- deploy the core app and record public URLs
-- verify deployed health, ingestion, retrieval, grounded answer generation, and frontend-to-backend calls
-- verify load-test claims against the deployable architecture or label them local-only
-
-## Day 6 Frontend Notes
-
-- `docs/FRONTEND_DESIGN.md` records the implemented brand, navigation, honesty rules, responsive behavior, and demo boundaries.
-- The frontend uses the lowercase `learnloop` wordmark and the provided book-and-compass logo, favicon, and app-icon SVGs.
-- Primary navigation is limited to Home, Learn, and Progress. History, Benchmarks, System, and GitHub are available under More.
-- Home leads with Continue learning and Start something new. The creation flow can add the first source before opening the new learning space.
-- Learn combines source-grounded questions, quizzes, and flashcards as three modes in one selected learning space.
-- Supporting evidence opens on demand instead of occupying a permanent third panel. Source management remains available contextually from Learn.
-- Each browser receives one isolated ML Foundations demo. Active changes persist, and the demo automatically returns to its seeded state after 24 hours without saved activity.
-- The Learn workspace replaces ThinkMate with persistent source-grounded question answering.
-- Study materials can be listed, opened, searched, renamed, and removed. Durable material text rebuilds the in-memory retrieval index after a backend restart.
-- Quiz and flashcard generation can use all material in a selected study journey.
-- Progress shows saved score trends and topic averages only. Concept mastery remains Day 8 scope.
-- The Benchmarks page shows the measured real-corpus Recall@3 and Recall@5 results plus the fixed 500-user local Gunicorn run with its environment limitation.
-- Frontend tests and the optimized production build pass. CRA still reports stale Browserslist data and a Node deprecation warning.
+- choose the hosted embedding architecture
+- configure the frontend and backend for the selected hosts
+- deploy the current core app
+- verify health, persistence, ingestion, retrieval, grounded generation, and
+  frontend-to-backend calls
+- rerun load testing against the deployable architecture before making a
+  production capacity claim

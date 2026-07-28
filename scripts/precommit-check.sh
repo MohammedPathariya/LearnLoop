@@ -23,6 +23,6 @@ echo "==> Running backend tests"
 python3.11 -m pytest
 
 echo "==> Running frontend tests"
-npm --prefix frontend test -- --watchAll=false
+npm --prefix frontend test
 
 echo "==> Pre-commit checks passed"

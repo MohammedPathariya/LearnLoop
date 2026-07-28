@@ -18,9 +18,12 @@ echo "==> Running backend tests"
 python3.11 -m pytest
 
 echo "==> Running frontend tests"
-npm --prefix frontend test -- --watchAll=false
+npm --prefix frontend test
 
 echo "==> Running frontend production build"
 npm --prefix frontend run build
+
+echo "==> Auditing frontend production dependencies"
+npm --prefix frontend audit --omit=dev
 
 echo "==> Verification passed"

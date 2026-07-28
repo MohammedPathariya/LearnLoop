@@ -6,9 +6,10 @@ services:
       - "5050:5050"
     env_file:
       - ./backend/.env
+    environment:
+      SUPABASE_DB_URI: sqlite:////app/data/conversations.db
     volumes:
-      # bind-mount the host file into the container
-      - ./backend/conversations.db:/app/conversations.db
+      - learnloop-data:/app/data
     restart: unless-stopped
 
   frontend:
@@ -19,3 +20,6 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+
+volumes:
+  learnloop-data:

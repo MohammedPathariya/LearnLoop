@@ -6,9 +6,10 @@ This file records architecture and product decisions made during the revamp. Kee
 
 - The backend started as a single Flask app in `backend/thinkmate.py`.
 - Day 1 split the backend into a minimal Flask package under `backend/app/` and renamed the stale backend entry point to `backend/main.py`.
-- The frontend is Create React App with React 19 and `react-scripts`.
+- The frontend uses React 19, Vite, Vitest, and Wouter.
 - Persistence is currently SQLAlchemy with SQLite fallback and optional Supabase URI.
-- The checked-in SQLite DB contains existing conversation, quiz, and flashcard records.
+- Local SQLite stores conversation, quiz, and flashcard records as untracked
+  runtime data.
 - Day 2 adds session-scoped in-memory FAISS retrieval with local `all-MiniLM-L6-v2` embeddings.
 - Locust evidence now includes a fixed 500-user local Gunicorn run. Quiz and flashcard generation uses Pydantic validation with bounded repair retries.
 
@@ -97,3 +98,22 @@ Reason: Public demo visitors need isolated state, while authentication remains o
 Decision: The Benchmarks page renders checked-in measured results instead of adding a runtime benchmark API.
 
 Reason: Benchmark data changes only when a deliberate evaluation run updates its report. A live endpoint would add infrastructure without improving evidence quality.
+
+### 15. Replace the legacy CRA toolchain
+
+Decision: The Day 6 frontend uses Vite and Vitest, with Wouter for the small
+client-side route surface.
+
+Reason: Create React App and its transitive dependencies produced unresolved
+security advisories and stale build warnings. The smaller toolchain preserves
+the existing routes while keeping the production dependency audit clean.
+
+### 16. Keep runtime SQLite data out of Git
+
+Decision: `backend/conversations.db` is local runtime state and is ignored by
+Git. Docker Compose stores its SQLite database in the `learnloop-data` named
+volume.
+
+Reason: Visitor sessions and generated study artifacts are mutable data, not
+source code. A named volume preserves local Docker data without publishing a
+developer database.

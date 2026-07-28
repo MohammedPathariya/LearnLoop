@@ -12,7 +12,7 @@ Backend:
 - Production-style local/Docker server: Gunicorn with four workers and two
   threads per worker
 - App package: `backend/app/`
-- Default local fallback DB: `backend/conversations.db`
+- Default local fallback DB: untracked `backend/conversations.db`
 - Optional production DB: `SUPABASE_DB_URI`
 - Direct local startup with `python3.11 backend/main.py` uses SQLite even if a
   stale remote URI exists in `backend/.env`. Set `LEARNLOOP_USE_REMOTE_DB=1`
@@ -21,8 +21,8 @@ Backend:
 
 Frontend:
 
-- Framework: Create React App
-- API base URL: `REACT_APP_API_URL`, falling back to `http://localhost:5050`
+- Framework: React 19 with Vite
+- API base URL: `VITE_API_URL`, falling back to `http://localhost:5050`
 - Production build command: `npm run build`
 
 Docker:
@@ -30,12 +30,13 @@ Docker:
 - Root compose file: `docker-compose.yml`
 - Backend service builds from `./backend`
 - Frontend service builds from `./frontend`
+- SQLite data is persisted in the `learnloop-data` named volume.
 
 ## Verified Baseline
 
 - Frontend production build succeeds with `npm run build`.
 - Backend imports and `/healthz` returns `200 OK` without requiring `OPENAI_API_KEY`.
-- Backend read endpoints return `200` against the checked-in SQLite DB.
+- Backend read endpoints return `200` against local SQLite data.
 - Backend write-path smoke checks pass against a temporary SQLite DB.
 - Local SQLite connections use `PRAGMA journal_mode=WAL`.
 - The Day 5 500-user local run used WAL plus `PRAGMA busy_timeout=5000`; it
@@ -47,7 +48,8 @@ Docker:
 - Docker Compose maps backend host port `5050` to container port `5050`, matching the Flask default.
 - README and the frontend default both point to the backend at `http://localhost:5050`.
 - The backend no longer requires `OPENAI_API_KEY` during import; missing keys fail only when generation endpoints need the model client.
-- The Docker volume maps `./backend/conversations.db` to `/app/conversations.db`; this matches the current Docker workdir but should be rechecked after backend refactoring.
+- Docker sets `SUPABASE_DB_URI=sqlite:////app/data/conversations.db` and mounts
+  the named volume at `/app/data`.
 - The Flask development server is for smoke checks only. Load tests must use
   the Gunicorn command documented in `load_tests/README.md`.
 

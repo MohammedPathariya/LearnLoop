@@ -25,14 +25,16 @@ means learner-facing brand or action state. It must not mean a correct answer.
 ## Information Architecture
 
 - Home
-- Study
-- Materials
-- Practice
-- Flashcards
+- Learn
 - Progress
 - History
 - Benchmarks
 - System information
+
+Home, Learn, and Progress are the primary navigation. History, Benchmarks,
+System information, and the GitHub repository live under More. Materials,
+quizzes, and flashcards are contextual modes inside Learn rather than competing
+top-level destinations.
 
 The avatar was removed because the product has no authentication. System
 information contains app-level status and demo reset controls, not account
@@ -76,7 +78,7 @@ each visitor's persistent sessions separate without implying authentication.
 
 ## Responsive Behavior
 
-Desktop uses the full top navigation and a three-panel Study workspace. Mobile
-uses Home, Study, Practice, and Progress in a bottom navigation bar, with
-secondary routes in a drawer. The Study sidebars stack into touch-friendly
-sections on narrow screens.
+Desktop uses Home, Learn, Progress, and More in the top navigation. Mobile uses
+Home, Learn, Progress, and More in a bottom navigation bar. The Learn workspace
+shows one primary task at a time, while materials and supporting evidence open
+contextually. Its panels stack into touch-friendly sections on narrow screens.
