@@ -1,53 +1,43 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
-import axios from 'axios';
+import { getProgress, getSessions } from './api/learnloopApi';
 
-jest.mock('axios', () => ({
-  get: jest.fn(),
-  post: jest.fn(),
+jest.mock('./api/learnloopApi', () => ({
+  getSessions: jest.fn(),
+  getProgress: jest.fn(),
+  openDemo: jest.fn(),
+  createSession: jest.fn(),
+  updateSession: jest.fn(),
+  deleteSession: jest.fn(),
+  getHealth: jest.fn(),
 }));
 
 beforeEach(() => {
-  axios.get.mockImplementation((url) => {
-    if (url.includes('/analytics/stats')) {
-      return Promise.resolve({
-        data: {
-          total_conversations: 0,
-          unique_topics: 0,
-          today_sessions: 0,
-        },
-      });
-    }
-
-    if (url.includes('/analytics/quiz_stats')) {
-      return Promise.resolve({
-        data: {
-          total_quizzes: 0,
-          average_score: 0,
-          quizzes_today: 0,
-        },
-      });
-    }
-
-    if (url.includes('/analytics/flashcard_stats')) {
-      return Promise.resolve({
-        data: {
-          total_flashcard_sets: 0,
-          total_flashcards_generated: 0,
-          sets_created_today: 0,
-        },
-      });
-    }
-
-    return Promise.resolve({ data: [] });
+  getSessions.mockResolvedValue([{
+    id: 'demo-session',
+    title: 'Machine Learning Foundations',
+    domain: 'Machine Learning',
+    is_demo: true,
+    material_count: 3,
+    quiz_count: 3,
+    flashcard_count: 1,
+    updated_at: '2026-07-28T16:30:00',
+  }]);
+  getProgress.mockResolvedValue({
+    average_score: 80,
+    sessions: 1,
+    materials: 3,
+    quizzes: 3,
+    flashcard_sets: 1,
+    needs_review: [{ topic: 'Evaluation metrics', score: 60 }],
   });
 });
 
-test('renders the LearnLoop dashboard shell', async () => {
+test('renders the redesigned learnloop home', async () => {
   render(<App />);
 
-  expect(screen.getByText('LearnLoop')).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument();
-  expect(screen.getByRole('heading', { name: /Ready to Learn Something New Today/i })).toBeInTheDocument();
-  expect(await screen.findByText('Total Chat Sessions')).toBeInTheDocument();
+  expect(await screen.findByText('Machine Learning Foundations')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'learnloop home' })).toHaveTextContent('learnloop');
+  expect(screen.getAllByRole('link', { name: 'Study' })).toHaveLength(2);
+  expect(screen.getByRole('heading', { name: /Learn from your own material/i })).toBeInTheDocument();
 });

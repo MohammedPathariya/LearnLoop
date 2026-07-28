@@ -1,36 +1,48 @@
-// ========== src/App.js ==========
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import NavBar from './components/NavBar';
-import Dashboard from './pages/Dashboard';
-import ThinkMate from './pages/ThinkMate';
-import Conversations from './pages/Conversations';
-import Analytics from './pages/Analytics';
-import QuizPage from './pages/QuizPage';
-import QuizDetail from './pages/QuizDetail';
-import FlashcardPage from './pages/FlashcardPage';
-import FlashcardHistory from './pages/FlashcardHistory';
-import FlashcardDetail from './pages/FlashcardDetail';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import AppShell from './components/AppShell';
+import Benchmarks from './pages/Benchmarks';
+import Flashcards from './pages/Flashcards';
+import History from './pages/History';
+import Home from './pages/Home';
+import Materials from './pages/Materials';
+import Practice from './pages/Practice';
+import Progress from './pages/Progress';
+import QuizResult from './pages/QuizResult';
+import Settings from './pages/Settings';
+import Study from './pages/Study';
+import './index.css';
 
 function App() {
   return (
-    <Router>
-      <NavBar />
-      <div className="content-area">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/thinkmate" element={<ThinkMate />} />
-          <Route path="/quiz" element={<QuizPage />} />
-          <Route path="/quiz/:quizId" element={<QuizDetail />} /> 
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/conversations/:id" element={<Conversations />} />
-          <Route path="/flashcards" element={<FlashcardPage />} />
-          <Route path="/flashcards_history" element={<FlashcardHistory />} />
-          <Route path="/flashcards/:id" element={<FlashcardDetail />} />
-          <Route path="/" element={<Dashboard />} />
-        </Routes>
-      </div>
-    </Router>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/study" element={<Study />} />
+          <Route path="/study/:sessionId" element={<Study />} />
+          <Route path="/materials" element={<Materials />} />
+          <Route path="/practice" element={<Practice />} />
+          <Route path="/practice/results/:quizId" element={<QuizResult />} />
+          <Route path="/flashcards" element={<Flashcards />} />
+          <Route path="/flashcards/:setId" element={<Flashcards />} />
+          <Route path="/progress" element={<Progress />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/benchmarks" element={<Benchmarks />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+function NotFound() {
+  return (
+    <div className="page empty-state">
+      <h1>Page not found</h1>
+      <p>The study page you requested does not exist.</p>
+      <a className="button primary" href="/">Return home</a>
+    </div>
   );
 }
 

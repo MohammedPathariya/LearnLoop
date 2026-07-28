@@ -1,0 +1,38 @@
+{
+  "updated": "2026-07-28",
+  "retrieval": [
+    {
+      "name": "Real project corpus Recall@3",
+      "recall": 0.6,
+      "hits": "6/10",
+      "p50_ms": 6.304,
+      "p95_ms": 9.2693,
+      "documents": 7,
+      "chunks": 25,
+      "source": "docs/benchmarks/real_project_recall_at_3.json"
+    },
+    {
+      "name": "Real project corpus Recall@5",
+      "recall": 0.9,
+      "hits": "9/10",
+      "p50_ms": 6.146,
+      "p95_ms": 10.2577,
+      "documents": 7,
+      "chunks": 25,
+      "source": "docs/benchmarks/real_project_recall_at_5.json"
+    }
+  ],
+  "load_test": {
+    "name": "Local Gunicorn 500-user fixed run",
+    "users": 500,
+    "requests": 128917,
+    "failures": 0,
+    "rps": 1078.47,
+    "p50_ms": 260,
+    "p95_ms": 580,
+    "server": "Gunicorn, 4 workers, 2 threads",
+    "database": "SQLite in WAL mode",
+    "environment": "Local Mac, load generator and backend sharing the same host",
+    "source": "docs/load-tests/catalog.json"
+  }
+}
