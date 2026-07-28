@@ -37,7 +37,7 @@ def chunk_text(text: str, chunk_tokens: int = CHUNK_TOKENS, overlap: int = CHUNK
         raise ValueError("overlap must be non-negative and smaller than chunk_tokens")
 
     tokenizer = get_embedding_model().tokenizer
-    tokens = tokenizer.encode(text, add_special_tokens=False)
+    tokens = _encode_content_tokens(tokenizer, text)
     if not tokens:
         return []
 
@@ -68,7 +68,7 @@ def ingest_study_material(session_id: str, text: str, source_id: str | None = No
             source_id=source,
             chunk_index=index,
             text=chunk,
-            token_count=len(get_embedding_model().tokenizer.encode(chunk, add_special_tokens=False)),
+            token_count=len(_encode_content_tokens(get_embedding_model().tokenizer, chunk)),
         )
         for index, chunk in enumerate(chunk_texts)
     ]
@@ -180,7 +180,7 @@ def _embed(texts: list[str]):
     window_owners = []
     window_weights = []
     for owner, text in enumerate(texts):
-        token_ids = tokenizer.encode(text, add_special_tokens=False)
+        token_ids = _encode_content_tokens(tokenizer, text)
         for start in range(0, len(token_ids), window_tokens):
             window = token_ids[start:start + window_tokens]
             window_texts.append(tokenizer.decode(window, skip_special_tokens=True))
@@ -212,6 +212,10 @@ def get_embedding_model():
             ) from exc
         _embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
     return _embedding_model
+
+
+def _encode_content_tokens(tokenizer, text: str) -> list[int]:
+    return tokenizer.encode(text, add_special_tokens=False, verbose=False)
 
 
 def _normalize(vectors: np.ndarray) -> np.ndarray:

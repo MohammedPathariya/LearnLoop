@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 import json
 import platform
 import sys
@@ -23,7 +24,8 @@ def percentile(values: list[float], percentile_value: float) -> float:
 def run(dataset_path: Path, report_path: Path, benchmark_name: str, top_k: int) -> dict:
     dataset_path = dataset_path.resolve()
     report_path = report_path.resolve()
-    dataset = json.loads(dataset_path.read_text())
+    dataset_bytes = dataset_path.read_bytes()
+    dataset = json.loads(dataset_bytes)
     if isinstance(dataset, dict):
         documents = dataset["documents"]
         evaluation_items = dataset["queries"]
@@ -35,10 +37,32 @@ def run(dataset_path: Path, report_path: Path, benchmark_name: str, top_k: int) 
     started = time.perf_counter()
     try:
         chunk_count = 0
+        corpus = []
         for item in documents:
             text = item.get("text")
             if text is None:
-                text = (ROOT / item["path"]).read_text()
+                source_path = ROOT / item["path"]
+                source_bytes = source_path.read_bytes()
+                source_sha256 = hashlib.sha256(source_bytes).hexdigest()
+                expected_sha256 = item.get("sha256")
+                if expected_sha256 is None:
+                    raise ValueError(f"Missing sha256 for benchmark source: {item['path']}")
+                if source_sha256 != expected_sha256:
+                    raise ValueError(
+                        f"Benchmark source changed: {item['path']} "
+                        f"(expected {expected_sha256}, found {source_sha256})"
+                    )
+                text = source_bytes.decode()
+                corpus.append({
+                    "source_id": item["source_id"],
+                    "path": item["path"],
+                    "sha256": source_sha256,
+                })
+            else:
+                corpus.append({
+                    "source_id": item["source_id"],
+                    "sha256": hashlib.sha256(text.encode()).hexdigest(),
+                })
             ingest_result = rag.ingest_study_material(
                 session_id=session_id,
                 source_id=item["source_id"],
@@ -66,12 +90,10 @@ def run(dataset_path: Path, report_path: Path, benchmark_name: str, top_k: int) 
             "benchmark": benchmark_name,
             "model": rag.EMBEDDING_MODEL_NAME,
             "dataset": str(dataset_path.relative_to(ROOT)),
+            "dataset_sha256": hashlib.sha256(dataset_bytes).hexdigest(),
             "document_count": len(documents),
             "chunk_count": chunk_count,
-            "corpus": [
-                {key: item[key] for key in ("source_id", "path") if key in item}
-                for item in documents
-            ],
+            "corpus": corpus,
             "query_count": len(evaluation_items),
             "top_k": top_k,
             f"recall_at_{top_k}": hits / len(evaluation_items),

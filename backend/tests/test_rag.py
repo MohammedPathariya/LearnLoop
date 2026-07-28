@@ -15,7 +15,7 @@ class FakeTokenizer:
         self.tokens = {}
         self.values = {}
 
-    def encode(self, text, add_special_tokens=False):
+    def encode(self, text, add_special_tokens=False, verbose=True):
         ids = []
         for token in text.split():
             if token not in self.tokens:

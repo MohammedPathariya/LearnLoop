@@ -1,15 +1,118 @@
 {
-  "test_id": "synthetic-near-neighbor-recall-at-3",
   "benchmark": "LearnLoop synthetic near-neighbor Recall@3",
   "model": "sentence-transformers/all-MiniLM-L6-v2",
   "dataset": "docs/benchmarks/archive/retrieval_dataset_v2.json",
+  "dataset_sha256": "f9a588dd1fd95b9dd5782bc8e654fc19b5dde78ca40de34358a7ce03abd837b9",
   "document_count": 25,
+  "chunk_count": 25,
+  "corpus": [
+    {
+      "source_id": "biology-osmosis",
+      "sha256": "3790bb54ac7fce14eea145a2fbffaa7e569b180baae998ab9a1370c7cc794a7f"
+    },
+    {
+      "source_id": "biology-diffusion",
+      "sha256": "1e0533522c9ed47e57e5e811e75450354c3f6194bcac1a80f53ef5d8222695fb"
+    },
+    {
+      "source_id": "biology-meiosis",
+      "sha256": "443901744c45c9529f0cdf4038426f49d8835ed34359b47ae4be5a49bf412d70"
+    },
+    {
+      "source_id": "biology-mitosis-v2",
+      "sha256": "266650230a9f81ee129dc0e75702eaf6548f562d7498ea79b5abb9099bbb9a77"
+    },
+    {
+      "source_id": "economics-opportunity-cost",
+      "sha256": "7c643ef6a9486b8c889139b4c88e806a063bc400ec3e0b99b11c8600da46e7d0"
+    },
+    {
+      "source_id": "economics-sunk-cost",
+      "sha256": "403fa3d12cf9f9532a49db7d2f717147a24be0d539469849eded9ce03298c961"
+    },
+    {
+      "source_id": "economics-inflation",
+      "sha256": "f40a5ea309774a18f7794c950583bdcd19249acbfaced0968d22fdf9ac782a29"
+    },
+    {
+      "source_id": "computer-science-binary-search",
+      "sha256": "95658aa5d6827d0e30ddf59f26c526fe13355bd0f2d2d4672c0b3cc829ca5925"
+    },
+    {
+      "source_id": "computer-science-linear-search",
+      "sha256": "200023c32206c1bc0b7c2268d2dca06abfc0494fb63e3c10cb40e9e5ecf1c843"
+    },
+    {
+      "source_id": "computer-science-tcp",
+      "sha256": "d730a5b1aa555ec665ae2a1e740e0f47f9a8ea4924d426a96d7c35d7348297be"
+    },
+    {
+      "source_id": "computer-science-udp",
+      "sha256": "3c264e5bec728a48f2343fa3256ea562820ce35d1c9f5f3f0a4ceb6c390e5bb5"
+    },
+    {
+      "source_id": "physics-newton-second-law",
+      "sha256": "3382628fe0f1f93fbcd85d7723e0bec173795774e8b9ec243fea2d4302e197d0"
+    },
+    {
+      "source_id": "physics-momentum",
+      "sha256": "305f9a47682a5b2e1aefde9bdda180b93ce4be8ef409fb1095254e4f21e3f0d1"
+    },
+    {
+      "source_id": "biology-active-transport",
+      "sha256": "8c0cc0e3d9fbe4a1f54f00a9e07892172131f0e7ef32777cc4b75402abb3aa23"
+    },
+    {
+      "source_id": "biology-homeostasis",
+      "sha256": "ea4d0dfd1cb260cd39a3ff8a7fd4c861e00235144f3d2270118cceb4341b8fd8"
+    },
+    {
+      "source_id": "biology-cell-cycle",
+      "sha256": "584aac6ad4c006ccc4c9e290aa4b131dfe3fe231cee36be1f9e3074ef5c389fc"
+    },
+    {
+      "source_id": "biology-natural-selection",
+      "sha256": "3b940eb8cbc0423104872807a6f1a0f66343c5fef6822ad5d35575513fd6c11a"
+    },
+    {
+      "source_id": "economics-elasticity",
+      "sha256": "8aaa6f266f84640eadc92f3c238e94db95dbbed79086fa83f4dc70c516cdc2aa"
+    },
+    {
+      "source_id": "economics-gdp",
+      "sha256": "5d6671e6ffdae55baeb7ee78e318bffbe507e10e54bec97b98b74f52b95d2cdf"
+    },
+    {
+      "source_id": "economics-marginal-cost",
+      "sha256": "4ae8715b8e176615cc1468b52ac4fbe4d0c4d386d0591f7a31650383e616840b"
+    },
+    {
+      "source_id": "computer-science-hash-table",
+      "sha256": "24ed503aa225b4c5d73bc89d9b3618401c96b48c290c20d52770264574da542c"
+    },
+    {
+      "source_id": "computer-science-stack",
+      "sha256": "03ce2b9cdd466467caa81be7e472d69c50287151edf9c08fa90c7dcd23d2e3ca"
+    },
+    {
+      "source_id": "computer-science-dns",
+      "sha256": "8ac84d02e99dde072d070145221c8f5a86b9795c8209ed6dd169a43038c5246d"
+    },
+    {
+      "source_id": "physics-impulse",
+      "sha256": "882400168e15ecf21b8cd96b338c20b4629a9a8b8d5927e6e51e53efc1334414"
+    },
+    {
+      "source_id": "physics-kinetic-energy",
+      "sha256": "1bfcf20c17c1b837e04f4c92ce618e13e814031f8d97327b75e34fb64257ddce"
+    }
+  ],
   "query_count": 13,
   "top_k": 3,
   "recall_at_3": 1.0,
   "hits_at_3": 13,
-  "p50_latency_ms": 6.591,
-  "p95_latency_ms": 8.5436,
+  "p50_latency_ms": 12.89,
+  "p95_latency_ms": 543.597,
   "latency_definition": "retrieval_chunks query embedding plus FAISS search, excluding ingestion",
   "environment": {
     "python": "3.11.12",
@@ -20,19 +123,149 @@
   },
   "command": "HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=backend python3.11 scripts/evaluate_retrieval.py --dataset docs/benchmarks/archive/retrieval_dataset_v2.json --report docs/benchmarks/synthetic_near_neighbor_recall_at_3.json --benchmark-name 'LearnLoop synthetic near-neighbor Recall@3' --top-k 3",
   "queries": [
-    {"id": "osmosis", "expected_chunk_id": "biology-osmosis:0", "retrieved_chunk_ids": ["biology-osmosis:0", "biology-active-transport:0", "biology-diffusion:0"], "hit_at_3": true, "latency_ms": 9.494},
-    {"id": "diffusion", "expected_chunk_id": "biology-diffusion:0", "retrieved_chunk_ids": ["biology-active-transport:0", "biology-diffusion:0", "biology-osmosis:0"], "hit_at_3": true, "latency_ms": 7.163},
-    {"id": "meiosis", "expected_chunk_id": "biology-meiosis:0", "retrieved_chunk_ids": ["biology-meiosis:0", "biology-mitosis-v2:0", "biology-cell-cycle:0"], "hit_at_3": true, "latency_ms": 6.591},
-    {"id": "mitosis", "expected_chunk_id": "biology-mitosis-v2:0", "retrieved_chunk_ids": ["biology-mitosis-v2:0", "biology-meiosis:0", "biology-cell-cycle:0"], "hit_at_3": true, "latency_ms": 5.878},
-    {"id": "opportunity-cost", "expected_chunk_id": "economics-opportunity-cost:0", "retrieved_chunk_ids": ["economics-opportunity-cost:0", "economics-sunk-cost:0", "economics-inflation:0"], "hit_at_3": true, "latency_ms": 6.652},
-    {"id": "sunk-cost", "expected_chunk_id": "economics-sunk-cost:0", "retrieved_chunk_ids": ["economics-sunk-cost:0", "economics-opportunity-cost:0", "economics-marginal-cost:0"], "hit_at_3": true, "latency_ms": 6.162},
-    {"id": "inflation", "expected_chunk_id": "economics-inflation:0", "retrieved_chunk_ids": ["economics-inflation:0", "economics-elasticity:0", "economics-opportunity-cost:0"], "hit_at_3": true, "latency_ms": 6.205},
-    {"id": "binary-search", "expected_chunk_id": "computer-science-binary-search:0", "retrieved_chunk_ids": ["computer-science-binary-search:0", "computer-science-linear-search:0", "computer-science-hash-table:0"], "hit_at_3": true, "latency_ms": 7.23},
-    {"id": "linear-search", "expected_chunk_id": "computer-science-linear-search:0", "retrieved_chunk_ids": ["computer-science-linear-search:0", "computer-science-hash-table:0", "computer-science-binary-search:0"], "hit_at_3": true, "latency_ms": 5.888},
-    {"id": "tcp", "expected_chunk_id": "computer-science-tcp:0", "retrieved_chunk_ids": ["computer-science-tcp:0", "computer-science-udp:0", "biology-active-transport:0"], "hit_at_3": true, "latency_ms": 7.495},
-    {"id": "udp", "expected_chunk_id": "computer-science-udp:0", "retrieved_chunk_ids": ["computer-science-tcp:0", "computer-science-udp:0", "biology-active-transport:0"], "hit_at_3": true, "latency_ms": 6.275},
-    {"id": "newton-second-law", "expected_chunk_id": "physics-newton-second-law:0", "retrieved_chunk_ids": ["physics-newton-second-law:0", "physics-momentum:0", "physics-kinetic-energy:0"], "hit_at_3": true, "latency_ms": 5.678},
-    {"id": "momentum", "expected_chunk_id": "physics-momentum:0", "retrieved_chunk_ids": ["physics-kinetic-energy:0", "physics-newton-second-law:0", "physics-momentum:0"], "hit_at_3": true, "latency_ms": 7.91}
+    {
+      "id": "osmosis",
+      "expected_chunk_id": "biology-osmosis:0",
+      "retrieved_chunk_ids": [
+        "biology-osmosis:0",
+        "biology-active-transport:0",
+        "biology-diffusion:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 32.437
+    },
+    {
+      "id": "diffusion",
+      "expected_chunk_id": "biology-diffusion:0",
+      "retrieved_chunk_ids": [
+        "biology-active-transport:0",
+        "biology-diffusion:0",
+        "biology-osmosis:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 12.751
+    },
+    {
+      "id": "meiosis",
+      "expected_chunk_id": "biology-meiosis:0",
+      "retrieved_chunk_ids": [
+        "biology-meiosis:0",
+        "biology-mitosis-v2:0",
+        "biology-cell-cycle:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 7.363
+    },
+    {
+      "id": "mitosis",
+      "expected_chunk_id": "biology-mitosis-v2:0",
+      "retrieved_chunk_ids": [
+        "biology-mitosis-v2:0",
+        "biology-meiosis:0",
+        "biology-cell-cycle:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 12.825
+    },
+    {
+      "id": "opportunity-cost",
+      "expected_chunk_id": "economics-opportunity-cost:0",
+      "retrieved_chunk_ids": [
+        "economics-opportunity-cost:0",
+        "economics-sunk-cost:0",
+        "economics-inflation:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 12.89
+    },
+    {
+      "id": "sunk-cost",
+      "expected_chunk_id": "economics-sunk-cost:0",
+      "retrieved_chunk_ids": [
+        "economics-sunk-cost:0",
+        "economics-opportunity-cost:0",
+        "economics-marginal-cost:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 8.037
+    },
+    {
+      "id": "inflation",
+      "expected_chunk_id": "economics-inflation:0",
+      "retrieved_chunk_ids": [
+        "economics-inflation:0",
+        "economics-elasticity:0",
+        "economics-opportunity-cost:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 12.684
+    },
+    {
+      "id": "binary-search",
+      "expected_chunk_id": "computer-science-binary-search:0",
+      "retrieved_chunk_ids": [
+        "computer-science-binary-search:0",
+        "computer-science-linear-search:0",
+        "computer-science-hash-table:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 1310.337
+    },
+    {
+      "id": "linear-search",
+      "expected_chunk_id": "computer-science-linear-search:0",
+      "retrieved_chunk_ids": [
+        "computer-science-linear-search:0",
+        "computer-science-hash-table:0",
+        "computer-science-binary-search:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 13.264
+    },
+    {
+      "id": "tcp",
+      "expected_chunk_id": "computer-science-tcp:0",
+      "retrieved_chunk_ids": [
+        "computer-science-tcp:0",
+        "computer-science-udp:0",
+        "biology-active-transport:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 11.196
+    },
+    {
+      "id": "udp",
+      "expected_chunk_id": "computer-science-udp:0",
+      "retrieved_chunk_ids": [
+        "computer-science-tcp:0",
+        "computer-science-udp:0",
+        "biology-active-transport:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 15.69
+    },
+    {
+      "id": "newton-second-law",
+      "expected_chunk_id": "physics-newton-second-law:0",
+      "retrieved_chunk_ids": [
+        "physics-newton-second-law:0",
+        "physics-momentum:0",
+        "physics-kinetic-energy:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 14.319
+    },
+    {
+      "id": "momentum",
+      "expected_chunk_id": "physics-momentum:0",
+      "retrieved_chunk_ids": [
+        "physics-kinetic-energy:0",
+        "physics-newton-second-law:0",
+        "physics-momentum:0"
+      ],
+      "hit_at_3": true,
+      "latency_ms": 14.353
+    }
   ],
-  "elapsed_seconds": 4.2608165410056245
+  "elapsed_seconds": 7.525166708015604
 }
