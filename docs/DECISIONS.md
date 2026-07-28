@@ -9,7 +9,8 @@ This file records architecture and product decisions made during the revamp. Kee
 - The frontend is Create React App with React 19 and `react-scripts`.
 - Persistence is currently SQLAlchemy with SQLite fallback and optional Supabase URI.
 - The checked-in SQLite DB contains existing conversation, quiz, and flashcard records.
-- There is no current RAG layer, FAISS index, embedding pipeline, Locust test, or Pydantic validation loop.
+- Day 2 adds session-scoped in-memory FAISS retrieval with local `all-MiniLM-L6-v2` embeddings.
+- There is no retrieval benchmark, Locust test, or Pydantic validation loop yet.
 
 ## Decisions
 
@@ -45,9 +46,9 @@ Reason: The final interface should be designed around the real study workspace, 
 
 ### 6. Add a feature-expansion phase after the core claims are real
 
-Decision: Phase 7 will add additional high-value product features after the baseline revamp, RAG, validation, load testing, and redesign phases are complete.
+Decision: Phase 8 will add additional high-value product features after the baseline revamp, RAG, validation, load testing, redesign, and production deployment phases are complete.
 
-Reason: Extra features should build on stable foundations. We will brainstorm exact Phase 7 scope later, but candidates include adaptive review, exports, source citations, topic mastery tracking, and shareable study packs.
+Reason: Extra features should build on stable and deployed foundations. We will brainstorm exact Phase 8 scope later, but candidates include adaptive review, exports, source citations, topic mastery tracking, and shareable study packs.
 
 ### 7. Work directly on main for this revamp
 
@@ -66,3 +67,15 @@ Reason: Separate commits make review and rollback easier. The body should preser
 Decision: The backend now uses `backend/app/` for factory, models, routes, and services, with `backend/main.py` as the executable entry point.
 
 Reason: `thinkmate.py` was stale project branding. `main.py` is a standard backend entry-point name and keeps Docker/local startup aligned with the LearnLoop project name.
+
+### 10. Deploy the core app before feature expansion
+
+Decision: Phase 7 will make the completed core app deployment-compatible and deploy it before Phase 8 product work starts.
+
+Reason: Render, Vercel, and any separate model service must be validated against the real RAG and load-test architecture before additional features expand the deployment surface.
+
+### 11. Preserve 512-token retrieval chunks across MiniLM windows
+
+Decision: RAG chunks use the MiniLM tokenizer for 512-token boundaries with 64-token overlap. Embeddings are pooled across model-sized windows so all chunk tokens contribute despite the model's 256-token sequence limit.
+
+Reason: Sending a 512-token chunk directly to `all-MiniLM-L6-v2` silently truncates content after its usable sequence limit and weakens retrieval for information near the end of the chunk.

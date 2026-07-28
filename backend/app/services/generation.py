@@ -127,3 +127,29 @@ def generate_flashcards(topic: str, num_cards: int = 5) -> dict:
         return {"error": "Unexpected format", "raw_output": raw}
     except Exception:
         return {"error": "Failed to parse GPT output as JSON", "raw_output": raw}
+
+
+def generate_grounded_answer(question: str, chunks: list[dict]) -> str:
+    if not chunks:
+        return "I do not have enough source material in this session to answer that."
+
+    sources = "\n\n".join(
+        f"[Source {index + 1}: {chunk['source_id']} chunk {chunk['chunk_index']}]\n{chunk['text']}"
+        for index, chunk in enumerate(chunks)
+    )
+    system_prompt = (
+        "Answer the student's question using only the provided source chunks. "
+        "If the chunks do not contain the answer, say that the source material does not provide enough information. "
+        "Cite sources inline with the provided source numbers."
+    )
+
+    resp = get_openai_client().chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Question: {question}\n\nSource chunks:\n{sources}"},
+        ],
+        max_tokens=512,
+        temperature=0.2,
+    )
+    return resp.choices[0].message.content.strip()

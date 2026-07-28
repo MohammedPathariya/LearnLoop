@@ -174,16 +174,43 @@ Tasks:
 Do not create a marketing landing page. The first screen should be the actual app experience.
 ```
 
-## Day 7 Prompt: Additional Product Features
+## Day 7 Prompt: Deployment Compatibility And Production Deployment
 
 ```text
-Start Day 7 of the LearnLoop revamp: additional impressive product features.
+Start Day 7 of the LearnLoop revamp: deployment compatibility and production deployment.
 
 Goal:
-Brainstorm and implement 2-3 features that make the app more useful and stronger for resume discussion.
+Deploy the completed core app before adding additional product features.
 
 Tasks:
-- Read docs/STATUS.md and inspect the completed Days 1-6 implementation.
+- Read docs/STATUS.md, docs/WEEK_PLAN.md, docs/DECISIONS.md, and docs/DEPLOYMENT.md.
+- Inspect the completed Days 1-6 implementation, especially RAG, embeddings, FAISS indexes, answer generation, frontend API config, Docker, and load tests.
+- Revisit whether Render should run sentence-transformers in-process or call a remote embedding service.
+- Add a provider boundary if needed so local development can use local MiniLM while deployment can use Modal or another remote embedding provider.
+- Document memory, cold-start, persistence, scale-out, and model-download tradeoffs.
+- Update deployment config and docs for Vercel, Render, and Modal if Modal is selected.
+- Deploy the backend to Render or the selected backend host.
+- Deploy the frontend to Vercel or the selected frontend host.
+- Deploy the embedding/model service to Modal if the deployment architecture uses it.
+- Configure production environment variables and CORS for the deployed frontend/backend connection.
+- Verify the deployed app end-to-end from the public frontend URL.
+- Make Locust testing target the deployable architecture, or clearly document local-only limits.
+- Run backend tests, frontend tests, production build, and relevant benchmark/load-test commands.
+- Update docs/STATUS.md with deployment URLs, verification commands, results, and remaining risks.
+
+Do not add extra product features in this phase. The end goal is actual deployment of the core app, not just deployment planning.
+```
+
+## Day 8 Prompt: Additional Product Features
+
+```text
+Start Day 8 of the LearnLoop revamp: additional impressive product features.
+
+Goal:
+Brainstorm and implement 2-3 features that make the app more useful and stronger for resume discussion, after production deployment has been completed.
+
+Tasks:
+- Read docs/STATUS.md and inspect the completed Days 1-7 implementation.
 - Brainstorm feature candidates and explain tradeoffs.
 - Choose the best 2-3 based on user value, implementation time, and resume impact.
 - Implement the selected features end-to-end.

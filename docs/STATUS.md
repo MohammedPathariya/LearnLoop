@@ -4,8 +4,9 @@ Last updated: 2026-07-28
 
 ## Current State
 
-- Repo is clean on `main`.
+- Day 2 RAG changes are implemented on `main`.
 - Day 1 backend stabilization is implemented.
+- Day 2 session-based RAG is implemented in the backend.
 - Backend is split into a minimal Flask package under `backend/app/`.
 - `backend/main.py` is the local and Docker entry point.
 - Frontend is Create React App with React 19 and `react-scripts@5`.
@@ -14,8 +15,14 @@ Last updated: 2026-07-28
 - Backend smoke checks pass for import without `OPENAI_API_KEY`, health, read endpoints, selected write validation, and SQLite WAL.
 - Backend pytest smoke tests pass for health, read endpoints, validation errors, quiz-result persistence, empty search, no-key import, and SQLite WAL.
 - Local guardrail scripts have been added and installed as Git hooks for pre-commit and pre-push verification.
-- No actual RAG implementation exists yet.
-- No FAISS, local embedding, chunking, retrieval benchmark, or Locust load test exists yet.
+- Study material ingestion exists at `POST /rag/ingest`.
+- Retrieval exists at `POST /rag/retrieve` and returns top-k chunks plus retrieval latency.
+- Source-grounded answering exists at `POST /rag/answer` using retrieved chunks as source context.
+- RAG uses tokenizer-based 512-token chunking with 64-token overlap.
+- Chunk embeddings use weighted pooling across MiniLM-sized windows so all 512 chunk tokens contribute.
+- RAG uses lazy local `sentence-transformers/all-MiniLM-L6-v2` embeddings and per-session in-memory FAISS `IndexFlatIP` indexes.
+- The current local embedding path is not yet deployment-tuned for Render memory, cold-start, or scale-out constraints.
+- Retrieval benchmark and Locust load test do not exist yet.
 - Git workflow for this revamp is direct commits to `main` with logical multi-commit history.
 - Local folder and GitHub remote have been renamed from `LearnLoop-Deployment` to `LearnLoop`.
 - Docker Compose maps the backend to `5050:5050`, matching the Flask default and frontend API fallback.
@@ -35,6 +42,8 @@ Passed:
 - `GET /analytics/flashcard_stats`
 - temporary SQLite smoke test for `/quiz_results`
 - `python3.11 -m pytest` with 7 backend tests passing
+- `python3.11 -m pytest` with 12 backend tests passing after Day 2 RAG changes
+- `PYTHONPYCACHEPREFIX=/tmp/learnloop-pycache python3.11 -m compileall backend/app backend/tests`
 - `npm test -- --watchAll=false`
 - `npm run build`
 - `bash scripts/precommit-check.sh`
@@ -57,6 +66,9 @@ Dependency Notes:
 - This is likely tied to the old CRA/react-scripts toolchain.
 - Backend tests require Python 3.10+; `python3` is 3.9.6 locally, so use `python3.11`.
 - `python3.11 -m pip install -r backend/requirements.txt` completed successfully.
+- Day 2 adds `faiss-cpu==1.8.0.post1`, `numpy==1.26.4`, and `sentence-transformers==3.0.1`.
+- The real embedding model is loaded lazily on first ingestion.
+- Unit tests use a deterministic fake embedder, and an integration test exercises real MiniLM embeddings plus FAISS retrieval.
 
 Residual Warnings:
 
@@ -74,19 +86,35 @@ Guardrails:
 | Phase | Focus | Status |
 | --- | --- | --- |
 | 1 | Backend stabilization | Complete |
-| 2 | Real RAG layer | Not started |
+| 2 | Real RAG layer | Complete |
 | 3 | Benchmark evidence | Not started |
 | 4 | Pydantic self-healing generation | Not started |
 | 5 | Load testing and WAL validation | Not started |
 | 6 | Complete frontend redesign | Not started |
-| 7 | Additional impressive product features | Not started |
+| 7 | Deployment compatibility and production deployment | Not started |
+| 8 | Additional impressive product features | Not started |
+
+## Day 2 Implementation Notes
+
+- `backend/app/services/rag.py` owns chunking, embedding generation, FAISS index creation, ingestion, retrieval, latency measurement, and session-index clearing for tests.
+- In-memory indexes are keyed by `session_id`; retrieval does not search across sessions.
+- `backend/app/services/generation.py` now includes grounded answer generation that instructs the model to answer only from retrieved source chunks.
+- `backend/tests/test_rag.py` covers 512-token chunking with overlap, full-chunk embedding coverage, relevant retrieval, and session isolation.
+- `backend/tests/test_rag_integration.py` covers real MiniLM embedding generation and FAISS retrieval.
 
 ## Immediate Next Step
 
-Continue on `main` and start Phase 2:
+Continue on `main` and start Phase 3:
 
-- add text ingestion
-- add 512-token chunking with overlap
-- add local embeddings
-- add per-session in-memory FAISS indexes
-- add retrieval tests and session-isolation checks
+- add a small retrieval benchmark dataset
+- measure Recall@5 and retrieval latency
+- save traceable benchmark output under `docs/benchmarks/`
+- update README only with measured retrieval results
+
+Before adding Day 8 product features, complete Day 7 deployment compatibility and production deployment:
+
+- decide whether Render runs embeddings locally or calls Modal/another model service
+- document Vercel, Render, and Modal environment variables and deployment steps
+- deploy the core app and record public URLs
+- verify deployed health, ingestion, retrieval, grounded answer generation, and frontend-to-backend calls
+- verify load-test claims against the deployable architecture or label them local-only

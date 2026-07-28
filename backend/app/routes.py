@@ -6,7 +6,8 @@ from sqlalchemy import func, or_
 
 from .extensions import db
 from .models import Conversation, FlashcardSet, QuizSession
-from .services.generation import generate_convo, generate_flashcards, generate_quiz
+from .services.generation import generate_convo, generate_flashcards, generate_grounded_answer, generate_quiz
+from .services.rag import ingest_study_material, retrieve_chunks
 
 
 def register_routes(app):
@@ -118,6 +119,67 @@ def register_routes(app):
             }
             for conv in results
         ])
+
+    @app.route("/rag/ingest", methods=["POST"])
+    def rag_ingest():
+        data = request.get_json(force=True)
+        session_id = data.get("session_id", "")
+        text = data.get("text", "")
+        source_id = data.get("source_id")
+
+        try:
+            result = ingest_study_material(session_id=session_id, text=text, source_id=source_id)
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+
+        return jsonify(result), 201
+
+    @app.route("/rag/retrieve", methods=["POST"])
+    def rag_retrieve():
+        data = request.get_json(force=True)
+        try:
+            top_k = int(data.get("top_k", 5))
+        except (ValueError, TypeError):
+            return jsonify({"error": "top_k must be an integer"}), 400
+
+        try:
+            result = retrieve_chunks(
+                session_id=data.get("session_id", ""),
+                query=data.get("query", ""),
+                top_k=top_k,
+            )
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+
+        return jsonify(result)
+
+    @app.route("/rag/answer", methods=["POST"])
+    def rag_answer():
+        data = request.get_json(force=True)
+        question = data.get("question", "").strip()
+        if not question:
+            return jsonify({"error": "question is required"}), 400
+        try:
+            top_k = int(data.get("top_k", 5))
+        except (ValueError, TypeError):
+            return jsonify({"error": "top_k must be an integer"}), 400
+
+        try:
+            retrieval = retrieve_chunks(
+                session_id=data.get("session_id", ""),
+                query=question,
+                top_k=top_k,
+            )
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+
+        answer = generate_grounded_answer(question, retrieval["chunks"])
+
+        return jsonify({
+            "answer": answer,
+            "chunks": retrieval["chunks"],
+            "retrieval_latency_ms": retrieval["latency_ms"],
+        })
 
     @app.route("/analytics/stats", methods=["GET"])
     def get_stats():

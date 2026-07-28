@@ -117,13 +117,41 @@ Definition of done:
 - Main workflows are usable from the redesigned interface.
 - No backend claims are hidden behind unfinished UI.
 
-## Day 7: Additional Product Features
+## Day 7: Deployment Compatibility And Production Deployment
+
+Goal: Deploy the completed core app before adding extra product features.
+
+Scope:
+
+- Revisit the RAG architecture after Days 1-6 are implemented.
+- Decide whether embeddings run in-process on Render, behind a Modal service, or through another provider boundary.
+- Add environment-driven configuration for local versus deployed embedding and generation providers.
+- Keep the Render backend lightweight enough for the selected instance type.
+- Document what data is ephemeral, what is durable, and what breaks on restart or scale-out.
+- Update deployment files and docs for Vercel frontend, Render backend, and Modal model service if used.
+- Deploy the frontend, backend, and model service pieces needed for the core app.
+- Verify the deployed app end-to-end from the public frontend URL.
+- Re-run backend tests, frontend tests, frontend build, benchmark commands, and load tests that apply to the deployment architecture.
+- Re-run or revise the 500-user Locust target against the deployable architecture, not only the local demo path.
+
+Definition of done:
+
+- `docs/DEPLOYMENT.md` clearly explains the deployed architecture and required environment variables.
+- The backend has a feasible path for model work on the selected Render instance type.
+- The deployed frontend can call the deployed backend successfully.
+- Core deployed workflows work: health check, study material ingestion, retrieval, source-grounded answer generation, quiz or flashcard generation, and relevant read endpoints.
+- Local development still works without requiring hosted Modal infrastructure.
+- Load-test claims are tied to the final deployment architecture or clearly labeled local-only.
+- Public deployment URLs and verification results are recorded in `docs/STATUS.md`.
+- `docs/STATUS.md` is updated with the deployment decision, verification results, and remaining risks.
+
+## Day 8: Additional Product Features
 
 Goal: Add extra features that make LearnLoop more useful and more impressive on a resume.
 
 Scope:
 
-- Brainstorm and choose the best 2-3 features after Days 1-6 are complete.
+- Brainstorm and choose the best 2-3 features after Days 1-7 are complete.
 - Candidate features:
   - adaptive review based on missed quiz questions
   - topic mastery tracking
