@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '../router';
 import { getProgress } from '../api/learnloopApi';
 import { EmptyState, LoadingBlock, MetricCard, PageHeader, ScoreBar, StatusNotice } from '../components/UI';
 

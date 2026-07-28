@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams } from '../router';
 import { getQuiz } from '../api/learnloopApi';
 import { LoadingBlock, PageHeader, StatusNotice } from '../components/UI';
 

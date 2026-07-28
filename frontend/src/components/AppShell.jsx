@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink } from '../router';
 import logo from '../assets/learnloop-logo.svg';
 
 const primaryLinks = [
@@ -20,7 +20,7 @@ const utilityLinks = [
   ['/settings', 'System'],
 ];
 
-function AppShell() {
+function AppShell({ children }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -52,7 +52,7 @@ function AppShell() {
       </header>
 
       <main className="app-main">
-        <Outlet />
+        {children}
       </main>
 
       <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
