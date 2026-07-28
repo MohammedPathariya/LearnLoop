@@ -15,6 +15,7 @@ Last updated: 2026-07-28
 - No actual RAG implementation exists yet.
 - No FAISS, local embedding, chunking, retrieval benchmark, Locust load test, or WAL configuration exists yet.
 - Git workflow for this revamp is direct commits to `main` with logical multi-commit history.
+- Local folder and GitHub remote have been renamed from `LearnLoop-Deployment` to `LearnLoop`.
 
 ## Baseline Verification
 

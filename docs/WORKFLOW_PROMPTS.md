@@ -5,7 +5,7 @@ Use one new Codex chat per day. Start each day by asking Codex to read the proje
 ## Standard Start Prompt
 
 ```text
-We are working on /Users/mohammedpathariya/Docs/IUB Docs/Projects/LearnLoop-Deployment.
+We are working on /Users/mohammedpathariya/Docs/IUB Docs/Projects/LearnLoop.
 
 Before editing, read:
 - docs/STATUS.md

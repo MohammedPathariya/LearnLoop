@@ -51,19 +51,19 @@ Docker:
 Full local guardrail suite:
 
 ```bash
-cd /Users/mohammedpathariya/Docs/IUB\ Docs/Projects/LearnLoop-Deployment
+cd /Users/mohammedpathariya/Docs/IUB\ Docs/Projects/LearnLoop
 bash scripts/verify.sh
 ```
 
 Pre-commit guardrail suite:
 
 ```bash
-cd /Users/mohammedpathariya/Docs/IUB\ Docs/Projects/LearnLoop-Deployment
+cd /Users/mohammedpathariya/Docs/IUB\ Docs/Projects/LearnLoop
 bash scripts/precommit-check.sh
 ```
 
 ```bash
-cd /Users/mohammedpathariya/Docs/IUB\ Docs/Projects/LearnLoop-Deployment
+cd /Users/mohammedpathariya/Docs/IUB\ Docs/Projects/LearnLoop
 docker compose up --build
 ```
 

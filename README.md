@@ -87,8 +87,8 @@ This project is fully containerized with Docker for a simple setup.
 
 1.  **Clone the Repository**
     ```bash
-    git clone
-    cd learnloop
+    git clone https://github.com/MohammedPathariya/LearnLoop.git
+    cd LearnLoop
     ```
 2.  **Configure Your API Key**
     -   In the `backend/` directory, create a new file named `.env`.
