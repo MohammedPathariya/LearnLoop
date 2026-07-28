@@ -135,6 +135,31 @@ def clear_session_indexes():
     _session_indexes.clear()
 
 
+def clear_session_index(session_id: str):
+    _session_indexes.pop(session_id, None)
+
+
+def has_session_index(session_id: str) -> bool:
+    return session_id in _session_indexes
+
+
+def get_session_chunks(session_id: str) -> list[dict]:
+    session_index = _session_indexes.get(session_id)
+    if session_index is None:
+        return []
+    return [
+        {
+            "id": chunk.id,
+            "session_id": chunk.session_id,
+            "source_id": chunk.source_id,
+            "chunk_index": chunk.chunk_index,
+            "text": chunk.text,
+            "token_count": chunk.token_count,
+        }
+        for chunk in session_index.chunks
+    ]
+
+
 def _create_faiss_index(dimensions: int):
     try:
         import faiss

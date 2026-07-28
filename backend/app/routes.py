@@ -5,9 +5,16 @@ from flask import jsonify, request
 from sqlalchemy import func, or_
 
 from .extensions import db
-from .models import Conversation, FlashcardSet, QuizSession
+from .models import (
+    Conversation,
+    FlashcardSet,
+    QuizSession,
+    SessionFlashcardLink,
+    SessionQuizLink,
+)
 from .services.generation import generate_convo, generate_flashcards, generate_grounded_answer, generate_quiz
 from .services.rag import ingest_study_material, retrieve_chunks
+from .study_routes import get_session_content, require_owned_session
 
 
 def register_routes(app):
@@ -25,6 +32,7 @@ def register_routes(app):
     @app.route("/quiz_results/<int:quiz_id>", methods=["DELETE"])
     def delete_quiz(quiz_id):
         q = db.get_or_404(QuizSession, quiz_id)
+        SessionQuizLink.query.filter_by(quiz_id=quiz_id).delete()
         db.session.delete(q)
         db.session.commit()
         return jsonify({"success": True})
@@ -32,6 +40,7 @@ def register_routes(app):
     @app.route("/flashcards/<int:id>", methods=["DELETE"])
     def delete_flashcard(id):
         s = db.get_or_404(FlashcardSet, id)
+        SessionFlashcardLink.query.filter_by(flashcard_id=id).delete()
         db.session.delete(s)
         db.session.commit()
         return jsonify({"success": True})
@@ -202,6 +211,9 @@ def register_routes(app):
         data = request.get_json(force=True)
         topic = data.get("topic", "").strip()
         content = data.get("content", "").strip()
+        session_id = data.get("session_id", "").strip()
+        if session_id and not content:
+            content = get_session_content(session_id)
         try:
             num_q = int(data.get("num_questions", 5))
         except (ValueError, TypeError):
@@ -230,6 +242,7 @@ def register_routes(app):
         user_answers = data.get("user_answers")
         correct_answers = data.get("correct_answers")
         score = data.get("score")
+        session_id = data.get("session_id", "").strip()
 
         if quiz_arr is None or user_answers is None or correct_answers is None or score is None:
             return jsonify({"error": "Missing one of required fields: quiz, user_answers, correct_answers, score"}), 400
@@ -244,6 +257,14 @@ def register_routes(app):
             score=score,
         )
         db.session.add(quiz_session)
+        db.session.flush()
+        if session_id:
+            study_session = require_owned_session(session_id)
+            study_session.updated_at = datetime.utcnow()
+            db.session.add(SessionQuizLink(
+                session_id=session_id,
+                quiz_id=quiz_session.id,
+            ))
         db.session.commit()
 
         return jsonify({"success": True, "quiz_session_id": quiz_session.id}), 201
@@ -307,8 +328,12 @@ def register_routes(app):
     def flashcards():
         data = request.get_json(force=True)
         topic = data.get("topic", "").strip()
-        if not topic:
-            return jsonify({"error": "Missing 'topic'"}), 400
+        content = data.get("content", "").strip()
+        session_id = data.get("session_id", "").strip()
+        if session_id and not content:
+            content = get_session_content(session_id)
+        if not topic and not content:
+            return jsonify({"error": "Provide either 'topic', 'content', or 'session_id'"}), 400
         try:
             num = int(data.get("num_cards", 5))
         except (ValueError, TypeError):
@@ -316,12 +341,28 @@ def register_routes(app):
         if not 1 <= num <= 10:
             return jsonify({"error": "num_cards must be between 1 and 10"}), 400
 
-        cards = generate_flashcards(topic, num_cards=num)
+        cards = generate_flashcards(
+            topic=topic or None,
+            content=content or None,
+            num_cards=num,
+        )
 
         if "flashcards" in cards and isinstance(cards["flashcards"], list):
             cards_json_str = json.dumps(cards["flashcards"])
-            fc = FlashcardSet(topic=topic, num_cards=len(cards["flashcards"]), cards_json=cards_json_str)
+            fc = FlashcardSet(
+                topic=topic or "Study material",
+                num_cards=len(cards["flashcards"]),
+                cards_json=cards_json_str,
+            )
             db.session.add(fc)
+            db.session.flush()
+            if session_id:
+                study_session = require_owned_session(session_id)
+                study_session.updated_at = datetime.utcnow()
+                db.session.add(SessionFlashcardLink(
+                    session_id=session_id,
+                    flashcard_id=fc.id,
+                ))
             db.session.commit()
             cards["id"] = fc.id
         status_code = 502 if "error" in cards else 200

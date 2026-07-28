@@ -156,17 +156,27 @@ def generate_quiz(content: str = None, topic: str = None, num_questions: int = 5
     )
 
 
-def generate_flashcards(topic: str, num_cards: int = 5) -> dict:
+def generate_flashcards(
+    topic: str | None = None,
+    num_cards: int = 5,
+    content: str | None = None,
+) -> dict:
+    subject = topic.strip() if topic else "the provided study material"
+    source_prompt = (
+        f"Create flashcards using only this study material:\n\n{content}"
+        if content
+        else subject
+    )
     system_prompt = (
         "You are an AI flashcard generator. *Respond with only a JSON object and no extra text.*\n"
-        f"Generate exactly {num_cards} flashcards for the topic: '{topic}'. "
+        f"Generate exactly {num_cards} flashcards about {subject}. "
         "Each flashcard should have a 'term' and a 'definition'. "
         "The definition should be clear and concise."
     )
 
     return _generate_validated_output(
         system_prompt=system_prompt,
-        user_prompt=topic,
+        user_prompt=source_prompt,
         schema=FlashcardOutput,
         normalize=lambda parsed: {"flashcards": parsed} if isinstance(parsed, list) else parsed,
         expected_count=num_cards,

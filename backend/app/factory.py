@@ -5,6 +5,7 @@ from sqlalchemy import event
 from .config import Config
 from .extensions import db
 from .routes import register_routes
+from .study_routes import register_study_routes
 
 
 def create_app(config_object=Config):
@@ -19,6 +20,7 @@ def create_app(config_object=Config):
     db.init_app(app)
     _configure_sqlite(app)
     register_routes(app)
+    register_study_routes(app)
 
     return app
 

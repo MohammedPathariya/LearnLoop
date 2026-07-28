@@ -57,7 +57,7 @@ def test_missing_generation_inputs_return_validation_errors(client):
     checks = [
         ("/chat", {"error": "Missing 'topic'"}),
         ("/quiz", {"error": "Provide either 'topic' or 'content'"}),
-        ("/flashcards", {"error": "Missing 'topic'"}),
+        ("/flashcards", {"error": "Provide either 'topic', 'content', or 'session_id'"}),
     ]
 
     for endpoint, expected_body in checks:

@@ -8,6 +8,9 @@ from app.services.generation import generate_convo, generate_flashcards, generat
 
 load_dotenv()
 
+if __name__ == "__main__" and os.getenv("LEARNLOOP_USE_REMOTE_DB") != "1":
+    os.environ.pop("SUPABASE_DB_URI", None)
+
 app = create_app()
 
 __all__ = [
