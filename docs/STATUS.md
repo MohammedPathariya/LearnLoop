@@ -5,24 +5,27 @@ Last updated: 2026-07-28
 ## Current State
 
 - Repo is clean on `main`.
-- Backend is a single Flask file with SQLAlchemy models and OpenAI generation helpers.
+- Day 1 backend stabilization is implemented.
+- Backend is split into a minimal Flask package under `backend/app/`.
+- `backend/main.py` is the local and Docker entry point.
 - Frontend is Create React App with React 19 and `react-scripts@5`.
 - Frontend production build passes.
 - Frontend test suite has been replaced with a baseline app render test and now passes.
-- Backend smoke checks pass for import, health, read endpoints, and selected write validation.
-- Backend pytest smoke tests pass for health, read endpoints, validation errors, quiz-result persistence, and empty search.
+- Backend smoke checks pass for import without `OPENAI_API_KEY`, health, read endpoints, selected write validation, and SQLite WAL.
+- Backend pytest smoke tests pass for health, read endpoints, validation errors, quiz-result persistence, empty search, no-key import, and SQLite WAL.
 - Local guardrail scripts have been added and installed as Git hooks for pre-commit and pre-push verification.
 - No actual RAG implementation exists yet.
-- No FAISS, local embedding, chunking, retrieval benchmark, Locust load test, or WAL configuration exists yet.
+- No FAISS, local embedding, chunking, retrieval benchmark, or Locust load test exists yet.
 - Git workflow for this revamp is direct commits to `main` with logical multi-commit history.
 - Local folder and GitHub remote have been renamed from `LearnLoop-Deployment` to `LearnLoop`.
+- Docker Compose maps the backend to `5050:5050`, matching the Flask default and frontend API fallback.
 
 ## Baseline Verification
 
 Passed:
 
-- `PYTHONDONTWRITEBYTECODE=1 python3 -c "compile(open('backend/thinkmate.py').read(), 'backend/thinkmate.py', 'exec')"`
-- Flask app import with dummy `OPENAI_API_KEY`
+- `PYTHONDONTWRITEBYTECODE=1 python3 -c "compile(open('backend/main.py').read(), 'backend/main.py', 'exec')"`
+- Flask app import without `OPENAI_API_KEY`
 - `GET /healthz`
 - `GET /history`
 - `GET /analytics/stats`
@@ -31,7 +34,7 @@ Passed:
 - `GET /flashcards_history`
 - `GET /analytics/flashcard_stats`
 - temporary SQLite smoke test for `/quiz_results`
-- `python3.11 -m pytest`
+- `python3.11 -m pytest` with 7 backend tests passing
 - `npm test -- --watchAll=false`
 - `npm run build`
 - `bash scripts/precommit-check.sh`
@@ -57,7 +60,6 @@ Dependency Notes:
 
 Residual Warnings:
 
-- Backend pytest reports a SQLAlchemy `Query.get()` legacy warning from the current Flask-SQLAlchemy query API.
 - Frontend Jest reports React Router v7 future-flag warnings.
 - Frontend build reports stale Browserslist data and a Node deprecation warning from the current CRA toolchain.
 
@@ -71,7 +73,7 @@ Guardrails:
 
 | Phase | Focus | Status |
 | --- | --- | --- |
-| 1 | Backend stabilization | Not started |
+| 1 | Backend stabilization | Complete |
 | 2 | Real RAG layer | Not started |
 | 3 | Benchmark evidence | Not started |
 | 4 | Pydantic self-healing generation | Not started |
@@ -81,11 +83,10 @@ Guardrails:
 
 ## Immediate Next Step
 
-Continue on `main` and start Phase 1:
+Continue on `main` and start Phase 2:
 
-- split backend structure carefully
-- fix OpenAI import-time requirement
-- fix Docker port behavior
-- add backend tests
-- configure SQLite WAL
-- keep behavior equivalent unless a fix is explicitly part of the phase
+- add text ingestion
+- add 512-token chunking with overlap
+- add local embeddings
+- add per-session in-memory FAISS indexes
+- add retrieval tests and session-isolation checks

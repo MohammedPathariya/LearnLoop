@@ -7,10 +7,11 @@ This file tracks local, Docker, and hosted deployment behavior during the revamp
 Backend:
 
 - Framework: Flask
-- Entry point: `backend/thinkmate.py`
+- Entry point: `backend/main.py`
+- App package: `backend/app/`
 - Default local fallback DB: `backend/conversations.db`
 - Optional production DB: `SUPABASE_DB_URI`
-- Required model key: `OPENAI_API_KEY`
+- Required model key: `OPENAI_API_KEY` only for generation endpoints.
 
 Frontend:
 
@@ -27,23 +28,24 @@ Docker:
 ## Verified Baseline
 
 - Frontend production build succeeds with `npm run build`.
-- Backend imports and `/healthz` returns `200 OK` when `OPENAI_API_KEY` is present.
+- Backend imports and `/healthz` returns `200 OK` without requiring `OPENAI_API_KEY`.
 - Backend read endpoints return `200` against the checked-in SQLite DB.
 - Backend write-path smoke checks pass against a temporary SQLite DB.
+- Local SQLite connections use `PRAGMA journal_mode=WAL`.
 
 ## Known Deployment Issues
 
-- `docker-compose.yml` maps host port `5050` to container port `5000`, but the Flask app defaults to port `8080` unless `PORT` is set.
-- README currently says the backend runs at `http://localhost:5000`, while the frontend default points to `http://localhost:5050`.
-- The backend requires `OPENAI_API_KEY` during import, which makes tests and health checks more brittle than necessary.
+- Docker Compose maps backend host port `5050` to container port `5050`, matching the Flask default.
+- README and the frontend default both point to the backend at `http://localhost:5050`.
+- The backend no longer requires `OPENAI_API_KEY` during import; missing keys fail only when generation endpoints need the model client.
 - The Docker volume maps `./backend/conversations.db` to `/app/conversations.db`; this matches the current Docker workdir but should be rechecked after backend refactoring.
 
 ## Deployment Goals
 
 - Local dev should start with one documented command.
 - Docker Compose should expose backend and frontend on documented ports.
-- Tests should not require a real OpenAI key.
-- Local SQLite should use WAL mode.
+- Tests do not require a real OpenAI key.
+- Local SQLite uses WAL mode.
 - Hosted deployment configuration should be documented after the backend structure settles.
 
 ## Commands To Reverify
@@ -74,5 +76,5 @@ npm run build
 
 ```bash
 cd backend
-python thinkmate.py
+python main.py
 ```

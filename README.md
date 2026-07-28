@@ -97,7 +97,6 @@ This project is fully containerized with Docker for a simple setup.
         OPENAI_API_KEY=sk-YourSecretKeyHere
         ```
 3.  **Build and Run with Docker Compose**
-    -   Install dependencies: `pip install -r requirements.txt`
     -   From the root directory of the project, run:
         ```bash
         docker compose up --build
@@ -106,7 +105,7 @@ This project is fully containerized with Docker for a simple setup.
 
 5.  **Access the Application**
     -   **Frontend:** Open your browser and go to `http://localhost:3000`
-    -   **Backend API:** The backend will be running on `http://localhost:5000`
+    -   **Backend API:** The backend will be running on `http://localhost:5050`
 
 ---
 

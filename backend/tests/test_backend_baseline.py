@@ -3,17 +3,17 @@ import sys
 from pathlib import Path
 
 import pytest
+from sqlalchemy import text
 
 
 @pytest.fixture()
-def thinkmate_app(tmp_path, monkeypatch):
+def backend_app(tmp_path, monkeypatch):
     db_path = tmp_path / "learnloop-test.db"
-    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
     monkeypatch.setenv("SUPABASE_DB_URI", f"sqlite:///{db_path}")
     monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1]))
 
-    sys.modules.pop("thinkmate", None)
-    module = importlib.import_module("thinkmate")
+    sys.modules.pop("main", None)
+    module = importlib.import_module("main")
 
     with module.app.app_context():
         module.db.create_all()
@@ -26,8 +26,8 @@ def thinkmate_app(tmp_path, monkeypatch):
 
 
 @pytest.fixture()
-def client(thinkmate_app):
-    return thinkmate_app.app.test_client()
+def client(backend_app):
+    return backend_app.app.test_client()
 
 
 def test_healthz_returns_ok(client):
@@ -104,3 +104,24 @@ def test_empty_search_query_returns_empty_list(client):
 
     assert response.status_code == 200
     assert response.get_json() == []
+
+
+def test_openai_key_is_not_required_to_import_backend(tmp_path, monkeypatch):
+    db_path = tmp_path / "learnloop-no-key.db"
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setenv("SUPABASE_DB_URI", f"sqlite:///{db_path}")
+    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1]))
+
+    sys.modules.pop("main", None)
+    module = importlib.import_module("main")
+
+    response = module.app.test_client().get("/healthz")
+
+    assert response.status_code == 200
+
+
+def test_sqlite_uses_wal_journal_mode(backend_app):
+    with backend_app.app.app_context():
+        journal_mode = backend_app.db.session.execute(text("PRAGMA journal_mode")).scalar()
+
+    assert journal_mode == "wal"

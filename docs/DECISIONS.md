@@ -4,7 +4,8 @@ This file records architecture and product decisions made during the revamp. Kee
 
 ## Current Baseline
 
-- The backend is a single Flask app in `backend/thinkmate.py`.
+- The backend started as a single Flask app in `backend/thinkmate.py`.
+- Day 1 split the backend into a minimal Flask package under `backend/app/` and renamed the stale backend entry point to `backend/main.py`.
 - The frontend is Create React App with React 19 and `react-scripts`.
 - Persistence is currently SQLAlchemy with SQLite fallback and optional Supabase URI.
 - The checked-in SQLite DB contains existing conversation, quiz, and flashcard records.
@@ -59,3 +60,9 @@ Reason: The user wants a seamless linear workflow for this project instead of br
 Decision: Keep commits logically separate and use commit messages with a concise subject plus a short body explaining what changed and why.
 
 Reason: Separate commits make review and rollback easier. The body should preserve the reasoning behind each change without making the subject line noisy.
+
+### 9. Use `main.py` as the backend entry point
+
+Decision: The backend now uses `backend/app/` for factory, models, routes, and services, with `backend/main.py` as the executable entry point.
+
+Reason: `thinkmate.py` was stale project branding. `main.py` is a standard backend entry-point name and keeps Docker/local startup aligned with the LearnLoop project name.

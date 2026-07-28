@@ -59,7 +59,7 @@ Goal:
 Make the backend maintainable and testable while preserving existing endpoint behavior as much as possible.
 
 Tasks:
-- Inspect backend/thinkmate.py, docker-compose.yml, backend/requirements.txt, and current README setup notes.
+- Inspect backend/main.py, backend/app/, docker-compose.yml, backend/requirements.txt, and current README setup notes.
 - Create a cleaner backend structure only as much as needed.
 - Remove the import-time requirement for a real OpenAI key.
 - Fix the Docker/backend port mismatch.

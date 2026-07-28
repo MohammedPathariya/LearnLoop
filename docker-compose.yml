@@ -3,7 +3,7 @@ services:
     build: ./backend
     container_name: learnloop-backend
     ports:
-      - "5050:5000"  # Host:Container (optional but useful for testing)
+      - "5050:5050"
     env_file:
       - ./backend/.env
     volumes:
