@@ -5,11 +5,12 @@ import {
   addPdfMaterial,
   askQuestion,
   createSession,
+  deleteSession,
   getMessages,
   getSession,
   getSessions,
 } from '../api/learnloopApi';
-import { EmptyState, FileUploadField, LoadingBlock, Modal, PageHeader, StatusNotice } from '../components/UI';
+import { ConfirmDialog, EmptyState, FileUploadField, LoadingBlock, Modal, PageHeader, StatusNotice } from '../components/UI';
 import Flashcards from './Flashcards';
 import Practice from './Practice';
 
@@ -29,10 +30,14 @@ function Study() {
   const [materialTitle, setMaterialTitle] = useState('');
   const [materialContent, setMaterialContent] = useState('');
   const [materialFile, setMaterialFile] = useState(null);
+  const [addingMaterial, setAddingMaterial] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const [journeyTitle, setJourneyTitle] = useState('');
+  const [creating, setCreating] = useState(false);
   const [showSources, setShowSources] = useState(false);
   const [showGuide, setShowGuide] = useState(() => localStorage.getItem('learnloop-guide-dismissed') !== 'true');
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const mode = ['ask', 'quiz', 'flashcards'].includes(searchParams.get('mode')) ? searchParams.get('mode') : 'ask';
 
   useEffect(() => {
@@ -80,18 +85,22 @@ function Study() {
 
   async function handleAddMaterial(event) {
     event.preventDefault();
+    if (addingMaterial) return;
     setError('');
+    if (!materialFile && !materialContent.trim()) {
+      setError('Choose a PDF or paste study text.');
+      return;
+    }
+    setAddingMaterial(true);
     try {
       if (materialFile) {
         await addPdfMaterial(session.id, materialFile, materialTitle);
-      } else if (materialContent.trim()) {
+      }
+      if (materialContent.trim()) {
         await addMaterial(session.id, {
-          title: materialTitle.trim() || 'Pasted study material',
+          title: materialTitle.trim() ? `${materialTitle.trim()} notes` : 'Pasted study material',
           content: materialContent,
         });
-      } else {
-        setError('Choose a PDF or paste study text.');
-        return;
       }
       setShowMaterial(false);
       setMaterialTitle('');
@@ -100,13 +109,37 @@ function Study() {
       await loadSession(session.id);
     } catch (requestError) {
       setError(requestError.response?.data?.error || 'The material could not be indexed.');
+    } finally {
+      setAddingMaterial(false);
     }
   }
 
   async function handleCreate(event) {
     event.preventDefault();
-    const created = await createSession({ title: journeyTitle });
-    navigate(`/learn/${created.id}`);
+    if (creating) return;
+    setCreating(true);
+    try {
+      const created = await createSession({ title: journeyTitle });
+      navigate(`/learn/${created.id}`);
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function handleDeleteSpace(item) {
+    if (item.is_demo) return;
+    setDeleteTarget(item);
+  }
+
+  async function confirmDeleteSpace() {
+    setDeleting(true);
+    try {
+      await deleteSession(deleteTarget.id);
+      setSessions((current) => current.filter((sessionItem) => sessionItem.id !== deleteTarget.id));
+      setDeleteTarget(null);
+    } finally {
+      setDeleting(false);
+    }
   }
 
   function changeMode(nextMode) {
@@ -145,7 +178,12 @@ function Study() {
                 <span className={item.is_demo ? 'badge brand' : 'badge neutral'}>{item.is_demo ? 'Guided demo' : item.domain || 'Learning space'}</span>
                 <h2>{item.title}</h2>
                 <p>{item.material_count} sources · {item.message_count} conversation messages</p>
-                <Link className="button primary full" to={`/learn/${item.id}`}>Open</Link>
+                <div className="card-actions">
+                  <Link className="button primary" to={`/learn/${item.id}`}>Open</Link>
+                  {!item.is_demo && (
+                    <button className="text-button destructive" type="button" onClick={() => handleDeleteSpace(item)}>Delete</button>
+                  )}
+                </div>
               </article>
             ))}
           </div>
@@ -267,6 +305,12 @@ function Study() {
                   rows="2"
                   value={question}
                   onChange={(event) => setQuestion(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+                      event.preventDefault();
+                      event.currentTarget.form?.requestSubmit();
+                    }
+                  }}
                   placeholder="Ask a question about your sources..."
                   disabled={answering || !session?.materials?.length}
                 />
@@ -288,7 +332,7 @@ function Study() {
             <p className="field-note">PDF text is extracted and indexed for this learning session only. Scanned PDFs without selectable text are not supported yet.</p>
             <div className="form-actions">
               <button className="button secondary" type="button" onClick={() => setShowMaterial(false)}>Cancel</button>
-              <button className="button primary" type="submit">Add source</button>
+              <button className="button primary" type="submit" disabled={addingMaterial}>{addingMaterial ? 'Indexing...' : 'Add source'}</button>
             </div>
           </form>
         </Modal>
@@ -308,9 +352,19 @@ function Study() {
               </details>
             )) : (
               <EmptyState title="No answer sources selected" description="Ask a question, then open the sources attached to the answer." />
-            )}
-          </div>
+        )}
+      </div>
         </Modal>
+      )}
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete learning space?"
+          description={`“${deleteTarget.title}” and its saved sources, messages, quizzes, and flashcards will be permanently removed.`}
+          confirmLabel="Delete learning space"
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={confirmDeleteSpace}
+          busy={deleting}
+        />
       )}
     </div>
   );

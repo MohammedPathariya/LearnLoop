@@ -23,6 +23,7 @@ function Materials() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
+  const [adding, setAdding] = useState(false);
   const [selected, setSelected] = useState(null);
   const [renameTarget, setRenameTarget] = useState(null);
   const [renameValue, setRenameValue] = useState('');
@@ -54,18 +55,22 @@ function Materials() {
 
   async function handleAdd(event) {
     event.preventDefault();
+    if (adding) return;
     setError('');
+    if (!file && !content.trim()) {
+      setError('Choose a PDF or paste study text.');
+      return;
+    }
+    setAdding(true);
     try {
       if (file) {
         await addPdfMaterial(sessionId, file, title);
-      } else if (content.trim()) {
+      }
+      if (content.trim()) {
         await addMaterial(sessionId, {
-          title: title.trim() || 'Pasted study material',
+          title: title.trim() ? `${title.trim()} notes` : 'Pasted study material',
           content,
         });
-      } else {
-        setError('Choose a PDF or paste study text.');
-        return;
       }
       setTitle('');
       setContent('');
@@ -74,6 +79,8 @@ function Materials() {
       await loadMaterials();
     } catch (requestError) {
       setError(requestError.response?.data?.error || 'Material indexing failed.');
+    } finally {
+      setAdding(false);
     }
   }
 
@@ -162,7 +169,7 @@ function Materials() {
             <p className="field-note">PDF text is indexed for this learning session only. Scanned PDFs without selectable text are not supported yet.</p>
             <div className="form-actions">
               <button className="button secondary" type="button" onClick={() => setShowAdd(false)}>Cancel</button>
-              <button className="button primary" type="submit">Add source</button>
+              <button className="button primary" type="submit" disabled={adding}>{adding ? 'Indexing...' : 'Add source'}</button>
             </div>
           </form>
         </Modal>

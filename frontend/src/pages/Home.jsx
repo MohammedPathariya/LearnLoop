@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from '../router';
+import { useAuth } from '../auth/AuthContext';
 import {
   addMaterial,
   addPdfMaterial,
@@ -11,11 +12,13 @@ import {
   openDemo,
   updateSession,
 } from '../api/learnloopApi';
-import { EmptyState, FileUploadField, LoadingBlock, MetricCard, Modal, PageHeader, ScoreBar, StatusNotice } from '../components/UI';
+import { ConfirmDialog, EmptyState, FileUploadField, LoadingBlock, MetricCard, Modal, PageHeader, ScoreBar, StatusNotice } from '../components/UI';
 
 function Home() {
   const navigate = useNavigate();
+  const { loading: authLoading, user } = useAuth();
   const initialLoadStarted = useRef(false);
+  const loadedIdentity = useRef(null);
   const [sessions, setSessions] = useState([]);
   const [progress, setProgress] = useState(null);
   const [backendStatus, setBackendStatus] = useState('waking');
@@ -27,15 +30,21 @@ function Home() {
   const [materialTitle, setMaterialTitle] = useState('');
   const [materialContent, setMaterialContent] = useState('');
   const [materialFile, setMaterialFile] = useState(null);
+  const [creating, setCreating] = useState(false);
   const [renameTarget, setRenameTarget] = useState(null);
   const [renameValue, setRenameValue] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    if (initialLoadStarted.current) return;
+    if (authLoading) return;
+    const identity = user?.id || 'guest';
+    if (loadedIdentity.current === identity) return;
+    loadedIdentity.current = identity;
     initialLoadStarted.current = true;
     checkBackend();
     loadHome();
-  }, []);
+  }, [authLoading, user]);
 
   async function checkBackend() {
     try {
@@ -50,7 +59,7 @@ function Home() {
     setLoading(true);
     setError('');
     try {
-      await openDemo();
+      if (!user) await openDemo();
       const nextSessions = await getSessions();
       const nextProgress = await getProgress();
       setSessions(nextSessions);
@@ -64,14 +73,17 @@ function Home() {
 
   async function handleCreate(event) {
     event.preventDefault();
+    if (creating) return;
     setError('');
+    setCreating(true);
     try {
       const session = await createSession({ title, domain });
       if (materialFile) {
         await addPdfMaterial(session.id, materialFile, materialTitle);
-      } else if (materialContent.trim()) {
+      }
+      if (materialContent.trim()) {
         await addMaterial(session.id, {
-          title: materialTitle.trim() || `${title} notes`,
+          title: materialTitle.trim() ? `${materialTitle.trim()} notes` : `${title} notes`,
           content: materialContent,
         });
       }
@@ -79,6 +91,8 @@ function Home() {
       navigate(`/learn/${session.id}`);
     } catch (requestError) {
       setError(requestError.response?.data?.error || 'The learning space could not be created.');
+    } finally {
+      setCreating(false);
     }
   }
 
@@ -90,13 +104,23 @@ function Home() {
   }
 
   async function handleDelete(session) {
-    if (!window.confirm(`Delete "${session.title}" and its saved study activity?`)) return;
-    await deleteSession(session.id);
-    await loadHome();
+    setDeleteTarget(session);
   }
 
-  const demo = sessions.find((session) => session.is_demo);
-  const latestSession = sessions[0] || demo;
+  async function confirmDelete() {
+    setDeleting(true);
+    try {
+      await deleteSession(deleteTarget.id);
+      setDeleteTarget(null);
+      await loadHome();
+    } catch (requestError) {
+      setError(requestError.response?.data?.error || 'The learning space could not be deleted.');
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  const latestSession = sessions[0];
   const recommendation = progress?.needs_review?.[0];
 
   return (
@@ -134,6 +158,17 @@ function Home() {
 
       {error && <StatusNotice type="error">{error}</StatusNotice>}
 
+      {!user && !loading && (
+        <section className="guest-mode-notice" aria-label="Guest mode">
+          <div>
+            <p className="eyebrow">Guest mode</p>
+            <strong>Try the guided demo or create a learning space without signing in.</strong>
+            <p>Your guest activity is available for this browser session only and is not saved to an account.</p>
+          </div>
+          <Link className="text-link" to="/login">Sign in to save your progress</Link>
+        </section>
+      )}
+
       {loading ? (
         <LoadingBlock label="Loading home" />
       ) : (
@@ -164,14 +199,8 @@ function Home() {
                       <ScoreBar value={progressValue} label={`${progressValue}% activity`} />
                       <div className="session-card-controls">
                         <Link className="button secondary" to={`/learn/${session.id}`}>Continue</Link>
-                        {session.is_demo ? (
-                          <Link className="text-link" to="/settings">Reset options</Link>
-                        ) : (
-                          <>
-                            <button className="text-button" type="button" onClick={() => { setRenameTarget(session); setRenameValue(session.title); }}>Rename</button>
-                            <button className="text-button destructive" type="button" onClick={() => handleDelete(session)}>Delete</button>
-                          </>
-                        )}
+                        <button className="text-button" type="button" onClick={() => { setRenameTarget(session); setRenameValue(session.title); }}>Rename</button>
+                        <button className="text-button destructive" type="button" onClick={() => handleDelete(session)}>Delete</button>
                       </div>
                     </article>
                   );
@@ -189,13 +218,13 @@ function Home() {
           <section className="home-lower-grid">
             <div className="recommendation-card">
               <p className="eyebrow">Recommended next</p>
-              <h2>{recommendation ? `Review ${recommendation.topic}` : 'Continue Machine Learning Foundations'}</h2>
+              <h2>{recommendation ? `Review ${recommendation.topic}` : 'Build your next study session'}</h2>
               <p>
                 {recommendation
                   ? `Your current average is ${recommendation.score}%. A focused quiz will reinforce this topic.`
                   : 'Return to your latest material and build on the questions you have already explored.'}
               </p>
-              <Link className="button primary" to={demo ? `/learn/${demo.id}?mode=quiz` : '/learn'}>
+              <Link className="button primary" to={latestSession ? `/learn/${latestSession.id}?mode=quiz` : '/learn'}>
                 Start focused practice
               </Link>
             </div>
@@ -238,7 +267,7 @@ function Home() {
             <p className="field-note">Add a PDF or paste text. PDF content is indexed for this learning session only.</p>
             <div className="form-actions">
               <button className="button secondary" type="button" onClick={() => setShowCreate(false)}>Cancel</button>
-              <button className="button primary" type="submit">Open learning space</button>
+              <button className="button primary" type="submit" disabled={creating}>{creating ? 'Creating...' : 'Open learning space'}</button>
             </div>
           </form>
         </Modal>
@@ -254,6 +283,16 @@ function Home() {
             </div>
           </form>
         </Modal>
+      )}
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete learning space?"
+          description={`“${deleteTarget.title}” and its saved sources, messages, quizzes, and flashcards will be permanently removed.`}
+          confirmLabel="Delete learning space"
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={confirmDelete}
+          busy={deleting}
+        />
       )}
     </div>
   );
