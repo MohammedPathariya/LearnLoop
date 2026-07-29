@@ -377,6 +377,11 @@ p {
   color: var(--text);
 }
 
+.button.danger {
+  background: var(--error);
+  color: white;
+}
+
 .button.technical {
   background: var(--technical);
   color: white;
@@ -399,6 +404,12 @@ p {
 
 .text-button.destructive {
   color: var(--error);
+}
+
+.confirm-dialog-copy {
+  margin: -4px 0 26px;
+  color: var(--secondary);
+  line-height: 1.6;
 }
 
 .quick-actions {
@@ -999,6 +1010,72 @@ select:focus {
 .field-note,
 .muted-copy {
   margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.account-link {
+  display: inline-flex;
+  max-width: 220px;
+  overflow: hidden;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--secondary);
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.guest-mode-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 24px 0 32px;
+  padding: 20px 24px;
+  border: 1px solid var(--line, #d8e1db);
+  border-radius: 18px;
+  background: #f1f7f2;
+}
+
+.guest-mode-notice p {
+  margin: 6px 0 0;
+}
+
+.guest-mode-notice .eyebrow {
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .guest-mode-notice {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.account-link:hover {
+  color: var(--brand);
+}
+
+.auth-page {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.auth-card {
+  width: min(480px, 100%);
+  margin: 40px auto 0;
+  padding: 28px;
+}
+
+.auth-switch {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 22px;
   color: var(--muted);
   font-size: 0.78rem;
 }

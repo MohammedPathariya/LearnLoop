@@ -92,6 +92,20 @@ export function Modal({ title, children, onClose, wide = false }) {
   );
 }
 
+export function ConfirmDialog({ title, description, confirmLabel, onClose, onConfirm, busy = false }) {
+  return (
+    <Modal title={title} onClose={onClose}>
+      <p className="confirm-dialog-copy">{description}</p>
+      <div className="form-actions">
+        <button className="button secondary" type="button" onClick={onClose} disabled={busy}>Cancel</button>
+        <button className="button danger" type="button" onClick={onConfirm} disabled={busy}>
+          {busy ? 'Working...' : confirmLabel}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
 export function ScoreBar({ value, tone = 'brand', label }) {
   const safeValue = Math.max(0, Math.min(100, value || 0));
   return (
