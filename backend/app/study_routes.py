@@ -7,6 +7,7 @@ from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
 from .extensions import db
+from .auth import current_user
 from .models import (
     FlashcardSet,
     QuizSession,
@@ -143,7 +144,7 @@ def register_study_routes(app):
             return jsonify(_serialize_session(session)), 201
 
         sessions = (
-            StudySession.query.filter_by(visitor_id=visitor_id)
+            _visible_sessions(visitor_id)
             .order_by(StudySession.updated_at.desc())
             .all()
         )
@@ -341,7 +342,7 @@ def register_study_routes(app):
     @app.route("/study/progress", methods=["GET"])
     def study_progress():
         visitor_id = _visitor_id()
-        sessions = StudySession.query.filter_by(visitor_id=visitor_id).all()
+        sessions = _visible_sessions(visitor_id).all()
         session_ids = [session.id for session in sessions]
         if not session_ids:
             return jsonify(_empty_progress())
@@ -395,7 +396,7 @@ def register_study_routes(app):
     @app.route("/study/history", methods=["GET"])
     def study_history():
         visitor_id = _visitor_id()
-        sessions = StudySession.query.filter_by(visitor_id=visitor_id).all()
+        sessions = _visible_sessions(visitor_id).all()
         session_ids = [session.id for session in sessions]
         if not session_ids:
             return jsonify([])
@@ -456,7 +457,7 @@ def register_study_routes(app):
         visitor_id = _visitor_id()
         session_ids = [
             session.id
-            for session in StudySession.query.filter_by(visitor_id=visitor_id).all()
+            for session in _visible_sessions(visitor_id).all()
         ]
         if not session_ids:
             return jsonify([])
@@ -500,8 +501,18 @@ def require_owned_session(session_id: str):
 
 
 def _visitor_id():
+    user = current_user()
+    if user is not None:
+        return user["id"]
     visitor_id = request.headers.get("X-LearnLoop-Visitor", "").strip()
     return visitor_id[:64] if visitor_id else "local-dev"
+
+
+def _visible_sessions(visitor_id):
+    query = StudySession.query.filter_by(visitor_id=visitor_id)
+    if current_user() is not None:
+        query = query.filter_by(is_demo=False)
+    return query
 
 
 def _owned_session(session_id):
