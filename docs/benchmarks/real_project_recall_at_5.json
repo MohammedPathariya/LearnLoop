@@ -2,7 +2,7 @@
   "benchmark": "LearnLoop real project corpus Recall@5",
   "model": "sentence-transformers/all-MiniLM-L6-v2",
   "dataset": "docs/benchmarks/real_project_corpus.json",
-  "dataset_sha256": "a379b4cab052160862f3604d6049915a4bdaa5abec8a42d490abf001fbd21768",
+  "dataset_sha256": "665212a33c55fce41f7638a282bd867ff9b2de70b8e24349b84d81f0355ce6fd",
   "document_count": 7,
   "chunk_count": 27,
   "corpus": [
@@ -29,12 +29,12 @@
     {
       "source_id": "week-plan",
       "path": "docs/WEEK_PLAN.md",
-      "sha256": "d97766a38338115dcd0a0eb3994f79db4bdf20e82cfc52d6dc88401a7b883db0"
+      "sha256": "270b4da708e5e77ffa200ef2e9ee0ae88b890c4ffbcb59ecb16371af57b10671"
     },
     {
       "source_id": "decisions",
       "path": "docs/DECISIONS.md",
-      "sha256": "10a6400500e3b58440a7a7115b4906462d55d414cf4817ac5e8e4e011fa9b8ed"
+      "sha256": "d1fd7e0ffc735608b86d2757e1515f691312ff41c1dde06b6b7d86a7397900c7"
     },
     {
       "source_id": "deployment",

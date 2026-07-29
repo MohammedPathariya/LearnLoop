@@ -5,8 +5,8 @@
     {"source_id": "routes", "path": "backend/app/routes.py", "sha256": "1b578144a62db8624d7db677f83cdc252a7264cf7a707d6c35f699c9f5d8a55e"},
     {"source_id": "factory", "path": "backend/app/factory.py", "sha256": "5e6c019479b274d60ed0a4a207e5cce09e80a66f7c939fcb4c08e6bca2e5bebb"},
     {"source_id": "config", "path": "backend/app/config.py", "sha256": "e06060340d6f1beed48d905ef55867f9af296d71c7fec10bf8b658a70b6ab9dd"},
-    {"source_id": "week-plan", "path": "docs/WEEK_PLAN.md", "sha256": "d97766a38338115dcd0a0eb3994f79db4bdf20e82cfc52d6dc88401a7b883db0"},
-    {"source_id": "decisions", "path": "docs/DECISIONS.md", "sha256": "10a6400500e3b58440a7a7115b4906462d55d414cf4817ac5e8e4e011fa9b8ed"},
+    {"source_id": "week-plan", "path": "docs/WEEK_PLAN.md", "sha256": "270b4da708e5e77ffa200ef2e9ee0ae88b890c4ffbcb59ecb16371af57b10671"},
+    {"source_id": "decisions", "path": "docs/DECISIONS.md", "sha256": "d1fd7e0ffc735608b86d2757e1515f691312ff41c1dde06b6b7d86a7397900c7"},
     {"source_id": "deployment", "path": "docs/DEPLOYMENT.md", "sha256": "c2a02071a30ab98fce043efd32fc0f5bc7eb020571dc7182364f06d5cce41741"}
   ],
   "queries": [

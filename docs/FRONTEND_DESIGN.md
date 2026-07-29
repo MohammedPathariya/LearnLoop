@@ -1,6 +1,6 @@
 # LearnLoop Frontend Design
 
-This document records the implemented Day 6 design system and product boundaries.
+This document records the implemented Day 7 design system and product boundaries.
 
 ## Brand
 
@@ -36,9 +36,9 @@ System information, and the GitHub repository live under More. Materials,
 quizzes, and flashcards are contextual modes inside Learn rather than competing
 top-level destinations.
 
-The avatar was removed because the product has no authentication. System
-information contains app-level status and demo reset controls, not account
-settings.
+The account email opens a profile page with saved-activity information and a
+confirmed sign-out action. System information contains app-level status and
+guest demo reset controls, not account settings.
 
 Home begins with a compact backend availability indicator and a note that the
 free backend may take up to 60 seconds to wake. It stays above the main page
@@ -58,7 +58,8 @@ sessions and source-grounded question answering.
 ## Honesty Rules
 
 - Grounded answers display a source-count indicator. Ungrounded answers do not.
-- Text paste is the only material input. File upload is not shown as available.
+- PDF upload and text paste are available source inputs. Both can be added to
+  one learning space.
 - Flashcard review supports flip, previous, and next. Knowledge tracking is
   labeled as coming soon.
 - Progress uses saved quiz scores and topic-level averages. It does not claim
@@ -79,8 +80,9 @@ The public demo is Machine Learning Foundations. It includes:
 - an isolated browser-scoped copy for each visitor
 - a reset action that restores the canonical seed
 
-The demo does not represent a user account. A random browser identifier keeps
-each visitor's persistent sessions separate without implying authentication.
+The demo is available to guests only. A random browser identifier keeps each
+guest session separate, while signed-in users see their account-associated
+learning spaces instead.
 
 ## Responsive Behavior
 

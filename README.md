@@ -5,8 +5,8 @@ persistent journeys, ask questions backed by retrieved evidence, generate
 validated quizzes and flashcards from the same sources, and review saved
 progress.
 
-The redesigned Day 6 application is verified locally. The previous public
-deployment does not represent this version. Public deployment is Day 7 scope.
+The redesigned Day 7 application is verified locally. The previous public
+deployment does not represent this version. Public deployment is Day 8 scope.
 
 ## Product
 
@@ -15,8 +15,11 @@ deployment does not represent this version. Public deployment is Day 7 scope.
   journey.
 - Progress reports saved quiz score trends and topic averages.
 - History reopens saved sessions and practice artifacts.
-- The isolated Machine Learning Foundations demo gives each browser a complete,
-  resettable product journey without implying authentication.
+- Users can sign in with Supabase email/password authentication and return to
+  account-associated learning activity.
+- Guests can use the guided Machine Learning Foundations demo and create a
+  learning space without signing in.
+- Learning spaces accept PDF uploads and pasted study text together.
 - Benchmarks display checked-in retrieval and local load-test evidence.
 
 ## Stack
@@ -28,6 +31,7 @@ deployment does not represent this version. Public deployment is Day 7 scope.
 | Generation | OpenAI Python client |
 | Frontend | React 19, Vite, Vitest, Wouter |
 | Local persistence | SQLite with WAL |
+| Account persistence | Supabase Auth and Postgres schema |
 | Containers | Docker Compose, Gunicorn |
 
 ## Run locally
@@ -102,12 +106,15 @@ local-only evidence, not a production capacity claim. See
 
 ## Current boundaries
 
-- There is no authentication or account system. Browser IDs isolate local demo
-  visitors without representing user identities.
-- Text paste is the implemented material input. File upload is not claimed.
+- Guest mode uses a browser-session identifier and does not require an account.
+- Supabase email/password authentication is implemented for account-associated
+  sessions, scores, history, messages, quizzes, and flashcards.
+- PDF upload and text paste are implemented source inputs. The intended
+  privacy boundary is session-only source content, but the legacy SQLAlchemy
+  material path still needs removal before that boundary is production-enforced.
 - Progress is based on saved quiz results, not inferred concept mastery.
 - Retrieval indexes are in memory and rebuilt from durable material text.
-- The hosted architecture and production load rerun remain Day 7 work.
+- The hosted architecture and production load rerun remain Day 8 work.
 
 Project status and remaining work are tracked in
 [`docs/STATUS.md`](docs/STATUS.md).

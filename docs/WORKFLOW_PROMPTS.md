@@ -174,17 +174,38 @@ Tasks:
 Do not create a marketing landing page. The first screen should be the actual app experience.
 ```
 
-## Day 7 Prompt: Deployment Compatibility And Production Deployment
+## Day 7 Prompt: Accounts And PDF Sources
 
 ```text
-Start Day 7 of the LearnLoop revamp: deployment compatibility and production deployment.
+Start Day 7 of the LearnLoop revamp: accounts and PDF sources.
+
+Goal:
+Add PDF sources and account-aware study flows while preserving a usable guest mode.
+
+Tasks:
+- Read docs/STATUS.md, docs/WEEK_PLAN.md, docs/DECISIONS.md, and the current frontend/backend source.
+- Add PDF upload and selectable-text extraction with session-scoped indexing.
+- Allow PDF and pasted text to be added to the same learning space.
+- Add Supabase email/password authentication, account navigation, and verified backend tokens.
+- Keep guest sessions available without an account and show the guided demo only to guests.
+- Add account isolation tests and styled account/source-management states.
+- Provision the Supabase schema with RLS and avoid adding a durable source table.
+- Record any remaining source-persistence or privacy gap honestly in docs/STATUS.md.
+
+Do not start deployment in this phase. Verify the complete local account, guest, PDF, question, quiz, and flashcard flows first.
+```
+
+## Day 8 Prompt: Deployment Compatibility And Production Deployment
+
+```text
+Start Day 8 of the LearnLoop revamp: deployment compatibility and production deployment.
 
 Goal:
 Deploy the completed core app before adding additional product features.
 
 Tasks:
 - Read docs/STATUS.md, docs/WEEK_PLAN.md, docs/DECISIONS.md, and docs/DEPLOYMENT.md.
-- Inspect the completed Days 1-6 implementation, especially RAG, embeddings, FAISS indexes, answer generation, frontend API config, Docker, and load tests.
+- Inspect the completed Days 1-7 implementation, especially RAG, embeddings, FAISS indexes, answer generation, account configuration, frontend API config, Docker, and load tests.
 - Revisit whether Render should run sentence-transformers in-process or call a remote embedding service.
 - Add a provider boundary if needed so local development can use local MiniLM while deployment can use Modal or another remote embedding provider.
 - Document memory, cold-start, persistence, scale-out, and model-download tradeoffs.
@@ -201,16 +222,16 @@ Tasks:
 Do not add extra product features in this phase. The end goal is actual deployment of the core app, not just deployment planning.
 ```
 
-## Day 8 Prompt: Additional Product Features
+## Day 9 Prompt: Additional Product Features
 
 ```text
-Start Day 8 of the LearnLoop revamp: additional impressive product features.
+Start Day 9 of the LearnLoop revamp: additional impressive product features.
 
 Goal:
 Brainstorm and implement 2-3 features that make the app more useful and stronger for resume discussion, after production deployment has been completed.
 
 Tasks:
-- Read docs/STATUS.md and inspect the completed Days 1-7 implementation.
+- Read docs/STATUS.md and inspect the completed Days 1-8 implementation.
 - Brainstorm feature candidates and explain tradeoffs.
 - Choose the best 2-3 based on user value, implementation time, and resume impact.
 - Implement the selected features end-to-end.

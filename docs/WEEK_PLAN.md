@@ -117,13 +117,36 @@ Definition of done:
 - Main workflows are usable from the redesigned interface.
 - No backend claims are hidden behind unfinished UI.
 
-## Day 7: Deployment Compatibility And Production Deployment
+## Day 7: Accounts And PDF Sources
+
+Goal: Add the first user-facing product features beyond the core study workspace.
+
+Scope:
+
+- Add PDF upload with selectable-text extraction and session-scoped chunk indexing.
+- Allow a learning space to contain both PDF and pasted-text sources.
+- Add Supabase email/password authentication and verified bearer-token handling.
+- Associate authenticated learning activity with the signed-in user.
+- Keep guest mode available without an account and show the guided demo only to guests.
+- Add account, sign-out, guest-mode, and source-privacy UI states.
+- Provision the Supabase schema with RLS for profiles, learning sessions, messages,
+  quiz results, and flashcard sets, without a durable source table.
+
+Definition of done:
+
+- A user can upload a PDF and add pasted text to the same learning space.
+- Authenticated users can sign in, sign out, and recover their account-specific study flow.
+- Guest users can use the demo and create a session without signing in.
+- PDF and pasted-source behavior, account isolation, and guest behavior are tested locally.
+- `docs/STATUS.md` and the decision log record the implementation and remaining privacy risks.
+
+## Day 8: Deployment Compatibility And Production Deployment
 
 Goal: Deploy the completed core app before adding extra product features.
 
 Scope:
 
-- Revisit the RAG architecture after Days 1-6 are implemented.
+- Revisit the RAG architecture after Days 1-7 are implemented.
 - Decide whether embeddings run in-process on Render, behind a Modal service, or through another provider boundary.
 - Add environment-driven configuration for local versus deployed embedding and generation providers.
 - Keep the Render backend lightweight enough for the selected instance type.
@@ -145,13 +168,13 @@ Definition of done:
 - Public deployment URLs and verification results are recorded in `docs/STATUS.md`.
 - `docs/STATUS.md` is updated with the deployment decision, verification results, and remaining risks.
 
-## Day 8: Additional Product Features
+## Day 9: Additional Product Features
 
 Goal: Add extra features that make LearnLoop more useful and more impressive on a resume.
 
 Scope:
 
-- Brainstorm and choose the best 2-3 features after Days 1-7 are complete.
+- Brainstorm and choose the best 2-3 features after Days 1-8 are complete.
 - Candidate features:
   - adaptive review based on missed quiz questions
   - topic mastery tracking

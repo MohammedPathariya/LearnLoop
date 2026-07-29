@@ -89,9 +89,9 @@ Reason: A frontend that displayed recent sessions, durable materials, or session
 
 ### 13. Scope visitors without implying authentication
 
-Decision: The frontend creates a random browser identifier and sends it with study requests. Persistent study records are scoped to that identifier, but the interface does not show an avatar or claim that an account exists.
+Decision: Guest mode creates a random browser identifier and sends it with study requests. Guest records are scoped to that identifier, while authenticated requests use the verified Supabase user identity.
 
-Reason: Public demo visitors need isolated state, while authentication remains outside the implemented product scope.
+Reason: Public demo visitors need isolated state, and account users need a separate identity-backed path.
 
 ### 14. Preserve benchmark reports as static evidence
 
@@ -117,3 +117,22 @@ volume.
 Reason: Visitor sessions and generated study artifacts are mutable data, not
 source code. A named volume preserves local Docker data without publishing a
 developer database.
+
+### 17. Add accounts without storing source files permanently
+
+Decision: Supabase Auth provides email/password accounts. Authenticated requests
+carry a verified Supabase bearer token, while guest mode remains browser-session
+scoped. The Supabase schema stores account-owned learning activity but does not
+include a durable source table.
+
+Reason: Users need saved history and scores without making uploaded PDFs or
+pasted source material permanent server-side data.
+
+### 18. Treat PDF uploads as complete session sources
+
+Decision: A PDF is treated as one source, extracted as selectable text, and
+chunked using the existing session retrieval pipeline. Users can add a PDF and
+pasted text to the same learning space.
+
+Reason: This keeps the original source workflow simple while allowing real study
+documents without requiring a separate document-management system.
