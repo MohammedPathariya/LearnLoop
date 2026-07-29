@@ -5,6 +5,7 @@ import App from './App';
 
 const api = vi.hoisted(() => ({
   addMaterial: vi.fn(),
+  addPdfMaterial: vi.fn(),
   askQuestion: vi.fn(),
   createSession: vi.fn(),
   deleteFlashcardSet: vi.fn(),
@@ -136,7 +137,8 @@ describe('LearnLoop frontend workflows', () => {
 
     expect(screen.getByLabelText('Subject (optional)')).toBeInTheDocument();
     expect(screen.getByLabelText('Source title (optional)')).toBeInTheDocument();
-    expect(screen.getByLabelText('Paste study material (optional)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Or paste study material (optional)')).toBeInTheDocument();
+    expect(screen.getByLabelText('Upload a PDF')).toBeInTheDocument();
   });
 
   test('opens a learning space and switches to its embedded quiz without crashing', async () => {

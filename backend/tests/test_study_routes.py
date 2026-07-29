@@ -1,4 +1,5 @@
 import importlib
+from io import BytesIO
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -126,6 +127,62 @@ def test_session_and_material_crud(client, monkeypatch):
     ).get_json() == []
 
 
+def test_pdf_material_is_indexed_without_database_content(client, backend_app, monkeypatch):
+    from app import study_routes
+    from app.models import StudyMaterial
+
+    monkeypatch.setattr(study_routes, "extract_pdf_text", lambda _: "Private PDF content")
+    monkeypatch.setattr(
+        study_routes,
+        "ingest_study_material",
+        lambda **_: {"source_id": "pdf-source", "chunks_indexed": 1, "total_chunks": 1},
+    )
+    session = client.post(
+        "/study/sessions",
+        headers=VISITOR_HEADERS,
+        json={"title": "PDF study"},
+    ).get_json()
+
+    response = client.post(
+        f"/study/sessions/{session['id']}/materials",
+        headers=VISITOR_HEADERS,
+        data={"title": "Private notes", "file": (BytesIO(b"pdf-bytes"), "notes.pdf")},
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 201
+    material = response.get_json()
+    assert material["source_type"] == "pdf"
+    assert material["title"] == "Private notes"
+    assert material["chunk_count"] == 1
+    with backend_app.app.app_context():
+        assert StudyMaterial.query.count() == 0
+
+    listed = client.get(
+        f"/study/sessions/{session['id']}/materials",
+        headers=VISITOR_HEADERS,
+    ).get_json()
+    assert listed[0]["id"] == material["id"]
+
+
+def test_pdf_material_rejects_non_pdf_files(client):
+    session = client.post(
+        "/study/sessions",
+        headers=VISITOR_HEADERS,
+        json={"title": "PDF study"},
+    ).get_json()
+
+    response = client.post(
+        f"/study/sessions/{session['id']}/materials",
+        headers=VISITOR_HEADERS,
+        data={"file": (BytesIO(b"not a pdf"), "notes.txt")},
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "Upload a PDF file"
+
+
 def test_grounded_question_is_saved_with_sources(client, monkeypatch):
     from app import study_routes
 
@@ -172,6 +229,50 @@ def test_grounded_question_is_saved_with_sources(client, monkeypatch):
     ).get_json()
     assert messages[-2]["role"] == "user"
     assert messages[-1]["role"] == "assistant"
+
+
+def test_pdf_source_text_is_not_saved_in_message_history(client, backend_app, monkeypatch):
+    from app import study_routes
+    from app.models import StudyMessage
+
+    session = client.post(
+        "/study/sessions",
+        headers=VISITOR_HEADERS,
+        json={"title": "Private PDF study"},
+    ).get_json()
+    source = study_routes.register_source(
+        session["id"], "Private PDF", "secret source text", 1, source_id="private-pdf"
+    )
+    monkeypatch.setattr(study_routes, "_ensure_session_index", lambda _: None)
+    monkeypatch.setattr(
+        study_routes,
+        "retrieve_chunks",
+        lambda *_args, **_kwargs: {
+            "chunks": [{
+                "id": f"{source.id}:0",
+                "source_id": source.id,
+                "session_id": session["id"],
+                "chunk_index": 0,
+                "text": "secret source text",
+                "token_count": 3,
+                "score": 0.91,
+            }],
+            "latency_ms": 1.0,
+        },
+    )
+    monkeypatch.setattr(study_routes, "generate_grounded_answer", lambda *_args: "Private answer")
+
+    response = client.post(
+        f"/study/sessions/{session['id']}/ask",
+        headers=VISITOR_HEADERS,
+        json={"question": "What is private?"},
+    )
+
+    assert response.status_code == 201
+    assert response.get_json()["sources"][0]["text"] == "secret source text"
+    with backend_app.app.app_context():
+        saved = StudyMessage.query.filter_by(role="assistant").one()
+        assert "secret source text" not in saved.sources_json
 
 
 def test_demo_progress_and_history_use_saved_artifacts(client):

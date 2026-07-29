@@ -37,6 +37,12 @@ export const getMaterial = (id) => data(api.get(`/study/materials/${id}`));
 export const addMaterial = (sessionId, payload) => data(
   api.post(`/study/sessions/${sessionId}/materials`, payload),
 );
+export const addPdfMaterial = (sessionId, file, title = '') => {
+  const form = new FormData();
+  form.append('file', file);
+  if (title.trim()) form.append('title', title.trim());
+  return data(api.post(`/study/sessions/${sessionId}/materials`, form));
+};
 export const renameMaterial = (id, title) => data(
   api.patch(`/study/materials/${id}`, { title }),
 );

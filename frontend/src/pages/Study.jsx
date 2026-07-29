@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from '../router';
 import {
   addMaterial,
+  addPdfMaterial,
   askQuestion,
   createSession,
   getMessages,
   getSession,
   getSessions,
 } from '../api/learnloopApi';
-import { EmptyState, LoadingBlock, Modal, PageHeader, StatusNotice } from '../components/UI';
+import { EmptyState, FileUploadField, LoadingBlock, Modal, PageHeader, StatusNotice } from '../components/UI';
 import Flashcards from './Flashcards';
 import Practice from './Practice';
 
@@ -27,6 +28,7 @@ function Study() {
   const [showMaterial, setShowMaterial] = useState(false);
   const [materialTitle, setMaterialTitle] = useState('');
   const [materialContent, setMaterialContent] = useState('');
+  const [materialFile, setMaterialFile] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [journeyTitle, setJourneyTitle] = useState('');
   const [showSources, setShowSources] = useState(false);
@@ -80,10 +82,21 @@ function Study() {
     event.preventDefault();
     setError('');
     try {
-      await addMaterial(session.id, { title: materialTitle, content: materialContent });
+      if (materialFile) {
+        await addPdfMaterial(session.id, materialFile, materialTitle);
+      } else if (materialContent.trim()) {
+        await addMaterial(session.id, {
+          title: materialTitle.trim() || 'Pasted study material',
+          content: materialContent,
+        });
+      } else {
+        setError('Choose a PDF or paste study text.');
+        return;
+      }
       setShowMaterial(false);
       setMaterialTitle('');
       setMaterialContent('');
+      setMaterialFile(null);
       await loadSession(session.id);
     } catch (requestError) {
       setError(requestError.response?.data?.error || 'The material could not be indexed.');
@@ -269,9 +282,10 @@ function Study() {
       {showMaterial && (
         <Modal title="Add a source" wide onClose={() => setShowMaterial(false)}>
           <form className="form-stack" onSubmit={handleAddMaterial}>
-            <label>Source title<input value={materialTitle} onChange={(event) => setMaterialTitle(event.target.value)} required /></label>
-            <label>Paste study text<textarea rows="10" value={materialContent} onChange={(event) => setMaterialContent(event.target.value)} required /></label>
-            <p className="field-note">Text paste is supported today. File upload is not available yet.</p>
+            <label>Source title (optional)<input value={materialTitle} onChange={(event) => setMaterialTitle(event.target.value)} placeholder="Defaults to the PDF filename" /></label>
+            <FileUploadField id="study-pdf-upload" file={materialFile} onChange={setMaterialFile} />
+            <label>Or paste study text<textarea rows="8" value={materialContent} onChange={(event) => setMaterialContent(event.target.value)} /></label>
+            <p className="field-note">PDF text is extracted and indexed for this learning session only. Scanned PDFs without selectable text are not supported yet.</p>
             <div className="form-actions">
               <button className="button secondary" type="button" onClick={() => setShowMaterial(false)}>Cancel</button>
               <button className="button primary" type="submit">Add source</button>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from '../router';
 import {
   addMaterial,
+  addPdfMaterial,
   createSession,
   deleteSession,
   getHealth,
@@ -10,7 +11,7 @@ import {
   openDemo,
   updateSession,
 } from '../api/learnloopApi';
-import { EmptyState, LoadingBlock, MetricCard, Modal, PageHeader, ScoreBar, StatusNotice } from '../components/UI';
+import { EmptyState, FileUploadField, LoadingBlock, MetricCard, Modal, PageHeader, ScoreBar, StatusNotice } from '../components/UI';
 
 function Home() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ function Home() {
   const [domain, setDomain] = useState('');
   const [materialTitle, setMaterialTitle] = useState('');
   const [materialContent, setMaterialContent] = useState('');
+  const [materialFile, setMaterialFile] = useState(null);
   const [renameTarget, setRenameTarget] = useState(null);
   const [renameValue, setRenameValue] = useState('');
 
@@ -65,7 +67,9 @@ function Home() {
     setError('');
     try {
       const session = await createSession({ title, domain });
-      if (materialContent.trim()) {
+      if (materialFile) {
+        await addPdfMaterial(session.id, materialFile, materialTitle);
+      } else if (materialContent.trim()) {
         await addMaterial(session.id, {
           title: materialTitle.trim() || `${title} notes`,
           content: materialContent,
@@ -224,12 +228,14 @@ function Home() {
             </label>
             <label>
               Source title (optional)
-              <input value={materialTitle} onChange={(event) => setMaterialTitle(event.target.value)} placeholder="e.g. Lecture notes" />
+              <input value={materialTitle} onChange={(event) => setMaterialTitle(event.target.value)} placeholder="Defaults to the PDF filename" />
             </label>
+            <FileUploadField id="home-pdf-upload" file={materialFile} onChange={setMaterialFile} />
             <label>
-              Paste study material (optional)
+              Or paste study material (optional)
               <textarea rows="7" value={materialContent} onChange={(event) => setMaterialContent(event.target.value)} placeholder="Paste notes now, or add sources later inside Learn." />
             </label>
+            <p className="field-note">Add a PDF or paste text. PDF content is indexed for this learning session only.</p>
             <div className="form-actions">
               <button className="button secondary" type="button" onClick={() => setShowCreate(false)}>Cancel</button>
               <button className="button primary" type="submit">Open learning space</button>

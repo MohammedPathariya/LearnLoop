@@ -788,6 +788,84 @@ p {
   font-weight: 650;
 }
 
+.file-upload-field {
+  position: relative;
+}
+
+.file-upload-dropzone {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px dashed #aebfb1;
+  border-radius: 10px;
+  background: var(--inset);
+  cursor: pointer;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.file-upload-dropzone:hover,
+.file-upload-field:focus-within .file-upload-dropzone {
+  border-color: var(--brand);
+  background: var(--brand-soft);
+}
+
+.file-upload-mark {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  place-items: center;
+  border-radius: 9px;
+  background: var(--brand);
+  color: white;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.file-upload-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.file-upload-copy strong {
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-upload-copy small {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 450;
+}
+
+.file-upload-action {
+  margin-left: auto;
+  padding: 7px 10px;
+  border: 0.5px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--brand);
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.file-upload-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  opacity: 0;
+}
+
 input,
 textarea,
 select,

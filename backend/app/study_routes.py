@@ -23,6 +23,8 @@ from .services.rag import (
     ingest_study_material,
     retrieve_chunks,
 )
+from .services.pdf import extract_pdf_text
+from .services.pdf_sources import clear_sources, get_source, get_sources, register_source, remove_source
 
 
 DEMO_TITLE = "Machine Learning Foundations"
@@ -173,6 +175,8 @@ def register_study_routes(app):
     def study_materials(session_id):
         session = _owned_session(session_id)
         if request.method == "POST":
+            if request.files.get("file") is not None:
+                return _add_pdf_material(session)
             data = request.get_json(force=True)
             title = data.get("title", "").strip()
             content = data.get("content", "").strip()
@@ -211,10 +215,27 @@ def register_study_routes(app):
         if query:
             materials_query = materials_query.filter(StudyMaterial.title.ilike(f"%{query}%"))
         materials = materials_query.order_by(StudyMaterial.created_at.desc()).all()
-        return jsonify([_serialize_material(material) for material in materials])
+        ephemeral = get_sources(session.id)
+        if query:
+            ephemeral = [source for source in ephemeral if query.lower() in source.title.lower()]
+        return jsonify(
+            [_serialize_material(material) for material in materials]
+            + [_serialize_ephemeral_source(source) for source in ephemeral]
+        )
 
     @app.route("/study/materials/<material_id>", methods=["GET", "PATCH", "DELETE"])
     def study_material_detail(material_id):
+        ephemeral = get_source(material_id)
+        if ephemeral is not None:
+            _owned_session(ephemeral.session_id)
+            if request.method == "GET":
+                return jsonify(_serialize_ephemeral_source(ephemeral))
+            if request.method == "DELETE":
+                remove_source(material_id)
+                _rebuild_session_index(ephemeral.session_id)
+                return jsonify({"success": True})
+            return jsonify({"error": "PDF sources cannot be renamed"}), 400
+
         material = db.get_or_404(StudyMaterial, material_id)
         _owned_session(material.session_id)
         if request.method == "GET":
@@ -274,13 +295,16 @@ def register_study_routes(app):
             role="assistant",
             content=answer,
             grounded=bool(chunks),
-            sources_json=json.dumps(chunks),
+            sources_json=json.dumps([_persisted_source(chunk) for chunk in chunks]),
             retrieval_latency_ms=retrieval["latency_ms"],
         )
         session.updated_at = datetime.utcnow()
         db.session.add_all([user_message, assistant_message])
         db.session.commit()
-        return jsonify(_serialize_message(assistant_message)), 201
+        response = _serialize_message(assistant_message)
+        response["sources"] = chunks
+        response["source_count"] = len(chunks)
+        return jsonify(response), 201
 
     @app.route("/study/demo", methods=["POST"])
     def study_demo():
@@ -348,6 +372,7 @@ def register_study_routes(app):
         ]
         topic_scores.sort(key=lambda item: item["score"], reverse=True)
         material_count = StudyMaterial.query.filter(StudyMaterial.session_id.in_(session_ids)).count()
+        material_count += sum(len(get_sources(session_id)) for session_id in session_ids)
         flashcard_count = (
             db.session.query(func.count(SessionFlashcardLink.id))
             .filter(SessionFlashcardLink.session_id.in_(session_ids))
@@ -460,10 +485,14 @@ def get_session_content(session_id: str) -> str:
         .order_by(StudyMaterial.created_at.asc())
         .all()
     )
-    return "\n\n".join(
+    durable_content = "\n\n".join(
         f"{material.title}\n{material.content}"
         for material in materials
     )
+    ephemeral_content = "\n\n".join(
+        f"{source.title}\n{source.text}" for source in get_sources(session_id)
+    )
+    return "\n\n".join(part for part in (durable_content, ephemeral_content) if part)
 
 
 def require_owned_session(session_id: str):
@@ -483,7 +512,9 @@ def _owned_session(session_id):
 
 
 def _serialize_session(session, include_details=False):
-    material_count = StudyMaterial.query.filter_by(session_id=session.id).count()
+    material_count = StudyMaterial.query.filter_by(session_id=session.id).count() + len(
+        get_sources(session.id)
+    )
     message_count = StudyMessage.query.filter_by(session_id=session.id).count()
     quiz_count = SessionQuizLink.query.filter_by(session_id=session.id).count()
     flashcard_count = SessionFlashcardLink.query.filter_by(session_id=session.id).count()
@@ -506,6 +537,9 @@ def _serialize_session(session, include_details=False):
             .order_by(StudyMaterial.created_at.asc())
             .all()
         ]
+        payload["materials"].extend(
+            _serialize_ephemeral_source(source) for source in get_sources(session.id)
+        )
     return payload
 
 
@@ -523,6 +557,53 @@ def _serialize_material(material, include_content=False):
     return payload
 
 
+def _serialize_ephemeral_source(source):
+    return {
+        "id": source.id,
+        "session_id": source.session_id,
+        "title": source.title,
+        "chunk_count": source.chunk_count,
+        "status": "indexed",
+        "source_type": source.source_type,
+        "created_at": source.created_at,
+    }
+
+
+def _add_pdf_material(session):
+    uploaded_file = request.files["file"]
+    filename = (uploaded_file.filename or "").strip()
+    if not filename.lower().endswith(".pdf"):
+        return jsonify({"error": "Upload a PDF file"}), 400
+
+    title = request.form.get("title", "").strip() or filename.rsplit(".", 1)[0]
+    if not title:
+        return jsonify({"error": "title is required"}), 400
+
+    try:
+        text = extract_pdf_text(uploaded_file.read())
+        source = register_source(session.id, title, text, 0)
+        result = ingest_study_material(
+            session_id=session.id,
+            text=text,
+            source_id=source.id,
+        )
+        source = register_source(
+            session.id,
+            title,
+            text,
+            result["chunks_indexed"],
+            source_id=source.id,
+        )
+    except (RuntimeError, ValueError) as exc:
+        if "source" in locals():
+            remove_source(source.id)
+        return jsonify({"error": str(exc)}), 400
+
+    session.updated_at = datetime.utcnow()
+    db.session.commit()
+    return jsonify(_serialize_ephemeral_source(source)), 201
+
+
 def _serialize_message(message):
     sources = json.loads(message.sources_json or "[]")
     return {
@@ -535,6 +616,12 @@ def _serialize_message(message):
         "retrieval_latency_ms": message.retrieval_latency_ms,
         "timestamp": message.timestamp.isoformat(),
     }
+
+
+def _persisted_source(chunk):
+    if get_source(chunk["source_id"]) is None:
+        return chunk
+    return {key: value for key, value in chunk.items() if key != "text"}
 
 
 def _ensure_session_index(session_id):
@@ -556,10 +643,32 @@ def _ensure_session_index(session_id):
     db.session.commit()
 
 
+def _rebuild_session_index(session_id):
+    clear_session_index(session_id)
+    materials = StudyMaterial.query.filter_by(session_id=session_id).all()
+    for material in materials:
+        result = ingest_study_material(
+            session_id=session_id,
+            text=material.content,
+            source_id=material.id,
+        )
+        material.chunk_count = result["chunks_indexed"]
+        material.status = "indexed"
+    for source in get_sources(session_id):
+        ingest_study_material(
+            session_id=session_id,
+            text=source.text,
+            source_id=source.id,
+        )
+    db.session.commit()
+
+
 def _add_source_titles(chunks):
     material_ids = {chunk["source_id"] for chunk in chunks}
     materials = StudyMaterial.query.filter(StudyMaterial.id.in_(material_ids)).all()
     titles = {material.id: material.title for material in materials}
+    if chunks:
+        titles.update({source.id: source.title for source in get_sources(chunks[0]["session_id"])})
     return [
         {**chunk, "title": titles.get(chunk["source_id"], "Study material")}
         for chunk in chunks
@@ -568,6 +677,7 @@ def _add_source_titles(chunks):
 
 def _delete_session_data(session):
     clear_session_index(session.id)
+    clear_sources(session.id)
     quiz_links = SessionQuizLink.query.filter_by(session_id=session.id).all()
     flashcard_links = SessionFlashcardLink.query.filter_by(session_id=session.id).all()
     for link in quiz_links:

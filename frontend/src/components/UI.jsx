@@ -48,6 +48,30 @@ export function StatusNotice({ type = 'info', children }) {
   return <div className={`status-notice ${type}`} role={type === 'error' ? 'alert' : 'status'}>{children}</div>;
 }
 
+export function FileUploadField({ id, file, onChange }) {
+  return (
+    <label className="file-upload-field" htmlFor={id}>
+      <span>Upload a PDF</span>
+      <span className="file-upload-dropzone">
+        <span className="file-upload-mark" aria-hidden="true">↑</span>
+        <span className="file-upload-copy">
+          <strong>{file?.name || 'Choose a PDF file'}</strong>
+          <small>{file ? 'Ready to add to this learning space' : 'PDF files up to 20 MB'}</small>
+        </span>
+        <span className="file-upload-action">{file ? 'Change' : 'Browse'}</span>
+      </span>
+      <input
+        className="file-upload-input"
+        id={id}
+        type="file"
+        aria-label="Upload a PDF"
+        accept="application/pdf,.pdf"
+        onChange={(event) => onChange(event.target.files?.[0] || null)}
+      />
+    </label>
+  );
+}
+
 export function Modal({ title, children, onClose, wide = false }) {
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>

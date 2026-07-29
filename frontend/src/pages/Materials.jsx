@@ -2,13 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from '../router';
 import {
   addMaterial,
+  addPdfMaterial,
   deleteMaterial,
   getMaterial,
   getMaterials,
   getSessions,
   renameMaterial,
 } from '../api/learnloopApi';
-import { EmptyState, LoadingBlock, Modal, PageHeader, SelectField, StatusNotice } from '../components/UI';
+import { EmptyState, FileUploadField, LoadingBlock, Modal, PageHeader, SelectField, StatusNotice } from '../components/UI';
 
 function Materials() {
   const [searchParams] = useSearchParams();
@@ -21,6 +22,7 @@ function Materials() {
   const [showAdd, setShowAdd] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [file, setFile] = useState(null);
   const [selected, setSelected] = useState(null);
   const [renameTarget, setRenameTarget] = useState(null);
   const [renameValue, setRenameValue] = useState('');
@@ -54,9 +56,20 @@ function Materials() {
     event.preventDefault();
     setError('');
     try {
-      await addMaterial(sessionId, { title, content });
+      if (file) {
+        await addPdfMaterial(sessionId, file, title);
+      } else if (content.trim()) {
+        await addMaterial(sessionId, {
+          title: title.trim() || 'Pasted study material',
+          content,
+        });
+      } else {
+        setError('Choose a PDF or paste study text.');
+        return;
+      }
       setTitle('');
       setContent('');
+      setFile(null);
       setShowAdd(false);
       await loadMaterials();
     } catch (requestError) {
@@ -143,9 +156,10 @@ function Materials() {
       {showAdd && (
         <Modal title="Add a source" wide onClose={() => setShowAdd(false)}>
           <form className="form-stack" onSubmit={handleAdd}>
-            <label>Source title<input value={title} onChange={(event) => setTitle(event.target.value)} required /></label>
-            <label>Study text<textarea rows="12" value={content} onChange={(event) => setContent(event.target.value)} required /></label>
-            <p className="field-note">Text paste is supported. File upload has not been implemented.</p>
+            <label>Source title (optional)<input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Defaults to the PDF filename" /></label>
+            <FileUploadField id="materials-pdf-upload" file={file} onChange={setFile} />
+            <label>Or paste study text<textarea rows="10" value={content} onChange={(event) => setContent(event.target.value)} /></label>
+            <p className="field-note">PDF text is indexed for this learning session only. Scanned PDFs without selectable text are not supported yet.</p>
             <div className="form-actions">
               <button className="button secondary" type="button" onClick={() => setShowAdd(false)}>Cancel</button>
               <button className="button primary" type="submit">Add source</button>
