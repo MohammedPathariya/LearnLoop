@@ -66,6 +66,7 @@ const progress = {
 beforeEach(() => {
   vi.clearAllMocks();
   window.localStorage.clear();
+  window.sessionStorage.clear();
   window.history.replaceState({}, '', '/');
   api.openDemo.mockResolvedValue(demoSession);
   api.getSessions.mockResolvedValue([demoSession]);

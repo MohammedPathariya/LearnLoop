@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from '../router';
+import { useAuth } from '../auth/AuthContext';
 import logo from '../assets/learnloop-logo.svg';
 
 const primaryLinks = [
@@ -22,6 +23,7 @@ const utilityLinks = [
 
 function AppShell({ children }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { loading, user } = useAuth();
 
   return (
     <div className="app-shell">
@@ -40,6 +42,11 @@ function AppShell({ children }) {
         </nav>
 
         <div className="utility-nav">
+          {loading ? <span className="account-link">Account</span> : user ? (
+            <NavLink className="account-link" to="/account" title="Open your profile">
+              {user.email}
+            </NavLink>
+          ) : <NavLink className="account-link" to="/login">Sign in</NavLink>}
           <button
             className="utility-menu-button"
             type="button"

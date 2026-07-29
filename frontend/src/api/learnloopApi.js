@@ -1,21 +1,28 @@
 import axios from 'axios';
+import { supabase } from '../auth/supabase';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5050';
 const VISITOR_KEY = 'learnloop-visitor-id';
 
 function getVisitorId() {
-  let visitorId = window.localStorage.getItem(VISITOR_KEY);
+  let visitorId = window.sessionStorage.getItem(VISITOR_KEY);
   if (!visitorId) {
     visitorId = window.crypto?.randomUUID?.()
       || `visitor-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    window.localStorage.setItem(VISITOR_KEY, visitorId);
+    window.sessionStorage.setItem(VISITOR_KEY, visitorId);
   }
   return visitorId;
 }
 
 const api = axios.create({ baseURL: BASE_URL });
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(async (config) => {
   config.headers['X-LearnLoop-Visitor'] = getVisitorId();
+  if (supabase) {
+    const { data } = await supabase.auth.getSession();
+    if (data.session?.access_token) {
+      config.headers.Authorization = `Bearer ${data.session.access_token}`;
+    }
+  }
   return config;
 });
 
