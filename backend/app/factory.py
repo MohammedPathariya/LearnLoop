@@ -4,6 +4,7 @@ from sqlalchemy import event
 
 from .config import Config
 from .extensions import db
+from .auth import register_auth
 from .routes import register_routes
 from .study_routes import register_study_routes
 
@@ -19,6 +20,7 @@ def create_app(config_object=Config):
     CORS(app, origins=app.config["CORS_ORIGINS"])
     db.init_app(app)
     _configure_sqlite(app)
+    register_auth(app)
     register_routes(app)
     register_study_routes(app)
 
