@@ -12,10 +12,10 @@ than inferred from a product demo.
 
 <p>
   <a href="https://learnloop-portfolio.vercel.app/" target="_blank" rel="noopener noreferrer">
-    <img src="docs/assets/live-application.svg" alt="Open the live LearnLoop application in a new tab" width="360">
+    <img src="docs/assets/live-application.svg" alt="Open the live LearnLoop application in a new tab" width="250">
   </a>
   <a href="https://learnloop-api-a1h4.onrender.com/healthz" target="_blank" rel="noopener noreferrer">
-    <img src="docs/assets/render-health.svg" alt="Open the Render API health check in a new tab" width="300">
+    <img src="docs/assets/render-health.svg" alt="Open the Render API health check in a new tab" width="220">
   </a>
 </p>
 
