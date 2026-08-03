@@ -10,7 +10,14 @@ architecture decisions, benchmark reports, load-test reports, and remaining
 limitations are kept together so that technical claims can be inspected rather
 than inferred from a product demo.
 
-[Live application](https://learnloop-portfolio.vercel.app/) · [Render API health](https://learnloop-api-a1h4.onrender.com/healthz)
+<p>
+  <a href="https://learnloop-portfolio.vercel.app/" target="_blank" rel="noopener noreferrer">
+    <img src="docs/assets/live-application.svg" alt="Open the live LearnLoop application in a new tab" width="360">
+  </a>
+  <a href="https://learnloop-api-a1h4.onrender.com/healthz" target="_blank" rel="noopener noreferrer">
+    <img src="docs/assets/render-health.svg" alt="Open the Render API health check in a new tab" width="300">
+  </a>
+</p>
 
 ## Product
 
