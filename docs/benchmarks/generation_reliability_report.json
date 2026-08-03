@@ -1,0 +1,140 @@
+{
+  "benchmark": "LearnLoop generation validation and repair reliability",
+  "model": "gpt-4o-mini",
+  "dataset": "docs/benchmarks/generation_reliability_corpus.json",
+  "dataset_sha256": "d55b1ecb9e1895ca4c80f3e3a7c9b14cab890d9d7eb176f6a5c20745185b5b0f",
+  "case_count": 10,
+  "baseline_definition": "same first model response scored with JSON parsing, schema validation, and exact item-count checks, without repair",
+  "robust_definition": "same first response plus Pydantic validation and at most two repair retries",
+  "metrics": {
+    "baseline_first_pass_valid": 6,
+    "baseline_first_pass_valid_rate": 0.6,
+    "robust_final_valid": 10,
+    "robust_final_valid_rate": 1.0,
+    "repaired_cases": 4,
+    "repair_case_rate": 0.4,
+    "repair_successes": 4,
+    "final_failures": 0,
+    "final_failure_rate": 0.0,
+    "baseline_p50_latency_ms": 2538.0481,
+    "robust_p50_latency_ms": 3361.0815,
+    "total_model_calls": 15
+  },
+  "environment": {
+    "python": "3.11.12",
+    "platform": "macOS-26.5.2-arm64-arm-64bit"
+  },
+  "command": "PYTHONPATH=backend python3.11 scripts/evaluate_generation_reliability.py --dataset docs/benchmarks/generation_reliability_corpus.json --report docs/benchmarks/generation_reliability_report.json --env-file backend/.env",
+  "cases": [
+    {
+      "id": "quiz-bias-variance",
+      "type": "quiz",
+      "count": 3,
+      "baseline_first_pass_valid": false,
+      "final_valid": true,
+      "repair_attempts": 2,
+      "baseline_error": "1 validation error for QuizOutput\nquiz.0.options\n  Input should be a valid list [type=list_type, input_value={'A': 'High variance', 'B...ty', 'D': 'Overfitting'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/list_type",
+      "final_error": null,
+      "elapsed_latency_ms": 13608.288
+    },
+    {
+      "id": "quiz-data-leakage",
+      "type": "quiz",
+      "count": 3,
+      "baseline_first_pass_valid": false,
+      "final_valid": true,
+      "repair_attempts": 1,
+      "baseline_error": "1 validation error for QuizOutput\nquiz.0.options\n  Input should be a valid list [type=list_type, input_value={'A': 'When training data...ocessing is not needed'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/list_type",
+      "final_error": null,
+      "elapsed_latency_ms": 5787.856
+    },
+    {
+      "id": "quiz-classification-metrics",
+      "type": "quiz",
+      "count": 3,
+      "baseline_first_pass_valid": false,
+      "final_valid": true,
+      "repair_attempts": 1,
+      "baseline_error": "1 validation error for QuizOutput\nquiz.0.options\n  Input should be a valid list [type=list_type, input_value={'A': 'The total number o... accuracy of the model'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/list_type",
+      "final_error": null,
+      "elapsed_latency_ms": 5577.739
+    },
+    {
+      "id": "quiz-cross-validation",
+      "type": "quiz",
+      "count": 3,
+      "baseline_first_pass_valid": true,
+      "final_valid": true,
+      "repair_attempts": 0,
+      "baseline_error": null,
+      "final_error": null,
+      "elapsed_latency_ms": 4198.196
+    },
+    {
+      "id": "quiz-regularization",
+      "type": "quiz",
+      "count": 3,
+      "baseline_first_pass_valid": false,
+      "final_valid": true,
+      "repair_attempts": 1,
+      "baseline_error": "1 validation error for QuizOutput\nquiz.0.options\n  Input should be a valid list [type=list_type, input_value={'A': 'It shrinks coeffic...ffect on coefficients.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.11/v/list_type",
+      "final_error": null,
+      "elapsed_latency_ms": 4838.212
+    },
+    {
+      "id": "cards-bias-variance",
+      "type": "flashcards",
+      "count": 4,
+      "baseline_first_pass_valid": true,
+      "final_valid": true,
+      "repair_attempts": 0,
+      "baseline_error": null,
+      "final_error": null,
+      "elapsed_latency_ms": 1306.786
+    },
+    {
+      "id": "cards-data-splits",
+      "type": "flashcards",
+      "count": 4,
+      "baseline_first_pass_valid": true,
+      "final_valid": true,
+      "repair_attempts": 0,
+      "baseline_error": null,
+      "final_error": null,
+      "elapsed_latency_ms": 1508.046
+    },
+    {
+      "id": "cards-classification",
+      "type": "flashcards",
+      "count": 4,
+      "baseline_first_pass_valid": true,
+      "final_valid": true,
+      "repair_attempts": 0,
+      "baseline_error": null,
+      "final_error": null,
+      "elapsed_latency_ms": 1562.425
+    },
+    {
+      "id": "cards-cross-validation",
+      "type": "flashcards",
+      "count": 4,
+      "baseline_first_pass_valid": true,
+      "final_valid": true,
+      "repair_attempts": 0,
+      "baseline_error": null,
+      "final_error": null,
+      "elapsed_latency_ms": 2523.967
+    },
+    {
+      "id": "cards-regularization",
+      "type": "flashcards",
+      "count": 4,
+      "baseline_first_pass_valid": true,
+      "final_valid": true,
+      "repair_attempts": 0,
+      "baseline_error": null,
+      "final_error": null,
+      "elapsed_latency_ms": 1676.788
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "description": "Ten fixed quiz and flashcard prompts for comparing raw JSON acceptance with LearnLoop validation and repair.",
+  "cases": [
+    {"id": "quiz-bias-variance", "type": "quiz", "content": "Underfitting uses a model that is too simple and has high bias. Overfitting models training-specific noise and often has high variance. Regularization limits unnecessary complexity.", "count": 3},
+    {"id": "quiz-data-leakage", "type": "quiz", "content": "Data leakage occurs when information unavailable at prediction time influences training or evaluation. Preprocessing should be fitted only on training data inside each cross-validation fold.", "count": 3},
+    {"id": "quiz-classification-metrics", "type": "quiz", "content": "Precision is the fraction of predicted positives that are correct. Recall is the fraction of actual positives that are found. F1 is the harmonic mean of precision and recall.", "count": 3},
+    {"id": "quiz-cross-validation", "type": "quiz", "content": "K-fold cross-validation divides training data into k folds, trains on k minus one folds, and validates on the remaining fold. The process rotates the validation fold.", "count": 3},
+    {"id": "quiz-regularization", "type": "quiz", "content": "L1 regularization can drive coefficients to zero, while L2 regularization shrinks coefficients smoothly. Both discourage excessive model complexity.", "count": 3},
+    {"id": "cards-bias-variance", "type": "flashcards", "content": "Bias is systematic error from an overly simple model. Variance is sensitivity to fluctuations in the training sample. The bias-variance tradeoff balances both.", "count": 4},
+    {"id": "cards-data-splits", "type": "flashcards", "content": "Training data fits model parameters. Validation data supports model and hyperparameter selection. Test data should remain untouched until final evaluation.", "count": 4},
+    {"id": "cards-classification", "type": "flashcards", "content": "Precision measures how many predicted positives are correct. Recall measures how many actual positives are found. F1 combines precision and recall.", "count": 4},
+    {"id": "cards-cross-validation", "type": "flashcards", "content": "In k-fold cross-validation, the data is divided into k folds and each fold serves as validation once while the others are used for training.", "count": 4},
+    {"id": "cards-regularization", "type": "flashcards", "content": "L1 regularization can produce sparse coefficients. L2 regularization shrinks coefficients without usually making them exactly zero.", "count": 4}
+  ]
+}

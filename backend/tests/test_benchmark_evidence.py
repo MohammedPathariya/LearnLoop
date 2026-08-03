@@ -7,6 +7,8 @@ ROOT = Path(__file__).resolve().parents[2]
 DATASET_PATH = ROOT / "docs/benchmarks/real_project_corpus.json"
 ABLATION_DATASET_PATH = ROOT / "docs/benchmarks/retrieval_ablation_corpus.json"
 ABLATION_REPORT_PATH = ROOT / "docs/benchmarks/retrieval_ablation_report.json"
+GENERATION_DATASET_PATH = ROOT / "docs/benchmarks/generation_reliability_corpus.json"
+GENERATION_REPORT_PATH = ROOT / "docs/benchmarks/generation_reliability_report.json"
 
 
 def test_real_project_benchmark_sources_match_pinned_hashes():
@@ -58,3 +60,15 @@ def test_retrieval_ablation_report_matches_pinned_dataset():
     assert len(report["runs"]) == 6
     assert all(run["status"] == "passed" for run in report["runs"])
     assert all(run["failure_rate"] == 0 for run in report["runs"])
+
+
+def test_generation_reliability_report_matches_pinned_dataset():
+    dataset_sha256 = hashlib.sha256(GENERATION_DATASET_PATH.read_bytes()).hexdigest()
+    dataset = json.loads(GENERATION_DATASET_PATH.read_text())
+    report = json.loads(GENERATION_REPORT_PATH.read_text())
+
+    assert report["dataset_sha256"] == dataset_sha256
+    assert report["case_count"] == len(dataset["cases"]) == 10
+    assert report["metrics"]["baseline_first_pass_valid"] == 6
+    assert report["metrics"]["robust_final_valid"] == 10
+    assert report["metrics"]["final_failures"] == 0

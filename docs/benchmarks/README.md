@@ -81,3 +81,27 @@ The checked-in report is [`retrieval_ablation_report.json`](retrieval_ablation_r
 For this ten-query corpus, Recall@5 reached 1.0 for every chunk configuration;
 the smaller 256-token configuration used twice as many stored chunks as the
 768-token configuration, while all configurations had zero query failures.
+
+## Generation reliability benchmark
+
+`generation_reliability_corpus.json` contains ten fixed cases: five quizzes and
+five flashcard sets. Each case uses the same first `gpt-4o-mini` response for
+both comparisons:
+
+- Baseline: JSON parsing, Pydantic schema validation, and exact item-count
+  validation without repair.
+- LearnLoop: the same validation followed by at most two repair retries when
+  the first response is invalid.
+
+The real run produced this result:
+
+| Pipeline | Valid cases | Repair cases | Final failures |
+| --- | ---: | ---: | ---: |
+| Baseline first pass | 6/10 | 0 | 4/10 |
+| LearnLoop after repair | 10/10 | 4/10 | 0/10 |
+
+All four invalid first-pass cases were repaired successfully. The run made 15
+model calls in total and recorded a 2.54-second baseline median and 3.36-second
+median including repair calls. This is a ten-case reliability evaluation, not a
+user engagement or production error-rate measurement. The full per-case report
+is [`generation_reliability_report.json`](generation_reliability_report.json).
