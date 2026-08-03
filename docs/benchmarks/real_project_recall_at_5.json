@@ -2,7 +2,7 @@
   "benchmark": "LearnLoop real project corpus Recall@5",
   "model": "sentence-transformers/all-MiniLM-L6-v2",
   "dataset": "docs/benchmarks/real_project_corpus.json",
-  "dataset_sha256": "170a77a8471518f236bbcca870c5f1bd13efb4aedc23fc8679f51e85ade712cf",
+  "dataset_sha256": "1b7856cdbe21eafc3ee7cb56848f8110cf54806ecece10980e8c92001c7a4282",
   "document_count": 7,
   "chunk_count": 27,
   "corpus": [

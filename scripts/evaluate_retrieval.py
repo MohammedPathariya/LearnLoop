@@ -1,6 +1,7 @@
 import argparse
 import hashlib
 import json
+import os
 import platform
 import sys
 import time
@@ -100,13 +101,13 @@ def run(dataset_path: Path, report_path: Path, benchmark_name: str, top_k: int) 
             f"hits_at_{top_k}": hits,
             "p50_latency_ms": round(percentile(latencies, 50), 3),
             "p95_latency_ms": round(percentile(latencies, 95), 4),
-            "latency_definition": "retrieval_chunks query embedding plus FAISS search, excluding ingestion",
+            "latency_definition": "retrieval_chunks query embedding plus vector-store search, excluding ingestion",
             "environment": {
                 "python": platform.python_version(),
                 "platform": platform.platform(),
                 "numpy": _version("numpy"),
-                "faiss": _version("faiss"),
-                "sentence_transformers": _version("sentence_transformers"),
+                "embedding_provider": os.getenv("EMBEDDING_PROVIDER", "http"),
+                "vector_store": os.getenv("VECTOR_STORE", "pgvector"),
             },
             "command": f"HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=backend python3.11 scripts/evaluate_retrieval.py --dataset {_display_path(dataset_path)} --report {_display_path(report_path)} --benchmark-name '{benchmark_name}' --top-k {top_k}",
             "queries": results,

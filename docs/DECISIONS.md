@@ -149,3 +149,26 @@ path. One worker avoids duplicating the model and keeps its in-memory FAISS
 index coherent within a process. The HTTP boundary preserves a migration path
 when Render memory, model download time, or scale-out requirements justify
 Modal.
+
+### 20. Move all production and local RAG inference to Modal
+
+Decision: LearnLoop no longer supports local MiniLM or FAISS as an application
+runtime. Modal owns document chunking and `all-MiniLM-L6-v2` embeddings. Tests
+use a deterministic fake provider instead of downloading the model.
+
+Reason: The Render Free service already hosts other portfolio projects and the
+in-process model caused unacceptable startup and memory pressure. Removing the
+model and FAISS dependencies makes the API process smaller and keeps the
+deployed architecture identical to the tested remote-provider path.
+
+### 21. Persist chunks and vectors in Supabase pgvector
+
+Decision: The API stores source chunks and 384-dimensional embeddings in
+Supabase pgvector and retrieves them with cosine-distance search. Session
+indexes are no longer process memory and do not reset after restart or
+scale-out.
+
+Reason: Modal solves model placement, not data persistence. Durable vectors are
+required for retrieval to remain available after Render restarts. Persisting
+chunks also changes source retention from the earlier session-only design and
+must remain visible in the privacy and deployment documentation.

@@ -1,13 +1,13 @@
 {
   "description": "Real-document retrieval benchmark built from LearnLoop implementation files and project documents checked into this repository.",
   "documents": [
-    {"source_id": "rag-service", "path": "backend/app/services/rag.py", "sha256": "767f95780c4418c763a4c08e9ba32a4023d5e2f7395e585a1578fbd09d6cce69"},
+    {"source_id": "rag-service", "path": "backend/app/services/rag.py", "sha256": "56957f047b430494134fcad866b2edf6b85aea521b0d6a7e99131ba22130fbae"},
     {"source_id": "routes", "path": "backend/app/routes.py", "sha256": "1b578144a62db8624d7db677f83cdc252a7264cf7a707d6c35f699c9f5d8a55e"},
     {"source_id": "factory", "path": "backend/app/factory.py", "sha256": "5e6c019479b274d60ed0a4a207e5cce09e80a66f7c939fcb4c08e6bca2e5bebb"},
     {"source_id": "config", "path": "backend/app/config.py", "sha256": "bcb518ff0cddf2cbbe895a361eaad98ec136a8152d6702327a8bc56c602437c0"},
     {"source_id": "week-plan", "path": "docs/WEEK_PLAN.md", "sha256": "270b4da708e5e77ffa200ef2e9ee0ae88b890c4ffbcb59ecb16371af57b10671"},
-    {"source_id": "decisions", "path": "docs/DECISIONS.md", "sha256": "554ee3d65e73bd570b288dc01412dd0f084e50bd332f424235e392c34846b89d"},
-    {"source_id": "deployment", "path": "docs/DEPLOYMENT.md", "sha256": "a0d60bafbd523d4e67da44be9641c71329e453720722f69c3e302d9b6cee0f42"}
+    {"source_id": "decisions", "path": "docs/DECISIONS.md", "sha256": "7955cbdb86f4ebdf41b461e87cb064587a4f0e6e8b4a926dfc585db824eaf207"},
+    {"source_id": "deployment", "path": "docs/DEPLOYMENT.md", "sha256": "24626e8db409c2a81afe1ee9eadf15da57b1b54ce01947fb48e90fc798a958b0"}
   ],
   "queries": [
     {"id": "embedding-model", "question": "Which local model is used to create the document embeddings?", "expected_chunk_id": "rag-service:0"},

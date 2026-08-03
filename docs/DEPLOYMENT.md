@@ -1,37 +1,74 @@
 # LearnLoop Deployment Notes
 
-This document describes the Day 8 deployment architecture and the limits of
-the current hosted design. Public deployment is not marked complete until the
-frontend-to-backend workflow is verified from the deployed frontend URL.
+This document describes the production architecture for the deployed core
+app. Public deployment is complete only after the frontend, Render API, Modal
+embedding service, and Supabase pgvector database have passed the smoke test.
 
 ## Selected architecture
 
 - Vercel serves the Vite frontend from `frontend/`.
-- Render serves the Flask API from `backend/` with Python 3.11.12, one Gunicorn
-  worker, two threads, and a 120-second request timeout.
-- Render runs `all-MiniLM-L6-v2` in-process for the first deployment. The model
-  is downloaded on the first embedding request and remains in that worker's
-  memory.
-- FAISS indexes remain in memory and are scoped by `session_id`.
-- OpenAI handles generation only. It is not required for health, reads, or
-  retrieval setup, but it is required for answer, quiz, flashcard, and chat
-  generation.
-- Supabase Postgres is the intended production database. SQLite is retained for
-  local development and Docker only.
+- Render serves the Flask API from `backend/` with Python 3.11.12, one
+  Gunicorn worker, two threads, and a 120-second request timeout.
+- Modal owns `all-MiniLM-L6-v2`, document chunking, and embedding generation.
+- Supabase Postgres with pgvector stores document chunks and 384-dimensional
+  embeddings durably.
+- OpenAI handles answer, quiz, flashcard, and conversation generation only.
+- The frontend does not receive the Modal token or any database credentials.
 
-The backend also supports `EMBEDDING_PROVIDER=http`. That provider sends
-`POST {EMBEDDING_SERVICE_URL}/embed` with `{"texts": [...]}` and expects
-`{"embeddings": [[...], ...]}`. The service must use the same model, weighted
-MiniLM-window pooling, and vector dimension as the local provider. Selecting
-this mode sends the chunk text to that service, so the privacy boundary changes
-from local-only embeddings to provider-mediated embeddings. Modal is not
-selected or deployed in this phase because no authenticated Modal deployment
-was available for verification.
+The backend no longer loads MiniLM, uses FAISS, or keeps a process-local RAG
+index. A Render restart or scale-out does not erase indexed material because
+chunks and vectors are stored in Supabase.
+
+Existing SQLAlchemy materials created before this cutover are reindexed once on
+their first grounded question if their session has no pgvector rows. New
+materials are written to pgvector during ingestion.
+
+## Modal embedding service
+
+The service source is `modal/embedding_service.py`. It exposes:
+
+```text
+POST /index  {"text": "..."}
+POST /embed  {"texts": ["..."]}
+```
+
+`/index` chunks source text with 512-token chunks and 64-token overlap, pools
+MiniLM-sized windows, and returns chunks with 384-dimensional normalized
+vectors. `/embed` creates query vectors. Both endpoints require a Bearer token.
+
+Create a Modal secret containing `EMBEDDING_SERVICE_TOKEN`, then deploy:
+
+```bash
+modal secret create learnloop-embedding EMBEDDING_SERVICE_TOKEN=<random-token>
+modal deploy modal/embedding_service.py
+```
+
+Record the deployed `/index` or `/embed` base URL in Render as
+`EMBEDDING_SERVICE_URL`. Modal web endpoints can cold-start after inactivity,
+and deployed web functions have a maximum HTTP request timeout of 150 seconds.
+See the [Modal Web Functions documentation](https://modal.com/docs/guide/webhooks)
+and [Modal timeout documentation](https://modal.com/docs/guide/webhook-timeouts).
+
+## Supabase pgvector
+
+Apply the migration:
+
+```text
+supabase/migrations/20260803180000_create_study_chunks_vector.sql
+```
+
+It enables pgvector and creates `public.study_chunk` with a `vector(384)`
+column. The current API enforces session ownership before reading or changing
+chunks. Database-level RLS for this legacy Flask table is a remaining security
+hardening task.
+
+Source text is now durable because grounded answer generation needs the stored
+chunk text. This is a deliberate change from the earlier ephemeral PDF/source
+design and must be disclosed in the portfolio documentation.
 
 ## Render configuration
 
-`render.yaml` defines the service. The Render service should use the repository
-root and the Blueprint file, or equivalent manual settings:
+`render.yaml` defines the service:
 
 ```text
 Root directory: backend
@@ -41,98 +78,88 @@ Health check: /healthz
 Python: 3.11.12
 ```
 
-Required Render environment variables:
+Required Render variables:
 
 ```text
 PYTHON_VERSION=3.11.12
-EMBEDDING_PROVIDER=local
-CORS_ORIGINS=["https://<actual-vercel-project>.vercel.app"]
+EMBEDDING_PROVIDER=http
+EMBEDDING_SERVICE_URL=https://<modal-endpoint>.modal.run
+EMBEDDING_SERVICE_TOKEN=<secret>
+EMBEDDING_SERVICE_TIMEOUT_SECONDS=120
+VECTOR_STORE=pgvector
+CORS_ORIGINS=["https://learnloop-portfolio.vercel.app"]
 OPENAI_API_KEY=<secret>
 SUPABASE_DB_URI=<Supabase Postgres URI>
 SUPABASE_URL=<Supabase project URL>
 SUPABASE_PUBLISHABLE_KEY=<Supabase publishable key>
 ```
 
-Do not set `CORS_ORIGINS` to a quoted JSON string containing extra shell
-quotes. It must be a JSON array whose origin exactly matches the browser origin.
+Do not commit or paste secrets into source files. `CORS_ORIGINS` must be a JSON
+array containing the exact browser origin.
 
-The Docker image uses the same Python major/minor version and one worker. This
-keeps local production-style behavior close to Render. Docker's named
-`learnloop-data` volume persists SQLite files across container restarts, but a
-Render filesystem should not be treated as durable application storage.
+Removing PyTorch, Sentence Transformers, Transformers, and FAISS from the
+Render dependency set reduces model memory and image size. Render Free can
+still sleep after inactivity, so the first frontend request may wait for the
+Render service to wake before Modal is called.
 
 ## Vercel configuration
 
-Set the Vercel project root directory to `frontend`. `frontend/vercel.json`
-uses `npm run build` and publishes the Vite `build` directory. Set:
+Set the Vercel project root directory to `frontend` and configure:
 
 ```text
-VITE_API_URL=https://<actual-render-service>.onrender.com
+VITE_API_URL=https://learnloop-api-a1h4.onrender.com
 ```
 
-After the frontend URL is known, put that exact origin in Render's
-`CORS_ORIGINS`, redeploy the backend, then redeploy the frontend if its API URL
-changed.
+The frontend uses the same API routes as local development. No Modal or
+Supabase secret belongs in Vercel.
 
-## Memory, cold-start, and scale tradeoffs
+## Persistence, cold starts, and scale
 
-In-process MiniLM keeps raw study text out of a hosted vector database and has
-no network hop for embeddings after warm-up. Its costs are model download time,
-model memory per worker, and duplicated model memory if workers are increased.
-The selected one-worker configuration is a compatibility choice, not a
-capacity guarantee.
+| Component | Restart behavior | Main tradeoff |
+| --- | --- | --- |
+| Render API | Stateless API process | Free-tier wake delay |
+| Modal model | Container may cold-start | Lower Render memory, extra network hop |
+| Supabase pgvector | Durable chunks and vectors | Database cost and source retention |
+| Vercel frontend | Static build persists | Separate deployment environment |
 
-Each worker has its own FAISS session registry. A restart, deploy, crash, or
-scale-out sends the user to an empty retrieval index even when the SQL database
-still contains the learning session and material metadata. The current core
-app therefore needs a re-ingestion path after such an event. Durable source
-storage is intentionally not added in Day 8.
+Modal does not provide vector persistence. Supabase pgvector provides that.
+Modal only moves chunking and model inference away from Render. A first request
+can still encounter both Render and Modal cold starts.
 
-The HTTP provider boundary can move model memory and model downloads to Modal
-or another service. That trades Render memory for network latency, provider
-cold starts, service authentication, request-size limits, and another failure
-mode. It does not by itself make FAISS indexes durable or solve scale-out
-session affinity.
+The current vector search uses exact cosine-distance ordering, which is
+appropriate for this portfolio-sized corpus. An HNSW or IVFFlat index should be
+considered only if the stored corpus grows materially.
 
 ## Verification commands
 
-Run from the canonical checkout:
+Run local application tests:
 
 ```bash
 cd /Users/mohammedpathariya/Docs/IUB\ Docs/Projects/LearnLoop
 bash scripts/precommit-check.sh
 bash scripts/verify.sh
-HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=backend \
-  python3.11 scripts/evaluate_retrieval.py \
-  --dataset docs/benchmarks/real_project_corpus.json \
-  --report /private/tmp/learnloop-recall5.json \
-  --benchmark-name 'LearnLoop real project corpus Recall@5' \
-  --top-k 5
 ```
 
-For local production-style API testing:
+Verify the Modal contract before changing Render variables:
 
 ```bash
-gunicorn --chdir backend --bind 127.0.0.1:5050 \
-  --workers 1 --threads 2 --timeout 120 wsgi:app
+curl -X POST "$EMBEDDING_SERVICE_URL/index" \
+  -H "Authorization: Bearer $EMBEDDING_SERVICE_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Mitosis divides one parent cell into two daughter cells."}'
 ```
 
-For the existing Locust evidence:
+Then verify the public app in this order:
 
-```bash
-locust -f load_tests/locustfile.py --headless \
-  --users 500 --spawn-rate 25 --run-time 2m \
-  --host http://127.0.0.1:5050 \
-  --csv /private/tmp/learnloop-locust
-```
+1. `GET https://learnloop-api-a1h4.onrender.com/healthz` returns `OK`.
+2. Open `https://learnloop-portfolio.vercel.app/`.
+3. Log in and open the existing demo/account learning space.
+4. Ask a grounded question and confirm sources are returned.
+5. Create a new workspace and add pasted material.
+6. Wait for indexing to finish and ask a question about that material.
+7. Restart or redeploy Render, reopen the workspace, and repeat retrieval.
+8. Generate a quiz or flashcards.
 
-The checked-in 500-user report remains local-only. It used a shared Mac for
-the backend and load generator and must not be presented as hosted capacity.
-Until a separate load generator targets the public Render URL, no production
-throughput or user-capacity claim is verified.
-
-## Deployment status
-
-As of 2026-08-03, deployment provider authentication was not available in the
-Codex session. No Render, Vercel, or Modal service was created or publicly
-verified. Do not add placeholder deployment URLs to `docs/STATUS.md`.
+The existing 500-user Locust report remains local-only evidence. It must not be
+described as hosted capacity without a separate load generator targeting the
+public architecture.
