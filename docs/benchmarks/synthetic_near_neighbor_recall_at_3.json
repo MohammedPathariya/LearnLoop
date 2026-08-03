@@ -111,8 +111,8 @@
   "top_k": 3,
   "recall_at_3": 1.0,
   "hits_at_3": 13,
-  "p50_latency_ms": 12.89,
-  "p95_latency_ms": 543.597,
+  "p50_latency_ms": 6.654,
+  "p95_latency_ms": 8.1752,
   "latency_definition": "retrieval_chunks query embedding plus FAISS search, excluding ingestion",
   "environment": {
     "python": "3.11.12",
@@ -132,7 +132,7 @@
         "biology-diffusion:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 32.437
+      "latency_ms": 9.899
     },
     {
       "id": "diffusion",
@@ -143,7 +143,7 @@
         "biology-osmosis:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 12.751
+      "latency_ms": 6.94
     },
     {
       "id": "meiosis",
@@ -154,7 +154,7 @@
         "biology-cell-cycle:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 7.363
+      "latency_ms": 6.23
     },
     {
       "id": "mitosis",
@@ -165,7 +165,7 @@
         "biology-cell-cycle:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 12.825
+      "latency_ms": 7.026
     },
     {
       "id": "opportunity-cost",
@@ -176,7 +176,7 @@
         "economics-inflation:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 12.89
+      "latency_ms": 5.523
     },
     {
       "id": "sunk-cost",
@@ -187,7 +187,7 @@
         "economics-marginal-cost:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 8.037
+      "latency_ms": 6.945
     },
     {
       "id": "inflation",
@@ -198,7 +198,7 @@
         "economics-opportunity-cost:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 12.684
+      "latency_ms": 6.542
     },
     {
       "id": "binary-search",
@@ -209,7 +209,7 @@
         "computer-science-hash-table:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 1310.337
+      "latency_ms": 6.243
     },
     {
       "id": "linear-search",
@@ -220,7 +220,7 @@
         "computer-science-binary-search:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 13.264
+      "latency_ms": 6.83
     },
     {
       "id": "tcp",
@@ -231,7 +231,7 @@
         "biology-active-transport:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 11.196
+      "latency_ms": 6.232
     },
     {
       "id": "udp",
@@ -242,7 +242,7 @@
         "biology-active-transport:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 15.69
+      "latency_ms": 6.878
     },
     {
       "id": "newton-second-law",
@@ -253,7 +253,7 @@
         "physics-kinetic-energy:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 14.319
+      "latency_ms": 6.654
     },
     {
       "id": "momentum",
@@ -264,8 +264,8 @@
         "physics-momentum:0"
       ],
       "hit_at_3": true,
-      "latency_ms": 14.353
+      "latency_ms": 6.299
     }
   ],
-  "elapsed_seconds": 7.525166708015604
+  "elapsed_seconds": 4.440427082998212
 }

@@ -1,11 +1,12 @@
 # LearnLoop Revamp Status
 
-Last updated: 2026-07-29
+Last updated: 2026-08-03
 
 ## Current State
 
 - Days 1 through 7 are complete locally on `main`.
-- Day 8 deployment compatibility and public deployment have not started.
+- Day 8 deployment compatibility is implemented locally. Public deployment is
+  blocked on authenticated access to the deployment providers.
 - The backend is a Flask package under `backend/app/`, with `backend/main.py`
   for local development and `backend/wsgi.py` for Gunicorn.
 - Persistent learning spaces, materials, grounded conversations, quizzes,
@@ -37,6 +38,12 @@ Last updated: 2026-07-29
   remains Day 8 scope.
 - `backend/conversations.db` is untracked runtime state. Docker Compose persists
   SQLite data in the `learnloop-data` named volume.
+- The selected first-host architecture is Vercel, Render, and in-process local
+  MiniLM on one Render worker. `EMBEDDING_PROVIDER=http` is available for a
+  future Modal or remote embedding service.
+- `render.yaml`, `backend/.python-version`, and `frontend/vercel.json` define
+  the deployable configuration. No public URLs are recorded because no service
+  was created or verified.
 
 ## Current Verification
 
@@ -56,8 +63,8 @@ The active retrieval measurements are:
 | Benchmark | Result | p50 | p95 |
 | --- | --- | --- | --- |
 | Synthetic near-neighbor Recall@3 | 1.0, 13/13 | 12.89 ms | 543.597 ms |
-| Real-project Recall@3 | 0.6, 6/10 | 15.433 ms | 30.8652 ms |
-| Real-project Recall@5 | 0.9, 9/10 | 15.826 ms | 33.8765 ms |
+| Real-project Recall@3 | 0.6, 6/10 | 5.716 ms | 6.7814 ms |
+| Real-project Recall@5 | 0.9, 9/10 | 6.822 ms | 11.4189 ms |
 
 The real-project benchmark uses seven checked-in files and 27 chunks. Every
 source is pinned by SHA-256, and reports include the dataset hash, corpus hashes,
@@ -108,8 +115,40 @@ advisory surface were removed by the Vite, Vitest, and Wouter migration.
 | 5 | Load testing and WAL validation | Measured locally; deployed rerun pending |
 | 6 | Complete frontend redesign | Complete locally |
 | 7 | Accounts and PDF sources | Complete locally |
-| 8 | Deployment compatibility and production deployment | Not started |
+| 8 | Deployment compatibility and production deployment | Compatibility complete; hosted deployment blocked |
 | 9 | Additional product features | Not started |
+
+## Day 8 Deployment Evidence
+
+Local checks completed during this phase:
+
+- RAG provider boundary supports local MiniLM and an authenticated HTTP
+  embedding provider without changing the ingest/retrieve contract.
+- Render configuration pins Python 3.11.12 and one Gunicorn worker to avoid
+  per-worker model duplication.
+- Refreshed real-corpus reports and frontend benchmark data pass the pinned
+  source/report consistency checks.
+- A separate local Gunicorn smoke with 10 Locust users for 10 seconds produced
+  598 requests, zero failures, 62.68 requests per second, aggregate p50 4 ms,
+  and aggregate p95 9 ms. This is a short local smoke, not hosted capacity.
+- `bash scripts/verify.sh` passed after moving the pre-existing generated
+  `frontend/build` directory to `/private/tmp`: 31 backend tests, 6 frontend
+  tests, production build, and 0 frontend audit vulnerabilities.
+- Provider access check reached the Render sign-in page. No credentials were
+  entered and no external deployment side effect was performed.
+
+Remaining risks and required public verification:
+
+- Create the Render service and set `CORS_ORIGINS`, OpenAI, Supabase, and
+  database variables.
+- Create the Vercel project with `VITE_API_URL` pointing at Render.
+- Verify `/healthz`, session creation, pasted/PDF ingestion, retrieval,
+  grounded answer, quiz or flashcard generation, and authenticated account
+  calls from the public frontend.
+- Verify restart behavior and decide whether session re-ingestion is acceptable
+  or whether durable indexes are required before scale-out.
+- Run Locust from a separate machine against the public backend. Keep the
+  existing 500-user result labeled local-only until then.
 
 ## Immediate Next Step
 

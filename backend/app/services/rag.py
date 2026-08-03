@@ -4,6 +4,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from .embeddings import build_embedding_provider
+
 
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 CHUNK_TOKENS = 512
@@ -27,6 +29,7 @@ class SessionIndex:
 
 
 _embedding_model = None
+_embedding_provider = None
 _session_indexes: dict[str, SessionIndex] = {}
 
 
@@ -36,7 +39,7 @@ def chunk_text(text: str, chunk_tokens: int = CHUNK_TOKENS, overlap: int = CHUNK
     if overlap < 0 or overlap >= chunk_tokens:
         raise ValueError("overlap must be non-negative and smaller than chunk_tokens")
 
-    tokenizer = get_embedding_model().tokenizer
+    tokenizer = get_embedding_tokenizer()
     tokens = _encode_content_tokens(tokenizer, text)
     if not tokens:
         return []
@@ -68,7 +71,7 @@ def ingest_study_material(session_id: str, text: str, source_id: str | None = No
             source_id=source,
             chunk_index=index,
             text=chunk,
-            token_count=len(_encode_content_tokens(get_embedding_model().tokenizer, chunk)),
+            token_count=len(_encode_content_tokens(get_embedding_tokenizer(), chunk)),
         )
         for index, chunk in enumerate(chunk_texts)
     ]
@@ -170,9 +173,38 @@ def _create_faiss_index(dimensions: int):
 
 
 def _embed(texts: list[str]):
-    model = get_embedding_model()
-    tokenizer = model.tokenizer
-    window_tokens = model.max_seq_length - tokenizer.num_special_tokens_to_add(pair=False)
+    return get_embedding_provider().embed(texts)
+
+
+def get_embedding_model():
+    global _embedding_model
+
+    if _embedding_model is None:
+        try:
+            from sentence_transformers import SentenceTransformer
+        except ImportError as exc:
+            raise RuntimeError(
+                "sentence-transformers is not installed. Run: python3.11 -m pip install -r backend/requirements.txt"
+            ) from exc
+        _embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
+    return _embedding_model
+
+
+def get_embedding_provider():
+    global _embedding_provider
+
+    if _embedding_provider is None:
+        _embedding_provider = build_embedding_provider()
+    return _embedding_provider
+
+
+def get_embedding_tokenizer():
+    return get_embedding_provider().tokenizer
+
+
+def _embed_local(texts: list[str]):
+    tokenizer = get_embedding_model().tokenizer
+    window_tokens = get_embedding_model().max_seq_length - tokenizer.num_special_tokens_to_add(pair=False)
     if window_tokens <= 0:
         raise RuntimeError("Embedding model has no usable content-token capacity")
 
@@ -188,7 +220,7 @@ def _embed(texts: list[str]):
             window_weights.append(len(window))
 
     window_embeddings = np.asarray(
-        model.encode(window_texts, convert_to_numpy=True, normalize_embeddings=False),
+        get_embedding_model().encode(window_texts, convert_to_numpy=True, normalize_embeddings=False),
         dtype="float32",
     )
     embeddings = np.zeros((len(texts), window_embeddings.shape[1]), dtype="float32")
@@ -198,20 +230,6 @@ def _embed(texts: list[str]):
         weights[owner] += weight
 
     return embeddings / weights[:, None]
-
-
-def get_embedding_model():
-    global _embedding_model
-
-    if _embedding_model is None:
-        try:
-            from sentence_transformers import SentenceTransformer
-        except ImportError as exc:
-            raise RuntimeError(
-                "sentence-transformers is not installed. Run: python3.11 -m pip install -r backend/requirements.txt"
-            ) from exc
-        _embedding_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
-    return _embedding_model
 
 
 def _encode_content_tokens(tokenizer, text: str) -> list[int]:

@@ -19,7 +19,7 @@ hashes, query labels, retrieved chunk IDs, and latency samples.
 
 | Test ID | Result | p50 | p95 |
 | --- | --- | --- | --- |
-| `synthetic-near-neighbor-recall-at-3` | 1.0, 13/13 | 12.89 ms | 543.597 ms |
+| `synthetic-near-neighbor-recall-at-3` | 1.0, 13/13 | 6.654 ms | 8.1752 ms |
 | `real-project-recall-at-3` | 0.6, 6/10 | 15.433 ms | 30.8652 ms |
 | `real-project-recall-at-5` | 0.9, 9/10 | 15.826 ms | 33.8765 ms |
 

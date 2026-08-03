@@ -2,14 +2,14 @@
   "benchmark": "LearnLoop real project corpus Recall@5",
   "model": "sentence-transformers/all-MiniLM-L6-v2",
   "dataset": "docs/benchmarks/real_project_corpus.json",
-  "dataset_sha256": "665212a33c55fce41f7638a282bd867ff9b2de70b8e24349b84d81f0355ce6fd",
+  "dataset_sha256": "170a77a8471518f236bbcca870c5f1bd13efb4aedc23fc8679f51e85ade712cf",
   "document_count": 7,
   "chunk_count": 27,
   "corpus": [
     {
       "source_id": "rag-service",
       "path": "backend/app/services/rag.py",
-      "sha256": "eecbc081a28d05b8c6463b6ae088c2381c0fe38ca22dcafac9e8a23c8baa75e5"
+      "sha256": "767f95780c4418c763a4c08e9ba32a4023d5e2f7395e585a1578fbd09d6cce69"
     },
     {
       "source_id": "routes",
@@ -19,12 +19,12 @@
     {
       "source_id": "factory",
       "path": "backend/app/factory.py",
-      "sha256": "726b264e2e154aa3fdb53b55fe11a630e7127f3487749df90b6979b5688a9995"
+      "sha256": "5e6c019479b274d60ed0a4a207e5cce09e80a66f7c939fcb4c08e6bca2e5bebb"
     },
     {
       "source_id": "config",
       "path": "backend/app/config.py",
-      "sha256": "e06060340d6f1beed48d905ef55867f9af296d71c7fec10bf8b658a70b6ab9dd"
+      "sha256": "bcb518ff0cddf2cbbe895a361eaad98ec136a8152d6702327a8bc56c602437c0"
     },
     {
       "source_id": "week-plan",
@@ -46,8 +46,8 @@
   "top_k": 5,
   "recall_at_5": 0.9,
   "hits_at_5": 9,
-  "p50_latency_ms": 15.826,
-  "p95_latency_ms": 33.8765,
+  "p50_latency_ms": 6.822,
+  "p95_latency_ms": 11.4189,
   "latency_definition": "retrieval_chunks query embedding plus FAISS search, excluding ingestion",
   "environment": {
     "python": "3.11.12",
@@ -63,26 +63,26 @@
       "expected_chunk_id": "rag-service:0",
       "retrieved_chunk_ids": [
         "rag-service:3",
-        "rag-service:4",
         "week-plan:2",
-        "decisions:0",
-        "decisions:2"
+        "week-plan:3",
+        "rag-service:4",
+        "decisions:3"
       ],
       "hit_at_5": false,
-      "latency_ms": 32.441
+      "latency_ms": 11.638
     },
     {
       "id": "retrieval-latency",
       "expected_chunk_id": "rag-service:2",
       "retrieved_chunk_ids": [
         "week-plan:0",
-        "week-plan:3",
         "decisions:0",
         "week-plan:1",
-        "rag-service:2"
+        "rag-service:2",
+        "week-plan:3"
       ],
       "hit_at_5": true,
-      "latency_ms": 26.938
+      "latency_ms": 6.203
     },
     {
       "id": "session-isolation",
@@ -95,7 +95,7 @@
         "routes:0"
       ],
       "hit_at_5": true,
-      "latency_ms": 35.051
+      "latency_ms": 6.399
     },
     {
       "id": "retrieve-validation",
@@ -103,12 +103,12 @@
       "retrieved_chunk_ids": [
         "routes:3",
         "rag-service:1",
+        "rag-service:2",
         "rag-service:0",
-        "routes:4",
-        "rag-service:2"
+        "routes:4"
       ],
       "hit_at_5": true,
-      "latency_ms": 12.842
+      "latency_ms": 7.309
     },
     {
       "id": "grounded-answer",
@@ -121,20 +121,20 @@
         "decisions:0"
       ],
       "hit_at_5": true,
-      "latency_ms": 7.405
+      "latency_ms": 6.149
     },
     {
       "id": "sqlite-wal",
       "expected_chunk_id": "factory:0",
       "retrieved_chunk_ids": [
-        "decisions:3",
-        "config:0",
         "decisions:0",
+        "deployment:0",
+        "week-plan:1",
         "factory:0",
-        "deployment:0"
+        "decisions:3"
       ],
       "hit_at_5": true,
-      "latency_ms": 10.552
+      "latency_ms": 6.427
     },
     {
       "id": "database-fallback",
@@ -142,12 +142,12 @@
       "retrieved_chunk_ids": [
         "deployment:0",
         "config:0",
-        "decisions:3",
         "deployment:1",
-        "factory:0"
+        "factory:0",
+        "decisions:3"
       ],
       "hit_at_5": true,
-      "latency_ms": 6.772
+      "latency_ms": 7.291
     },
     {
       "id": "day-five-goal",
@@ -160,7 +160,7 @@
         "routes:6"
       ],
       "hit_at_5": true,
-      "latency_ms": 10.408
+      "latency_ms": 6.92
     },
     {
       "id": "privacy-choice",
@@ -170,24 +170,24 @@
         "decisions:0",
         "deployment:0",
         "decisions:2",
-        "week-plan:0"
+        "week-plan:2"
       ],
       "hit_at_5": true,
-      "latency_ms": 21.07
+      "latency_ms": 6.724
     },
     {
       "id": "generation-key",
       "expected_chunk_id": "deployment:0",
       "retrieved_chunk_ids": [
+        "week-plan:2",
         "decisions:2",
         "deployment:0",
         "decisions:0",
-        "deployment:1",
-        "week-plan:2"
+        "decisions:3"
       ],
       "hit_at_5": true,
-      "latency_ms": 18.811
+      "latency_ms": 11.151
     }
   ],
-  "elapsed_seconds": 4.923781582998345
+  "elapsed_seconds": 4.797673749999376
 }

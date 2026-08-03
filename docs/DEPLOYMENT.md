@@ -1,95 +1,138 @@
 # LearnLoop Deployment Notes
 
-This file tracks local, Docker, and hosted deployment behavior during the revamp.
+This document describes the Day 8 deployment architecture and the limits of
+the current hosted design. Public deployment is not marked complete until the
+frontend-to-backend workflow is verified from the deployed frontend URL.
 
-## Current Setup
+## Selected architecture
 
-Backend:
+- Vercel serves the Vite frontend from `frontend/`.
+- Render serves the Flask API from `backend/` with Python 3.11.12, one Gunicorn
+  worker, two threads, and a 120-second request timeout.
+- Render runs `all-MiniLM-L6-v2` in-process for the first deployment. The model
+  is downloaded on the first embedding request and remains in that worker's
+  memory.
+- FAISS indexes remain in memory and are scoped by `session_id`.
+- OpenAI handles generation only. It is not required for health, reads, or
+  retrieval setup, but it is required for answer, quiz, flashcard, and chat
+  generation.
+- Supabase Postgres is the intended production database. SQLite is retained for
+  local development and Docker only.
 
-- Framework: Flask
-- Smoke-test entry point: `backend/main.py`
-- WSGI entry point: `backend/wsgi.py`, which creates the schema before serving
-- Production-style local/Docker server: Gunicorn with four workers and two
-  threads per worker
-- App package: `backend/app/`
-- Default local fallback DB: untracked `backend/conversations.db`
-- Optional production DB: `SUPABASE_DB_URI`
-- Direct local startup with `python3.11 backend/main.py` uses SQLite even if a
-  stale remote URI exists in `backend/.env`. Set `LEARNLOOP_USE_REMOTE_DB=1`
-  only when deliberately testing a valid remote database URI.
-- Required model key: `OPENAI_API_KEY` only for generation endpoints.
+The backend also supports `EMBEDDING_PROVIDER=http`. That provider sends
+`POST {EMBEDDING_SERVICE_URL}/embed` with `{"texts": [...]}` and expects
+`{"embeddings": [[...], ...]}`. The service must use the same model, weighted
+MiniLM-window pooling, and vector dimension as the local provider. Selecting
+this mode sends the chunk text to that service, so the privacy boundary changes
+from local-only embeddings to provider-mediated embeddings. Modal is not
+selected or deployed in this phase because no authenticated Modal deployment
+was available for verification.
 
-Frontend:
+## Render configuration
 
-- Framework: React 19 with Vite
-- API base URL: `VITE_API_URL`, falling back to `http://localhost:5050`
-- Production build command: `npm run build`
+`render.yaml` defines the service. The Render service should use the repository
+root and the Blueprint file, or equivalent manual settings:
 
-Docker:
-
-- Root compose file: `docker-compose.yml`
-- Backend service builds from `./backend`
-- Frontend service builds from `./frontend`
-- SQLite data is persisted in the `learnloop-data` named volume.
-
-## Verified Baseline
-
-- Frontend production build succeeds with `npm run build`.
-- Backend imports and `/healthz` returns `200 OK` without requiring `OPENAI_API_KEY`.
-- Backend read endpoints return `200` against local SQLite data.
-- Backend write-path smoke checks pass against a temporary SQLite DB.
-- Local SQLite connections use `PRAGMA journal_mode=WAL`.
-- The Day 5 500-user local run used WAL plus `PRAGMA busy_timeout=5000`; it
-  completed with no SQLite lock errors, but the single-process local setup had
-  21.52% client-side transport failures under the load generator.
-
-## Known Deployment Issues
-
-- Docker Compose maps backend host port `5050` to container port `5050`, matching the Flask default.
-- README and the frontend default both point to the backend at `http://localhost:5050`.
-- The backend no longer requires `OPENAI_API_KEY` during import; missing keys fail only when generation endpoints need the model client.
-- Docker sets `SUPABASE_DB_URI=sqlite:////app/data/conversations.db` and mounts
-  the named volume at `/app/data`.
-- The Flask development server is for smoke checks only. Load tests must use
-  the Gunicorn command documented in `load_tests/README.md`.
-
-## Deployment Goals
-
-- Local dev should start with one documented command.
-- Docker Compose should expose backend and frontend on documented ports.
-- Tests do not require a real OpenAI key.
-- Local SQLite uses WAL mode.
-- 500-user load-test evidence is local-only until repeated with a production
-  WSGI server and a separate load-generator process or host.
-- Hosted deployment configuration should be documented after the backend structure settles.
-
-## Commands To Reverify
-
-Full local guardrail suite:
-
-```bash
-cd /Users/mohammedpathariya/Docs/IUB\ Docs/Projects/LearnLoop
-bash scripts/verify.sh
+```text
+Root directory: backend
+Build command: pip install -r requirements.txt
+Start command: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 120 wsgi:app
+Health check: /healthz
+Python: 3.11.12
 ```
 
-Pre-commit guardrail suite:
+Required Render environment variables:
+
+```text
+PYTHON_VERSION=3.11.12
+EMBEDDING_PROVIDER=local
+CORS_ORIGINS=["https://<actual-vercel-project>.vercel.app"]
+OPENAI_API_KEY=<secret>
+SUPABASE_DB_URI=<Supabase Postgres URI>
+SUPABASE_URL=<Supabase project URL>
+SUPABASE_PUBLISHABLE_KEY=<Supabase publishable key>
+```
+
+Do not set `CORS_ORIGINS` to a quoted JSON string containing extra shell
+quotes. It must be a JSON array whose origin exactly matches the browser origin.
+
+The Docker image uses the same Python major/minor version and one worker. This
+keeps local production-style behavior close to Render. Docker's named
+`learnloop-data` volume persists SQLite files across container restarts, but a
+Render filesystem should not be treated as durable application storage.
+
+## Vercel configuration
+
+Set the Vercel project root directory to `frontend`. `frontend/vercel.json`
+uses `npm run build` and publishes the Vite `build` directory. Set:
+
+```text
+VITE_API_URL=https://<actual-render-service>.onrender.com
+```
+
+After the frontend URL is known, put that exact origin in Render's
+`CORS_ORIGINS`, redeploy the backend, then redeploy the frontend if its API URL
+changed.
+
+## Memory, cold-start, and scale tradeoffs
+
+In-process MiniLM keeps raw study text out of a hosted vector database and has
+no network hop for embeddings after warm-up. Its costs are model download time,
+model memory per worker, and duplicated model memory if workers are increased.
+The selected one-worker configuration is a compatibility choice, not a
+capacity guarantee.
+
+Each worker has its own FAISS session registry. A restart, deploy, crash, or
+scale-out sends the user to an empty retrieval index even when the SQL database
+still contains the learning session and material metadata. The current core
+app therefore needs a re-ingestion path after such an event. Durable source
+storage is intentionally not added in Day 8.
+
+The HTTP provider boundary can move model memory and model downloads to Modal
+or another service. That trades Render memory for network latency, provider
+cold starts, service authentication, request-size limits, and another failure
+mode. It does not by itself make FAISS indexes durable or solve scale-out
+session affinity.
+
+## Verification commands
+
+Run from the canonical checkout:
 
 ```bash
 cd /Users/mohammedpathariya/Docs/IUB\ Docs/Projects/LearnLoop
 bash scripts/precommit-check.sh
+bash scripts/verify.sh
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONPATH=backend \
+  python3.11 scripts/evaluate_retrieval.py \
+  --dataset docs/benchmarks/real_project_corpus.json \
+  --report /private/tmp/learnloop-recall5.json \
+  --benchmark-name 'LearnLoop real project corpus Recall@5' \
+  --top-k 5
 ```
 
-```bash
-cd /Users/mohammedpathariya/Docs/IUB\ Docs/Projects/LearnLoop
-docker compose up --build
-```
+For local production-style API testing:
 
 ```bash
-cd frontend
-npm run build
+gunicorn --chdir backend --bind 127.0.0.1:5050 \
+  --workers 1 --threads 2 --timeout 120 wsgi:app
 ```
 
+For the existing Locust evidence:
+
 ```bash
-cd backend
-python main.py
+locust -f load_tests/locustfile.py --headless \
+  --users 500 --spawn-rate 25 --run-time 2m \
+  --host http://127.0.0.1:5050 \
+  --csv /private/tmp/learnloop-locust
 ```
+
+The checked-in 500-user report remains local-only. It used a shared Mac for
+the backend and load generator and must not be presented as hosted capacity.
+Until a separate load generator targets the public Render URL, no production
+throughput or user-capacity claim is verified.
+
+## Deployment status
+
+As of 2026-08-03, deployment provider authentication was not available in the
+Codex session. No Render, Vercel, or Modal service was created or publicly
+verified. Do not add placeholder deployment URLs to `docs/STATUS.md`.

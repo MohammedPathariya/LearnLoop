@@ -136,3 +136,16 @@ pasted text to the same learning space.
 
 Reason: This keeps the original source workflow simple while allowing real study
 documents without requiring a separate document-management system.
+
+### 19. Start production with one Render worker and an embedding provider boundary
+
+Decision: The first hosted backend uses local MiniLM in-process with one Render
+worker. The RAG service now selects either this local provider or an HTTP
+embedding provider through `EMBEDDING_PROVIDER`.
+
+Reason: A remote Modal service adds another deployment, authentication, timeout,
+cold-start, and failure dependency before the core app has a verified public
+path. One worker avoids duplicating the model and keeps its in-memory FAISS
+index coherent within a process. The HTTP boundary preserves a migration path
+when Render memory, model download time, or scale-out requirements justify
+Modal.
