@@ -11,7 +11,15 @@ services:
       - key: PYTHON_VERSION
         value: 3.11.12
       - key: EMBEDDING_PROVIDER
-        value: local
+        value: http
+      - key: EMBEDDING_SERVICE_URL
+        sync: false
+      - key: EMBEDDING_SERVICE_TOKEN
+        sync: false
+      - key: EMBEDDING_SERVICE_TIMEOUT_SECONDS
+        value: 120
+      - key: VECTOR_STORE
+        value: pgvector
       - key: CORS_ORIGINS
         sync: false
       - key: OPENAI_API_KEY
