@@ -7,7 +7,12 @@ import numpy as np
 
 
 class EmbeddingProvider(Protocol):
-    def index_document(self, text: str) -> list[dict]: ...
+    def index_document(
+        self,
+        text: str,
+        chunk_size: int = 512,
+        chunk_overlap: int = 64,
+    ) -> list[dict]: ...
 
     def embed_query(self, text: str) -> np.ndarray: ...
 
@@ -18,8 +23,20 @@ class HttpEmbeddingProvider:
         self.token = token
         self.timeout = timeout
 
-    def index_document(self, text: str) -> list[dict]:
-        payload = self._post("/index", {"text": text})
+    def index_document(
+        self,
+        text: str,
+        chunk_size: int = 512,
+        chunk_overlap: int = 64,
+    ) -> list[dict]:
+        payload = self._post(
+            "/index",
+            {
+                "text": text,
+                "chunk_size": chunk_size,
+                "chunk_overlap": chunk_overlap,
+            },
+        )
         chunks = payload.get("chunks") if isinstance(payload, dict) else None
         if not isinstance(chunks, list) or not chunks:
             raise RuntimeError("Embedding service returned no document chunks")

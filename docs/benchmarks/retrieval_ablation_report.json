@@ -1,0 +1,854 @@
+{
+  "benchmark": "LearnLoop retrieval chunking and top-k ablation",
+  "dataset": "docs/benchmarks/retrieval_ablation_corpus.json",
+  "dataset_sha256": "1f0183e2a4d78678599616c6d9bd60276edf9d5428ea9dd6550c02ff46c85e6c",
+  "evaluation_unit": "source-level recall: a query is a hit when any returned chunk belongs to its expected source",
+  "latency_definition": "retrieval query embedding plus vector-store search, excluding ingestion",
+  "failure_rate_definition": "failed query attempts divided by total queries; ingestion failures fail every query for that configuration",
+  "environment": {
+    "python": "3.11.12",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "embedding_provider": "http",
+    "vector_store": "pgvector",
+    "embedding_service_url_configured": true,
+    "database_uri_configured": true
+  },
+  "command": "PYTHONPATH=backend python3.11 scripts/evaluate_retrieval_ablation.py --dataset docs/benchmarks/retrieval_ablation_corpus.json --report docs/benchmarks/retrieval_ablation_report.json --chunk-configs 256:32,512:64,768:96 --top-k 3,5",
+  "runs": [
+    {
+      "chunk_size": 256,
+      "chunk_overlap": 32,
+      "top_k": 3,
+      "status": "passed",
+      "document_count": 4,
+      "chunk_count": 36,
+      "query_count": 10,
+      "hits": 10,
+      "recall": 1.0,
+      "failed_queries": 0,
+      "failure_rate": 0.0,
+      "p50_latency_ms": 711.8925,
+      "p95_latency_ms": 722.1069,
+      "errors": [],
+      "queries": [
+        {
+          "id": "system-boundary",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "architecture",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 680.797
+        },
+        {
+          "id": "chunking-policy",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "deployment",
+            "decisions",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 715.848
+        },
+        {
+          "id": "grounded-retrieval",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "architecture",
+            "deployment"
+          ],
+          "hit": true,
+          "latency_ms": 720.298
+        },
+        {
+          "id": "modal-endpoints",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "decisions",
+            "deployment",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 714.768
+        },
+        {
+          "id": "vector-schema",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "decisions",
+            "deployment",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 723.587
+        },
+        {
+          "id": "render-config",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "status",
+            "status",
+            "deployment"
+          ],
+          "hit": true,
+          "latency_ms": 709.405
+        },
+        {
+          "id": "repair-loop",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "decisions",
+            "architecture",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 714.38
+        },
+        {
+          "id": "benchmark-policy",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "architecture",
+            "status",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 613.155
+        },
+        {
+          "id": "deployment-gap",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "status",
+            "deployment",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 633.607
+        },
+        {
+          "id": "historical-baseline",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "deployment",
+            "architecture",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 605.093
+        }
+      ],
+      "run_elapsed_seconds": 39.4771
+    },
+    {
+      "chunk_size": 256,
+      "chunk_overlap": 32,
+      "top_k": 5,
+      "status": "passed",
+      "document_count": 4,
+      "chunk_count": 36,
+      "query_count": 10,
+      "hits": 10,
+      "recall": 1.0,
+      "failed_queries": 0,
+      "failure_rate": 0.0,
+      "p50_latency_ms": 617.1505,
+      "p95_latency_ms": 673.2379,
+      "errors": [],
+      "queries": [
+        {
+          "id": "system-boundary",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "architecture",
+            "architecture",
+            "architecture",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 608.8
+        },
+        {
+          "id": "chunking-policy",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "deployment",
+            "decisions",
+            "architecture",
+            "decisions",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 712.459
+        },
+        {
+          "id": "grounded-retrieval",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "architecture",
+            "deployment",
+            "decisions",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 623.429
+        },
+        {
+          "id": "modal-endpoints",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "decisions",
+            "deployment",
+            "decisions",
+            "decisions",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 610.336
+        },
+        {
+          "id": "vector-schema",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "decisions",
+            "deployment",
+            "decisions",
+            "architecture",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 602.816
+        },
+        {
+          "id": "render-config",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "status",
+            "status",
+            "deployment",
+            "decisions",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 625.301
+        },
+        {
+          "id": "repair-loop",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "decisions",
+            "architecture",
+            "decisions",
+            "deployment",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 600.342
+        },
+        {
+          "id": "benchmark-policy",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "architecture",
+            "status",
+            "decisions",
+            "architecture",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 622.977
+        },
+        {
+          "id": "deployment-gap",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "status",
+            "deployment",
+            "decisions",
+            "decisions",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 622.464
+        },
+        {
+          "id": "historical-baseline",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "deployment",
+            "architecture",
+            "status",
+            "architecture",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 611.837
+        }
+      ],
+      "run_elapsed_seconds": 45.7181
+    },
+    {
+      "chunk_size": 512,
+      "chunk_overlap": 64,
+      "top_k": 3,
+      "status": "passed",
+      "document_count": 4,
+      "chunk_count": 18,
+      "query_count": 10,
+      "hits": 9,
+      "recall": 0.9,
+      "failed_queries": 0,
+      "failure_rate": 0.0,
+      "p50_latency_ms": 677.7395,
+      "p95_latency_ms": 719.0666,
+      "errors": [],
+      "queries": [
+        {
+          "id": "system-boundary",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "architecture",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 636.378
+        },
+        {
+          "id": "chunking-policy",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "deployment",
+            "deployment",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 719.981
+        },
+        {
+          "id": "grounded-retrieval",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "deployment",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 707.804
+        },
+        {
+          "id": "modal-endpoints",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "deployment",
+            "decisions",
+            "deployment"
+          ],
+          "hit": true,
+          "latency_ms": 614.967
+        },
+        {
+          "id": "vector-schema",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "decisions",
+            "status",
+            "decisions"
+          ],
+          "hit": false,
+          "latency_ms": 627.131
+        },
+        {
+          "id": "render-config",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "decisions",
+            "deployment",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 707.793
+        },
+        {
+          "id": "repair-loop",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "decisions",
+            "architecture",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 621.696
+        },
+        {
+          "id": "benchmark-policy",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "architecture",
+            "decisions",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 717.949
+        },
+        {
+          "id": "deployment-gap",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "decisions",
+            "status",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 710.854
+        },
+        {
+          "id": "historical-baseline",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "status",
+            "deployment",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 647.686
+        }
+      ],
+      "run_elapsed_seconds": 13.9039
+    },
+    {
+      "chunk_size": 512,
+      "chunk_overlap": 64,
+      "top_k": 5,
+      "status": "passed",
+      "document_count": 4,
+      "chunk_count": 18,
+      "query_count": 10,
+      "hits": 10,
+      "recall": 1.0,
+      "failed_queries": 0,
+      "failure_rate": 0.0,
+      "p50_latency_ms": 611.8275,
+      "p95_latency_ms": 701.6966,
+      "errors": [],
+      "queries": [
+        {
+          "id": "system-boundary",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "architecture",
+            "decisions",
+            "status",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 681.731
+        },
+        {
+          "id": "chunking-policy",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "deployment",
+            "deployment",
+            "architecture",
+            "decisions",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 612.473
+        },
+        {
+          "id": "grounded-retrieval",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "deployment",
+            "decisions",
+            "status",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 611.182
+        },
+        {
+          "id": "modal-endpoints",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "deployment",
+            "decisions",
+            "deployment",
+            "architecture",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 606.571
+        },
+        {
+          "id": "vector-schema",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "decisions",
+            "status",
+            "decisions",
+            "deployment",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 626.625
+        },
+        {
+          "id": "render-config",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "decisions",
+            "deployment",
+            "decisions",
+            "status",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 605.418
+        },
+        {
+          "id": "repair-loop",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "decisions",
+            "architecture",
+            "decisions",
+            "status",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 623.401
+        },
+        {
+          "id": "benchmark-policy",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "architecture",
+            "decisions",
+            "status",
+            "architecture",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 718.032
+        },
+        {
+          "id": "deployment-gap",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "decisions",
+            "status",
+            "decisions",
+            "decisions",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 605.033
+        },
+        {
+          "id": "historical-baseline",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "status",
+            "deployment",
+            "architecture",
+            "decisions",
+            "deployment"
+          ],
+          "hit": true,
+          "latency_ms": 598.212
+        }
+      ],
+      "run_elapsed_seconds": 20.1929
+    },
+    {
+      "chunk_size": 768,
+      "chunk_overlap": 96,
+      "top_k": 3,
+      "status": "passed",
+      "document_count": 4,
+      "chunk_count": 12,
+      "query_count": 10,
+      "hits": 7,
+      "recall": 0.7,
+      "failed_queries": 0,
+      "failure_rate": 0.0,
+      "p50_latency_ms": 608.851,
+      "p95_latency_ms": 647.0874,
+      "errors": [],
+      "queries": [
+        {
+          "id": "system-boundary",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "architecture",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 606.626
+        },
+        {
+          "id": "chunking-policy",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "deployment",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 608.903
+        },
+        {
+          "id": "grounded-retrieval",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "deployment",
+            "architecture",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 636.391
+        },
+        {
+          "id": "modal-endpoints",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "deployment",
+            "decisions",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 608.799
+        },
+        {
+          "id": "vector-schema",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "decisions",
+            "architecture",
+            "architecture"
+          ],
+          "hit": false,
+          "latency_ms": 617.27
+        },
+        {
+          "id": "render-config",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "deployment",
+            "status",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 607.513
+        },
+        {
+          "id": "repair-loop",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "decisions",
+            "status",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 603.357
+        },
+        {
+          "id": "benchmark-policy",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "architecture",
+            "architecture",
+            "status"
+          ],
+          "hit": false,
+          "latency_ms": 591.938
+        },
+        {
+          "id": "deployment-gap",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "status",
+            "decisions",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 655.839
+        },
+        {
+          "id": "historical-baseline",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "deployment",
+            "architecture",
+            "decisions"
+          ],
+          "hit": false,
+          "latency_ms": 613.275
+        }
+      ],
+      "run_elapsed_seconds": 12.4571
+    },
+    {
+      "chunk_size": 768,
+      "chunk_overlap": 96,
+      "top_k": 5,
+      "status": "passed",
+      "document_count": 4,
+      "chunk_count": 12,
+      "query_count": 10,
+      "hits": 10,
+      "recall": 1.0,
+      "failed_queries": 0,
+      "failure_rate": 0.0,
+      "p50_latency_ms": 682.9565,
+      "p95_latency_ms": 723.9292,
+      "errors": [],
+      "queries": [
+        {
+          "id": "system-boundary",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "architecture",
+            "decisions",
+            "status",
+            "deployment"
+          ],
+          "hit": true,
+          "latency_ms": 637.757
+        },
+        {
+          "id": "chunking-policy",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "architecture",
+            "deployment",
+            "decisions",
+            "status",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 631.426
+        },
+        {
+          "id": "grounded-retrieval",
+          "expected_source_id": "architecture",
+          "retrieved_source_ids": [
+            "deployment",
+            "architecture",
+            "architecture",
+            "decisions",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 651.466
+        },
+        {
+          "id": "modal-endpoints",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "deployment",
+            "decisions",
+            "architecture",
+            "deployment",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 663.217
+        },
+        {
+          "id": "vector-schema",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "decisions",
+            "architecture",
+            "architecture",
+            "architecture",
+            "deployment"
+          ],
+          "hit": true,
+          "latency_ms": 639.637
+        },
+        {
+          "id": "render-config",
+          "expected_source_id": "deployment",
+          "retrieved_source_ids": [
+            "deployment",
+            "status",
+            "decisions",
+            "status",
+            "deployment"
+          ],
+          "hit": true,
+          "latency_ms": 702.696
+        },
+        {
+          "id": "repair-loop",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "decisions",
+            "status",
+            "architecture",
+            "status",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 708.431
+        },
+        {
+          "id": "benchmark-policy",
+          "expected_source_id": "decisions",
+          "retrieved_source_ids": [
+            "architecture",
+            "architecture",
+            "status",
+            "decisions",
+            "decisions"
+          ],
+          "hit": true,
+          "latency_ms": 713.221
+        },
+        {
+          "id": "deployment-gap",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "status",
+            "decisions",
+            "status",
+            "decisions",
+            "architecture"
+          ],
+          "hit": true,
+          "latency_ms": 715.259
+        },
+        {
+          "id": "historical-baseline",
+          "expected_source_id": "status",
+          "retrieved_source_ids": [
+            "deployment",
+            "architecture",
+            "decisions",
+            "deployment",
+            "status"
+          ],
+          "hit": true,
+          "latency_ms": 731.023
+        }
+      ],
+      "run_elapsed_seconds": 19.2517
+    }
+  ],
+  "elapsed_seconds": 85.9121
+}

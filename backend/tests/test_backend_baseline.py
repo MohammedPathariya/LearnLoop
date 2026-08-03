@@ -10,6 +10,7 @@ from sqlalchemy import text
 def backend_app(tmp_path, monkeypatch):
     db_path = tmp_path / "learnloop-test.db"
     monkeypatch.setenv("SUPABASE_DB_URI", f"sqlite:///{db_path}")
+    monkeypatch.setenv("VECTOR_STORE", "memory")
     monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1]))
 
     sys.modules.pop("main", None)
@@ -147,6 +148,7 @@ def test_openai_key_is_not_required_to_import_backend(tmp_path, monkeypatch):
     db_path = tmp_path / "learnloop-no-key.db"
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     monkeypatch.setenv("SUPABASE_DB_URI", f"sqlite:///{db_path}")
+    monkeypatch.setenv("VECTOR_STORE", "memory")
     monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1]))
 
     sys.modules.pop("main", None)
@@ -167,6 +169,7 @@ def test_sqlite_uses_wal_journal_mode(backend_app):
 def test_wsgi_entrypoint_creates_schema(tmp_path, monkeypatch):
     db_path = tmp_path / "learnloop-wsgi.db"
     monkeypatch.setenv("SUPABASE_DB_URI", f"sqlite:///{db_path}")
+    monkeypatch.setenv("VECTOR_STORE", "memory")
     monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1]))
 
     sys.modules.pop("wsgi", None)

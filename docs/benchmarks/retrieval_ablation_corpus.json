@@ -1,0 +1,21 @@
+{
+  "description": "Pinned documentation corpus for chunk-size, overlap, and top-k retrieval ablations against the current Modal and pgvector architecture.",
+  "documents": [
+    {"source_id": "architecture", "path": "docs/ARCHITECTURE.md", "sha256": "90acd14f897ebd05d66e250231ee3f3f74f5ddba94f0a2ca90e739e9d8c3e953"},
+    {"source_id": "deployment", "path": "docs/DEPLOYMENT.md", "sha256": "24626e8db409c2a81afe1ee9eadf15da57b1b54ce01947fb48e90fc798a958b0"},
+    {"source_id": "decisions", "path": "docs/DECISIONS.md", "sha256": "7955cbdb86f4ebdf41b461e87cb064587a4f0e6e8b4a926dfc585db824eaf207"},
+    {"source_id": "status", "path": "docs/STATUS.md", "sha256": "8c1971a312ffcc2dc4e90dbff63e69e0df17840a58c54786757f3611257a710d"}
+  ],
+  "queries": [
+    {"id": "system-boundary", "question": "Which service is the API trust boundary for the browser, provider credentials, and database access?", "expected_source_id": "architecture"},
+    {"id": "chunking-policy", "question": "What token chunk size and overlap does the embedding service use?", "expected_source_id": "architecture"},
+    {"id": "grounded-retrieval", "question": "How does a grounded question move from the browser through retrieval to answer generation?", "expected_source_id": "architecture"},
+    {"id": "modal-endpoints", "question": "Which HTTP endpoints does the Modal embedding service expose?", "expected_source_id": "deployment"},
+    {"id": "vector-schema", "question": "What vector dimension and persistence mechanism does the hosted retrieval store use?", "expected_source_id": "deployment"},
+    {"id": "render-config", "question": "How is the Render API process configured for the hosted deployment?", "expected_source_id": "deployment"},
+    {"id": "repair-loop", "question": "How many repair retries are allowed for invalid generated quiz and flashcard output?", "expected_source_id": "decisions"},
+    {"id": "benchmark-policy", "question": "What evidence must be measured before retrieval metrics appear in portfolio claims?", "expected_source_id": "decisions"},
+    {"id": "deployment-gap", "question": "Which hosted deployment steps remain unverified?", "expected_source_id": "status"},
+    {"id": "historical-baseline", "question": "Which retrieval benchmark results are historical and not evidence for current Modal or pgvector performance?", "expected_source_id": "status"}
+  ]
+}

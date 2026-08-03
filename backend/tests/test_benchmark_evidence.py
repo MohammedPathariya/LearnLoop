@@ -5,6 +5,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DATASET_PATH = ROOT / "docs/benchmarks/real_project_corpus.json"
+ABLATION_DATASET_PATH = ROOT / "docs/benchmarks/retrieval_ablation_corpus.json"
+ABLATION_REPORT_PATH = ROOT / "docs/benchmarks/retrieval_ablation_report.json"
 
 
 def test_real_project_benchmark_sources_match_pinned_hashes():
@@ -34,3 +36,25 @@ def test_real_project_reports_and_frontend_data_match():
         assert frontend_result["p95_ms"] == report["p95_latency_ms"]
         assert frontend_result["documents"] == report["document_count"]
         assert frontend_result["chunks"] == report["chunk_count"]
+
+
+def test_retrieval_ablation_sources_and_queries_are_pinned():
+    dataset = json.loads(ABLATION_DATASET_PATH.read_text())
+    source_ids = {document["source_id"] for document in dataset["documents"]}
+
+    assert len(dataset["documents"]) == 4
+    assert len(dataset["queries"]) == 10
+    for document in dataset["documents"]:
+        source_bytes = (ROOT / document["path"]).read_bytes()
+        assert hashlib.sha256(source_bytes).hexdigest() == document["sha256"]
+    assert all(query["expected_source_id"] in source_ids for query in dataset["queries"])
+
+
+def test_retrieval_ablation_report_matches_pinned_dataset():
+    dataset_sha256 = hashlib.sha256(ABLATION_DATASET_PATH.read_bytes()).hexdigest()
+    report = json.loads(ABLATION_REPORT_PATH.read_text())
+
+    assert report["dataset_sha256"] == dataset_sha256
+    assert len(report["runs"]) == 6
+    assert all(run["status"] == "passed" for run in report["runs"])
+    assert all(run["failure_rate"] == 0 for run in report["runs"])

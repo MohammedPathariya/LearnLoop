@@ -22,20 +22,29 @@ def _content_tokens(tokenizer, text: str) -> list[int]:
     return tokenizer.encode(text, add_special_tokens=False, verbose=False)
 
 
-def chunk_document(tokenizer, text: str) -> list[dict]:
+def chunk_document(
+    tokenizer,
+    text: str,
+    chunk_tokens: int = CHUNK_TOKENS,
+    chunk_overlap: int = CHUNK_OVERLAP,
+) -> list[dict]:
+    if chunk_tokens <= 0:
+        raise ValueError("chunk_size must be greater than 0")
+    if chunk_overlap < 0 or chunk_overlap >= chunk_tokens:
+        raise ValueError("chunk_overlap must be non-negative and less than chunk_size")
     tokens = _content_tokens(tokenizer, text)
     if not tokens:
         return []
-    step = CHUNK_TOKENS - CHUNK_OVERLAP
+    step = chunk_tokens - chunk_overlap
     chunks = []
     for start in range(0, len(tokens), step):
-        token_window = tokens[start:start + CHUNK_TOKENS]
+        token_window = tokens[start:start + chunk_tokens]
         chunks.append({
             "chunk_index": len(chunks),
             "text": tokenizer.decode(token_window, skip_special_tokens=True),
             "token_count": len(token_window),
         })
-        if start + CHUNK_TOKENS >= len(tokens):
+        if start + chunk_tokens >= len(tokens):
             break
     return chunks
 
@@ -87,7 +96,14 @@ def _index(item: dict, token):
     if not text:
         return {"error": "text is required"}
     model, tokenizer = _load_model()
-    chunks = chunk_document(tokenizer, text)
+    chunk_tokens = item.get("chunk_size", CHUNK_TOKENS)
+    chunk_overlap = item.get("chunk_overlap", CHUNK_OVERLAP)
+    if not isinstance(chunk_tokens, int) or not isinstance(chunk_overlap, int):
+        return {"error": "chunk_size and chunk_overlap must be integers"}
+    try:
+        chunks = chunk_document(tokenizer, text, chunk_tokens, chunk_overlap)
+    except ValueError as exc:
+        return {"error": str(exc)}
     embeddings = embed_long_texts(model, tokenizer, [chunk["text"] for chunk in chunks])
     return {"chunks": [{**chunk, "embedding": embedding} for chunk, embedding in zip(chunks, embeddings)]}
 

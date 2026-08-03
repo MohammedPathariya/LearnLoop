@@ -44,6 +44,11 @@ def test_http_provider_indexes_documents_and_embeds_queries(monkeypatch):
     assert query.shape == (384,)
     assert calls[0][0] == "https://embeddings.example/index"
     assert calls[0][1]["headers"] == {"Authorization": "Bearer secret"}
+    assert calls[0][1]["json"] == {
+        "text": "Mitosis divides cells.",
+        "chunk_size": 512,
+        "chunk_overlap": 64,
+    }
     assert calls[1][0] == "https://embeddings.example/embed"
 
 

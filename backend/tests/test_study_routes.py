@@ -14,6 +14,7 @@ VISITOR_HEADERS = {"X-LearnLoop-Visitor": "visitor-a"}
 def backend_app(tmp_path, monkeypatch):
     db_path = tmp_path / "learnloop-study-test.db"
     monkeypatch.setenv("SUPABASE_DB_URI", f"sqlite:///{db_path}")
+    monkeypatch.setenv("VECTOR_STORE", "memory")
     monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1]))
 
     sys.modules.pop("main", None)
