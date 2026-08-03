@@ -84,16 +84,7 @@ def embed_long_texts(model, tokenizer, texts: list[str]) -> list[list[float]]:
     return vectors
 
 
-@app.function(
-    image=image,
-    scaledown_window=300,
-    secrets=[modal.Secret.from_name("learnloop-embedding")],
-)
-@modal.fastapi_endpoint(method="POST")
-def index(
-    item: dict,
-    token: HTTPAuthorizationCredentials = Depends(auth_scheme),
-):
+def _index(item: dict, token: HTTPAuthorizationCredentials):
     _require_token(token)
     text = item.get("text", "").strip()
     if not text:
@@ -104,22 +95,41 @@ def index(
     return {"chunks": [{**chunk, "embedding": embedding} for chunk, embedding in zip(chunks, embeddings)]}
 
 
-@app.function(
-    image=image,
-    scaledown_window=300,
-    secrets=[modal.Secret.from_name("learnloop-embedding")],
-)
-@modal.fastapi_endpoint(method="POST")
-def embed(
-    item: dict,
-    token: HTTPAuthorizationCredentials = Depends(auth_scheme),
-):
+def _embed(item: dict, token: HTTPAuthorizationCredentials):
     _require_token(token)
     texts = item.get("texts")
     if not isinstance(texts, list) or not texts or not all(isinstance(text, str) for text in texts):
         return {"error": "texts must be a non-empty list of strings"}
     model, tokenizer = _load_model()
     return {"embeddings": embed_long_texts(model, tokenizer, texts)}
+
+
+@app.function(
+    image=image,
+    scaledown_window=300,
+    secrets=[modal.Secret.from_name("learnloop-embedding")],
+)
+@modal.asgi_app()
+def fastapi_app():
+    from fastapi import FastAPI
+
+    web_app = FastAPI()
+
+    @web_app.post("/index")
+    def index_route(
+        item: dict,
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme),
+    ):
+        return _index(item, token)
+
+    @web_app.post("/embed")
+    def embed_route(
+        item: dict,
+        token: HTTPAuthorizationCredentials = Depends(auth_scheme),
+    ):
+        return _embed(item, token)
+
+    return web_app
 
 
 def _load_model():
