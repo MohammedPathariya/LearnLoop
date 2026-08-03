@@ -1,8 +1,6 @@
 import os
 
 import modal
-from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 
 APP_NAME = "learnloop-embeddings"
@@ -16,7 +14,6 @@ image = (
     .pip_install("fastapi[standard]", "sentence-transformers==3.0.1")
 )
 app = modal.App(APP_NAME)
-auth_scheme = HTTPBearer()
 _model = None
 _tokenizer = None
 
@@ -84,7 +81,7 @@ def embed_long_texts(model, tokenizer, texts: list[str]) -> list[list[float]]:
     return vectors
 
 
-def _index(item: dict, token: HTTPAuthorizationCredentials):
+def _index(item: dict, token):
     _require_token(token)
     text = item.get("text", "").strip()
     if not text:
@@ -95,7 +92,7 @@ def _index(item: dict, token: HTTPAuthorizationCredentials):
     return {"chunks": [{**chunk, "embedding": embedding} for chunk, embedding in zip(chunks, embeddings)]}
 
 
-def _embed(item: dict, token: HTTPAuthorizationCredentials):
+def _embed(item: dict, token):
     _require_token(token)
     texts = item.get("texts")
     if not isinstance(texts, list) or not texts or not all(isinstance(text, str) for text in texts):
@@ -111,9 +108,11 @@ def _embed(item: dict, token: HTTPAuthorizationCredentials):
 )
 @modal.asgi_app()
 def fastapi_app():
-    from fastapi import FastAPI
+    from fastapi import Depends, FastAPI
+    from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
     web_app = FastAPI()
+    auth_scheme = HTTPBearer()
 
     @web_app.post("/index")
     def index_route(
@@ -143,7 +142,9 @@ def _load_model():
     return _model, _tokenizer
 
 
-def _require_token(token: HTTPAuthorizationCredentials):
+def _require_token(token):
+    from fastapi import HTTPException, status
+
     expected = os.environ.get("EMBEDDING_SERVICE_TOKEN", "")
     if not expected or token.credentials != expected:
         raise HTTPException(
