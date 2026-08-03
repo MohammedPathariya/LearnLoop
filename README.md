@@ -10,8 +10,7 @@ architecture decisions, benchmark reports, load-test reports, and remaining
 limitations are kept together so that technical claims can be inspected rather
 than inferred from a product demo.
 
-The redesigned Day 7 application is verified locally. The previous public
-deployment does not represent this version. Public deployment is Day 8 scope.
+[Live application](https://learnloop-portfolio.vercel.app/) · [Render API health](https://learnloop-api-a1h4.onrender.com/healthz)
 
 ## Product
 
