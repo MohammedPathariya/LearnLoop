@@ -24,3 +24,60 @@ hashes, query labels, retrieved chunk IDs, and latency samples.
 | `real-project-recall-at-5` | 0.9, 9/10 | 15.826 ms | 33.8765 ms |
 
 Latency covers query embedding plus FAISS search and excludes ingestion.
+
+## Retrieval ablation study
+
+`retrieval_ablation_corpus.json` is a separate pinned corpus for evaluating the
+current hosted design. It varies chunk size and overlap across `256:32`,
+`512:64`, and `768:96`, and evaluates both Recall@3 and Recall@5. A query is a
+source-level hit when at least one returned chunk belongs to its expected
+source. This keeps the comparison valid when changing chunk boundaries.
+
+Deploy the current `modal/embedding_service.py` before running this study;
+older Modal deployments accept the default 512/64 behavior but cannot evaluate
+the alternate chunk configurations.
+
+Run it only with the current HTTP embedding provider and pgvector store:
+
+```bash
+EMBEDDING_PROVIDER=http \
+VECTOR_STORE=pgvector \
+EMBEDDING_SERVICE_URL=https://<modal-endpoint>.modal.run \
+EMBEDDING_SERVICE_TOKEN=<token> \
+SUPABASE_DB_URI=<supabase-postgres-uri> \
+PYTHONPATH=backend python3.11 scripts/evaluate_retrieval_ablation.py \
+  --dataset docs/benchmarks/retrieval_ablation_corpus.json \
+  --report docs/benchmarks/retrieval_ablation_report.json \
+  --chunk-configs 256:32,512:64,768:96 \
+  --top-k 3,5
+```
+
+The report records each configuration's chunk count, Recall@3, Recall@5,
+failed-query rate, p50 and p95 retrieval latency, ingestion errors, per-query
+results, dataset hash, environment flags, and the exact command. Latency is
+query embedding plus pgvector search and excludes ingestion. Failure rate is
+failed query attempts divided by the ten-query set. Do not copy metrics into
+the README or resume until the report has `status: passed` for the relevant
+configuration and the run is verified against the hosted Modal and pgvector
+services.
+
+### Current hosted ablation result
+
+Run completed on 2026-08-03 against the deployed Modal embedding service and
+Supabase pgvector. All 60 query attempts completed without failures. Because
+latency includes the remote Modal query-embedding request and pgvector search,
+these values are not directly comparable to the historical local FAISS report.
+
+| Chunk size | Overlap | Top-k | Chunks | Recall | Failure rate | Median latency |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 256 | 32 | 3 | 36 | 1.0, 10/10 | 0% | 711.89 ms |
+| 256 | 32 | 5 | 36 | 1.0, 10/10 | 0% | 617.15 ms |
+| 512 | 64 | 3 | 18 | 0.9, 9/10 | 0% | 677.74 ms |
+| 512 | 64 | 5 | 18 | 1.0, 10/10 | 0% | 611.83 ms |
+| 768 | 96 | 3 | 12 | 0.7, 7/10 | 0% | 608.85 ms |
+| 768 | 96 | 5 | 12 | 1.0, 10/10 | 0% | 682.96 ms |
+
+The checked-in report is [`retrieval_ablation_report.json`](retrieval_ablation_report.json).
+For this ten-query corpus, Recall@5 reached 1.0 for every chunk configuration;
+the smaller 256-token configuration used twice as many stored chunks as the
+768-token configuration, while all configurations had zero query failures.
