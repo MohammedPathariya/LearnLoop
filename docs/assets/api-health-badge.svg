@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="164" height="34" viewBox="0 0 164 34" role="img" aria-labelledby="title">
+  <title id="title">API health</title>
+  <rect width="164" height="34" rx="8" fill="#f0f3f7" stroke="#d0d8e2"/>
+  <circle cx="17" cy="17" r="4" fill="#4d7b68"/>
+  <circle cx="17" cy="17" r="4" fill="#4d7b68" opacity=".35">
+    <animate attributeName="r" values="4;7;4" dur="2.6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values=".35;0;.35" dur="2.6s" repeatCount="indefinite"/>
+  </circle>
+  <text x="29" y="22" fill="#405267" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="14" font-weight="600">API health</text>
+  <text x="140" y="22" fill="#4d7b68" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="15" font-weight="700">↗</text>
+</svg>
