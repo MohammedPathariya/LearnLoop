@@ -20,10 +20,10 @@ from .models import (
 from .services.generation import generate_grounded_answer
 from .services.rag import (
     clear_session_index,
-    has_session_index,
     ingest_study_material,
     retrieve_chunks,
 )
+from .services.vector_store import get_vector_store
 from .services.pdf import extract_pdf_text
 from .services.pdf_sources import clear_sources, get_source, get_sources, register_source, remove_source
 
@@ -252,8 +252,8 @@ def register_study_routes(app):
 
         session_id = material.session_id
         db.session.delete(material)
+        get_vector_store().delete_source(material_id)
         db.session.commit()
-        clear_session_index(session_id)
         return jsonify({"success": True})
 
     @app.route("/study/sessions/<session_id>/messages", methods=["GET"])
@@ -636,9 +636,12 @@ def _persisted_source(chunk):
 
 
 def _ensure_session_index(session_id):
-    if has_session_index(session_id):
-        return
+    store = get_vector_store()
+    if store.has_session(session_id):
+        return None
     materials = StudyMaterial.query.filter_by(session_id=session_id).all()
+    if not materials:
+        return None
     try:
         for material in materials:
             result = ingest_study_material(
@@ -649,13 +652,13 @@ def _ensure_session_index(session_id):
             material.chunk_count = result["chunks_indexed"]
             material.status = "indexed"
     except (RuntimeError, ValueError):
-        clear_session_index(session_id)
+        store.delete_session(session_id)
         raise
     db.session.commit()
 
 
 def _rebuild_session_index(session_id):
-    clear_session_index(session_id)
+    get_vector_store().delete_session(session_id)
     materials = StudyMaterial.query.filter_by(session_id=session_id).all()
     for material in materials:
         result = ingest_study_material(

@@ -10,67 +10,40 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from app.services import rag
 
 
-class FakeTokenizer:
-    def __init__(self):
-        self.tokens = {}
-        self.values = {}
+class FakeEmbeddingProvider:
+    def index_document(self, text):
+        chunks = [part.strip() for part in text.split("\n\n") if part.strip()]
+        return [
+            {
+                "chunk_index": index,
+                "text": chunk,
+                "token_count": len(chunk.split()),
+                "embedding": self._embed(chunk).tolist(),
+            }
+            for index, chunk in enumerate(chunks)
+        ]
 
-    def encode(self, text, add_special_tokens=False, verbose=True):
-        ids = []
-        for token in text.split():
-            if token not in self.tokens:
-                token_id = len(self.tokens) + 1
-                self.tokens[token] = token_id
-                self.values[token_id] = token
-            ids.append(self.tokens[token])
-        return ids
+    def embed_query(self, text):
+        return self._embed(text)
 
-    def decode(self, token_ids, skip_special_tokens=True):
-        return " ".join(self.values[token_id] for token_id in token_ids)
-
-    def num_special_tokens_to_add(self, pair=False):
-        return 2
-
-
-class FakeEmbeddingModel:
-    max_seq_length = 256
-
-    def __init__(self):
-        self.tokenizer = FakeTokenizer()
-
-    def encode(self, texts, convert_to_numpy=True, normalize_embeddings=False):
-        vectors = []
-        for text in texts:
-            lowered = text.lower()
-            vectors.append([
-                float("mitosis" in lowered or "cells" in lowered),
-                float("photosynthesis" in lowered or "chlorophyll" in lowered),
-                float("algebra" in lowered or "equation" in lowered),
-            ])
-        return np.asarray(vectors, dtype="float32")
-
-
-class FakeIndex:
-    def __init__(self, dimensions):
-        self.dimensions = dimensions
-        self.vectors = np.empty((0, dimensions), dtype="float32")
-
-    def add(self, vectors):
-        self.vectors = np.vstack([self.vectors, vectors])
-
-    def search(self, query, top_k):
-        scores = query @ self.vectors.T
-        order = np.argsort(-scores[0])[:top_k]
-        return scores[:, order], order.reshape(1, -1).astype("int64")
+    @staticmethod
+    def _embed(text):
+        lowered = text.lower()
+        return np.asarray([
+            float("mitosis" in lowered or "cells" in lowered),
+            float("photosynthesis" in lowered or "chlorophyll" in lowered),
+            float("algebra" in lowered or "equation" in lowered),
+        ], dtype="float32")
 
 
 @pytest.fixture(autouse=True)
 def fake_rag_dependencies(monkeypatch):
+    monkeypatch.setattr(rag, "_embedding_provider", FakeEmbeddingProvider())
+    monkeypatch.setenv("VECTOR_STORE", "memory")
     rag.clear_session_indexes()
-    monkeypatch.setattr(rag, "_embedding_model", FakeEmbeddingModel())
-    monkeypatch.setattr(rag, "_create_faiss_index", lambda dimensions: FakeIndex(dimensions))
     yield
     rag.clear_session_indexes()
+    rag._embedding_provider = None
 
 
 @pytest.fixture()
@@ -92,37 +65,18 @@ def client(tmp_path, monkeypatch):
         module.db.drop_all()
 
 
-def test_chunk_text_uses_512_tokens_with_overlap():
-    text = " ".join(f"token{i}" for i in range(1100))
-
-    chunks = rag.chunk_text(text)
-
-    tokenizer = rag.get_embedding_model().tokenizer
-    chunk_tokens = [tokenizer.encode(chunk, add_special_tokens=False) for chunk in chunks]
-    assert [len(tokens) for tokens in chunk_tokens] == [512, 512, 204]
-    assert chunk_tokens[0][448:512] == chunk_tokens[1][:64]
-    assert chunk_tokens[1][448:512] == chunk_tokens[2][:64]
-
-
-def test_embedding_includes_tokens_beyond_model_window():
-    text = " ".join(["filler"] * 300 + ["mitosis", "cells"])
-
-    embedding = rag._embed([text])
-
-    assert embedding[0][0] > 0
-
-
-def test_retrieval_returns_relevant_chunks_and_latency(client):
+def test_document_indexing_and_retrieval_use_the_provider_and_store(client):
     ingest_response = client.post(
         "/rag/ingest",
         json={
             "session_id": "biology",
             "source_id": "bio-notes",
-            "text": "Mitosis divides cells. Photosynthesis uses chlorophyll.",
+            "text": "Mitosis divides cells.\n\nPhotosynthesis uses chlorophyll.",
         },
     )
 
     assert ingest_response.status_code == 201
+    assert ingest_response.get_json()["chunks_indexed"] == 2
 
     retrieve_response = client.post(
         "/rag/retrieve",
@@ -156,3 +110,13 @@ def test_retrieval_is_scoped_to_session(client):
     chunks = response.get_json()["chunks"]
     assert [chunk["source_id"] for chunk in chunks] == ["algebra"]
     assert all(chunk["session_id"] == "session-a" for chunk in chunks)
+
+
+def test_reindexing_replaces_a_source_without_duplicates(client):
+    rag.ingest_study_material("biology", "Mitosis divides cells.", "notes")
+    rag.ingest_study_material("biology", "Algebra solves equations.", "notes")
+
+    result = rag.retrieve_chunks("biology", "What solves equations?", top_k=5)
+
+    assert len(result["chunks"]) == 1
+    assert result["chunks"][0]["text"] == "Algebra solves equations."

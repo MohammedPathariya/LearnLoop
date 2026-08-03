@@ -1,77 +1,84 @@
 import os
+import time
 from typing import Protocol
 
 import httpx
 import numpy as np
 
-from . import rag
-
 
 class EmbeddingProvider(Protocol):
-    @property
-    def tokenizer(self): ...
+    def index_document(self, text: str) -> list[dict]: ...
 
-    def embed(self, texts: list[str]) -> np.ndarray: ...
-
-
-class LocalMiniLMProvider:
-    @property
-    def tokenizer(self):
-        return rag.get_embedding_model().tokenizer
-
-    def embed(self, texts: list[str]) -> np.ndarray:
-        return rag._embed_local(texts)
+    def embed_query(self, text: str) -> np.ndarray: ...
 
 
 class HttpEmbeddingProvider:
-    def __init__(self, url: str, token: str = "", timeout: float = 60.0):
+    def __init__(self, url: str, token: str = "", timeout: float = 120.0):
         self.url = url.rstrip("/")
         self.token = token
         self.timeout = timeout
-        self._tokenizer = None
 
-    @property
-    def tokenizer(self):
-        if self._tokenizer is None:
-            try:
-                from transformers import AutoTokenizer
-            except ImportError as exc:
-                raise RuntimeError(
-                    "transformers is required for remote embedding tokenization"
-                ) from exc
-            self._tokenizer = AutoTokenizer.from_pretrained(rag.EMBEDDING_MODEL_NAME)
-        return self._tokenizer
+    def index_document(self, text: str) -> list[dict]:
+        payload = self._post("/index", {"text": text})
+        chunks = payload.get("chunks") if isinstance(payload, dict) else None
+        if not isinstance(chunks, list) or not chunks:
+            raise RuntimeError("Embedding service returned no document chunks")
+        for index, chunk in enumerate(chunks):
+            if not isinstance(chunk, dict):
+                raise RuntimeError("Embedding service returned an invalid chunk")
+            if chunk.get("chunk_index") != index:
+                raise RuntimeError("Embedding service returned non-contiguous chunk indexes")
+            embedding = chunk.get("embedding")
+            if not isinstance(embedding, list) or len(embedding) != 384:
+                raise RuntimeError("Embedding service returned a non-384-dimensional vector")
+        return chunks
 
-    def embed(self, texts: list[str]) -> np.ndarray:
-        if not self.url:
-            raise RuntimeError("EMBEDDING_SERVICE_URL is required for HTTP embeddings")
-        headers = {"Authorization": f"Bearer {self.token}"} if self.token else {}
-        try:
-            response = httpx.post(
-                f"{self.url}/embed",
-                json={"texts": texts},
-                headers=headers,
-                timeout=self.timeout,
-            )
-            response.raise_for_status()
-        except httpx.HTTPError as exc:
-            raise RuntimeError(f"Embedding service request failed: {exc}") from exc
-
-        payload = response.json()
+    def embed_query(self, text: str) -> np.ndarray:
+        payload = self._post("/embed", {"texts": [text]})
         embeddings = payload.get("embeddings") if isinstance(payload, dict) else None
-        if not isinstance(embeddings, list) or len(embeddings) != len(texts):
-            raise RuntimeError("Embedding service returned an invalid embeddings payload")
-        return np.asarray(embeddings, dtype="float32")
+        if not isinstance(embeddings, list) or len(embeddings) != 1:
+            raise RuntimeError("Embedding service returned an invalid query payload")
+        if not isinstance(embeddings[0], list) or len(embeddings[0]) != 384:
+            raise RuntimeError("Embedding service returned a non-384-dimensional query vector")
+        return np.asarray(embeddings[0], dtype="float32")
+
+    def _post(self, path: str, payload: dict) -> dict:
+        if not self.url:
+            raise RuntimeError("EMBEDDING_SERVICE_URL is required")
+        headers = {"Authorization": f"Bearer {self.token}"} if self.token else {}
+        for attempt in range(3):
+            try:
+                response = httpx.post(
+                    f"{self.url}{path}",
+                    json=payload,
+                    headers=headers,
+                    timeout=self.timeout,
+                )
+                if response.status_code >= 500 and attempt < 2:
+                    time.sleep(0.25 * (attempt + 1))
+                    continue
+                response.raise_for_status()
+                break
+            except (httpx.ConnectError, httpx.ReadTimeout) as exc:
+                if attempt == 2:
+                    raise RuntimeError(f"Embedding service request failed: {exc}") from exc
+                time.sleep(0.25 * (attempt + 1))
+            except httpx.HTTPError as exc:
+                raise RuntimeError(f"Embedding service request failed: {exc}") from exc
+        body = response.json()
+        if not isinstance(body, dict):
+            raise RuntimeError("Embedding service returned an invalid JSON object")
+        return body
 
 
 def build_embedding_provider() -> EmbeddingProvider:
-    provider = os.getenv("EMBEDDING_PROVIDER", "local").strip().lower()
-    if provider == "http":
-        return HttpEmbeddingProvider(
-            os.getenv("EMBEDDING_SERVICE_URL", ""),
-            os.getenv("EMBEDDING_SERVICE_TOKEN", ""),
-            float(os.getenv("EMBEDDING_SERVICE_TIMEOUT_SECONDS", "60")),
+    provider = os.getenv("EMBEDDING_PROVIDER", "http").strip().lower()
+    if provider != "http":
+        raise RuntimeError(
+            "Only EMBEDDING_PROVIDER=http is supported. Configure Modal for embeddings."
         )
-    if provider != "local":
-        raise RuntimeError(f"Unsupported EMBEDDING_PROVIDER: {provider}")
-    return LocalMiniLMProvider()
+    return HttpEmbeddingProvider(
+        os.getenv("EMBEDDING_SERVICE_URL", ""),
+        os.getenv("EMBEDDING_SERVICE_TOKEN", ""),
+        float(os.getenv("EMBEDDING_SERVICE_TIMEOUT_SECONDS", "120")),
+    )
